@@ -10,4 +10,9 @@ class UserAndPage extends Model
 
     protected $fillable = ['page_id', 'user_parent', 'user_child', 'status'];
 
+    public function page()
+    {
+        return $this->belongsTo(Page::class, 'page_id', 'id');
+    }
+
 }

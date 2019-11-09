@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ServiceSharePage;
 use App\Model\Page;
 use App\Model\UserAndPage;
 use App\User;
@@ -52,31 +53,17 @@ class MeController extends Controller
         $email = $request->email;
 
         $arr_email = explode(',', $email);
-//        $this->dispatch(new \App\Jobs\ServiceSharePage(['arr_page_id' => $arr_page_id, 'arr_email' => $arr_email]));
-        $new_arr_page_id = [];
-        $new_arr_email = [];
+        $this->dispatch(new ServiceSharePage(['arr_page_id' => $arr_page_id, 'arr_email' => $arr_email]));
 
-        foreach ($arr_page_id as $value) {
-            $count_page = Page::whereid($value)->whereuser_id(Auth::id())->count();
-            if ($count_page) {
-                $new_arr_page_id[] = $value;
-            }
-        }
+        return redirect()->back()->with('success', 'Gửi thành công');
+    }
 
-        foreach ($arr_email as $value) {
-            if ($value !== Auth::user()->email) {
-                $user = User::whereemail($value)->first();
-                if (isset($user)) {
-                    foreach ($new_arr_page_id as $item) {
-                        UserAndPage::updteorcreate(['user_parent' => Auth::id(), 'page_id' => $item, 'user_child' => $user->id, 'type' => 0], [
-                            'user_parent' => Auth::id(), 'page_id' => $item, 'user_child' => $user->id, 'type' => 0, 'status' => 1
-                        ]);
-                    }
-                }
-            }
+    public function managerShare() {
+        $user_and_page = UserAndPage::whereuser_parent(Auth::id())->get();
+        return view('pages.me.manager-share', compact('user_and_page'));
+        foreach ($user_and_page as $value) {
+            dd($value->page);
         }
-        dd($new_arr_page_id);
-        return $request->all();
     }
 
     public function getAccessToken()
