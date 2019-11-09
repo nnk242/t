@@ -7,7 +7,7 @@
                 <div class="mb-5">
                     <button class="btn btn-primary" data-toggle="modal" data-target="#page-modal">Thêm/cập nhật</button>
                 </div>
-                @component('components.table.index', ['headers' => $headers, 'data' => $data])
+                @component('components.table.index', ['headers' => $headers])
                     @slot('body')
                         @foreach($data as $key=>$value)
                             <tr>
@@ -37,6 +37,9 @@
                             </tr>
                         @endforeach
                     @endslot
+                        @slot('paginate')
+                            {{ $data->appends(request()->input())->links() }}
+                        @endslot
                 @endcomponent
             </div>
         </div>

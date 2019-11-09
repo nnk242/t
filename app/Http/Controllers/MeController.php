@@ -58,11 +58,22 @@ class MeController extends Controller
         return redirect()->back()->with('success', 'Gửi thành công');
     }
 
-    public function managerShare() {
-        $user_and_page = UserAndPage::whereuser_parent(Auth::id())->get();
-        return view('pages.me.manager-share', compact('user_and_page'));
-        foreach ($user_and_page as $value) {
-            dd($value->page);
+    public function managerShare()
+    {
+        $data = UserAndPage::whereuser_parent(Auth::id())->paginate(1);
+        $headers = ['STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Người nhận', 'Thể loại', 'status', 'Ngày chấp nhận', 'Ngày thêm', '###'];
+        return view('pages.me.manager-share', compact('data', 'headers'));
+    }
+
+    public function updateStatusManagerShare(Request $request)
+    {
+        try {
+            $id = $request->id;
+            UserAndPage::findorfail($id)->update(['status' => $request->is_checked === 'true' ? 0 : 1]);
+            $user_and_page = UserAndPage::findorfail($id);
+            return $user_and_page->status;
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
         }
     }
 

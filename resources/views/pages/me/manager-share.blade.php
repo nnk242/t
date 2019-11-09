@@ -8,7 +8,7 @@
             <div class="col-md-12 py-5">
                 <div class="row mb-5">
                     <div class="col-xl-3 text-center mb-2">
-                        <a href="{{route('me.accessToken')}}">
+                        <a href="{{route('me.index')}}">
                             <button class="btn btn-primary">{{__('Tổng quan')}}</button>
                         </a>
                     </div>
@@ -28,86 +28,83 @@
                         </a>
                     </div>
                 </div>
-{{--                @if($pages->count())--}}
-{{--                    <form method="POST">--}}
-{{--                        @csrf--}}
-{{--                        <div class="mt2 mb-2">--}}
-{{--                        <span class="badge badge-secondary p-2 cursor-pointer" id="pick-all"--}}
-{{--                              check="0">Chọn tất cả</span>--}}
-{{--                        </div>--}}
-{{--                        <div class="scream-item mb-3">--}}
-{{--                            @foreach($pages as $page)--}}
-{{--                                <div class="float-left item-element"--}}
-{{--                                     title="{{ $page->name }}">--}}
-{{--                                    <input id="p_{{ $page->user_id_fb_page_id }}" type="checkbox" class="w-100 pick"--}}
-{{--                                           name="arr_page_id[]"--}}
-{{--                                           value="{{ $page->id }}">--}}
-{{--                                    <label for="p_{{ $page->user_id_fb_page_id }}" class="d-block">--}}
-{{--                                        <img src="{{ $page->picture }}" class="d-block m-auto">--}}
-{{--                                        <p>{{ Str::limit($page->name, 10) }}</p>--}}
-{{--                                    </label>--}}
-{{--                                </div>--}}
-{{--                            @endforeach--}}
-{{--                        </div>--}}
-
-{{--                        <div id="render-fo">--}}
-{{--                            <div class="col-xl-4 col-lg-6 col-md-8 col-sm-10 col-12 m-auto" style="clear: both">--}}
-{{--                                <div class="form-group">--}}
-{{--                                    <label for="mail">Mail của user bạn muốn phân quyền</label>--}}
-{{--                                    <input class="form-control" id="email" name="email"--}}
-{{--                                           placeholder="Nhập mail của user..." required>--}}
-{{--                                </div>--}}
-{{--                                <div class="form-group text-center">--}}
-{{--                                    <button class="btn btn-primary">Gửi người dùng</button>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                    </form>--}}
-{{--                    @else--}}
-                    <p class="text-center text-dark h3">Bạn chưa thêm page...</p>
+                @if($data->count())
+                    @component('components.table.index', ['headers' => $headers])
+                        @slot('body')
+                            @foreach($data as $key=>$value)
+                                <tr>
+                                    <td>{{ $key +  1 }}</td>
+                                    <td>{{$value->page->fb_page_id}}</td>
+                                    <td>{{$value->page->name}}</td>
+                                    <td><img src="{{$value->page->picture}}"></td>
+                                    <td><code>{{$value->user->email}}</code></td>
+                                    <td>{!! $value->type === 0 ? '<span class="badge badge-pill badge-warning">Đã gửi</span>' :
+                                     ($value->type === 1 ? '<span class="badge badge-pill badge-success">Chấp nhận</span>' :
+                                      '<span class="badge badge-pill badge-danger">Từ chối</span>') !!}</td>
+                                    <td>
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" class="custom-control-input status"
+                                                   id="switch-{{ $key }}" {{$value->status ? 'checked' : ''}}>
+                                            <label class="custom-control-label cursor-pointer label-switch"
+                                                   for="switch-{{ $key }}" data-id="{{ $value->id }}"></label>
+                                        </div>
+                                    </td>
+                                    <td>{!! $value->updated_at->timestamp === $value->created_at->timestamp ?
+                                     '<span class="badge badge-pill badge-warning">Chưa chấp nhận</span>' : $value->updated_at !!}</td>
+                                    <td>{{$value->created_at}}</td>
+                                    <td><span title="Delete page"><a data-toggle="modal" data-target="#delete-modal"
+                                                                     data-id="{{ $value->id }}"
+                                                                     data-page-id="{{ $value->fb_page_id }}"
+                                                                     class="delete-item" href="#"><img
+                                                    width="15"
+                                                    src="{{ asset('icons/actions/trash-alt.svg') }}"></a></span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endslot
+                        @slot('paginate')
+                            {{ $data->appends(request()->input())->links() }}
+                        @endslot
+                    @endcomponent
+                @else
+                    <p class="text-center text-dark h3">Bạn chưa chia sẻ page nào...</p>
                     <p class="h2">Hướng dẫn:</p>
-                    <p><b>B1:</b> Cập nhật access token cá nhân</p>
-                    <p><b>B2:</b> Thêm hoặc cập nhật page</p>
-{{--                @endif--}}
+                    <p><b>B1:</b> Chia sẻ page</p>
+                    <p><b>B2:</b> Thêm page cho người muốn sử dụng</p>
+                @endif
             </div>
         </div>
     </div>
 @endsection
 @section('js')
     <script src="{{ asset('js/tags-input.js') }}"></script>
+    <script src="{{ asset('js/me_.js') }}"></script>
     <script>
-        $('input[name="email"]').amsifySuggestags({
-            tagLimit: 5,
-            isEmail: true
-        })
-
-        function check(_this) {
-            let check = parseInt(_this.attr('check'))
-            if (check === 0) {
-                $('.pick').prop('checked', true)
-                $('#pick-all').attr('check', 1)
-                $('#render-fo').append(render())
-            } else {
-                $('.pick').prop('checked', false)
-                $('#pick-all').attr('check', 0)
-                $('#render-fo').empty()
+        $(document).on('click', '.label-switch', function () {
+            let status = $(this).closest('.custom-switch').find('.status')
+            status.prop("disabled", true)
+            let is_checked = status.prop("checked")
+            let id = $(this).attr('data-id')
+            let data = {
+                is_checked,
+                id,
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
-        }
-
-        $(document).ready(function () {
-            $('.pick').prop('checked', false)
-            $('#pick-all').attr('check', 0)
-        })
-
-        $(document).on('click', '#pick-all', function () {
-            let check = parseInt($(this).attr('check'))
-            if (check === 0) {
-                $('.pick').prop('checked', true)
-                $('#pick-all').attr('check', 1)
-            } else {
-                $('.pick').prop('checked', false)
-                $('#pick-all').attr('check', 0)
-            }
+            $.ajax({
+                url: '/me/manager-share/',
+                method: 'POST',
+                data,
+                success: function (response) {
+                    status.prop("disabled", false)
+                    if (parseInt(response) === 1) {
+                        status.prop('checked', true)
+                    } else if (parseInt(response) === 0) {
+                        status.prop('checked', false)
+                    }
+                }, catch(error) {
+                    status.prop("disabled", false)
+                }
+            })
         })
     </script>
 @endsection

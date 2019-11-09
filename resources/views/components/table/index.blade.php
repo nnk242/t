@@ -12,10 +12,12 @@
         </tr>
         </thead>
         <tbody>
-        {{ $body }}
+        @isset($body)
+            {{ $body }}
+        @endisset
         </tbody>
     </table>
 </div>
-<div class="mt-2 mb-2">
-    {{ $data->appends(request()->input())->links() }}
-</div>
+@isset($paginate)
+    {{ $paginate }}
+@endisset

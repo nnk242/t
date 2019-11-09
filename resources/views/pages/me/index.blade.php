@@ -8,7 +8,7 @@
             <div class="col-md-12 py-5">
                 <div class="row mb-5">
                     <div class="col-xl-3 text-center mb-2">
-                        <a href="{{route('me.accessToken')}}">
+                        <a href="{{route('me.index')}}">
                             <button class="btn btn-primary">{{__('Tổng quan')}}</button>
                         </a>
                     </div>
@@ -75,39 +75,5 @@
 @endsection
 @section('js')
     <script src="{{ asset('js/tags-input.js') }}"></script>
-    <script>
-        $('input[name="email"]').amsifySuggestags({
-            tagLimit: 5,
-            isEmail: true
-        })
-
-        function check(_this) {
-            let check = parseInt(_this.attr('check'))
-            if (check === 0) {
-                $('.pick').prop('checked', true)
-                $('#pick-all').attr('check', 1)
-                $('#render-fo').append(render())
-            } else {
-                $('.pick').prop('checked', false)
-                $('#pick-all').attr('check', 0)
-                $('#render-fo').empty()
-            }
-        }
-
-        $(document).ready(function () {
-            $('.pick').prop('checked', false)
-            $('#pick-all').attr('check', 0)
-        })
-
-        $(document).on('click', '#pick-all', function () {
-            let check = parseInt($(this).attr('check'))
-            if (check === 0) {
-                $('.pick').prop('checked', true)
-                $('#pick-all').attr('check', 1)
-            } else {
-                $('.pick').prop('checked', false)
-                $('#pick-all').attr('check', 0)
-            }
-        })
-    </script>
+    <script src="{{ asset('js/me_.js') }}"></script>
 @endsection
