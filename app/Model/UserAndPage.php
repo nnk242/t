@@ -16,7 +16,12 @@ class UserAndPage extends Model
         return $this->belongsTo(Page::class, 'page_id', 'id');
     }
 
-    public function user()
+    public function userParent()
+    {
+        return $this->belongsTo(User::class, 'user_parent', 'id');
+    }
+
+    public function userChild()
     {
         return $this->belongsTo(User::class, 'user_child', 'id');
     }

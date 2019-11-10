@@ -39,7 +39,7 @@
                     <a class="nav-link" href="{{ route('page.index') }}">{{ __('Page') }}</a>
                 </ul>
                 <!-- Left Side Of Navbar -->
-                <ul class="navbar-nav {{ \App\Components\ActiveComponent::isActiveSide(['/me', '/me/manager-share'])? 'selected-page' : '' }}">
+                <ul class="navbar-nav {{ \App\Components\ActiveComponent::isActiveSide(['/me', '/me/manager-share', '/me/share'])? 'selected-page' : '' }}">
                     <a class="nav-link" href="{{ route('me.index') }}">{{ __('Cá nhân') }}</a>
                 </ul>
 

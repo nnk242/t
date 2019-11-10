@@ -27,7 +27,8 @@ class MeController extends Controller
 //        $log->pushHandler(new StreamHandler(storage_path('fb/' . date('Y-m-d') . '-fb.log')), Logger::INFO);
 //        $log->info('OrderLog', ['$arr_log']);
         $pages = Page::whereuser_id(Auth::id())->get();
-        return view('pages.me.index', compact('pages'));
+        $user_and_page = UserAndPage::whereuser_child(Auth::id())->wherestatus(1)->get();
+        return view('pages.me.index', compact('pages', 'user_and_page'));
     }
 
     public function store(Request $request)
@@ -63,6 +64,12 @@ class MeController extends Controller
         $data = UserAndPage::whereuser_parent(Auth::id())->paginate(1);
         $headers = ['STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Người nhận', 'Thể loại', 'status', 'Ngày chấp nhận', 'Ngày thêm', '###'];
         return view('pages.me.manager-share', compact('data', 'headers'));
+    }
+
+    public function share()
+    {
+        $pages = Page::whereuser_id(Auth::id())->get();
+        return view('pages.me.share', compact('pages'));
     }
 
     public function updateStatusManagerShare(Request $request)

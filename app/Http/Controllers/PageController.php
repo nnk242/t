@@ -80,7 +80,7 @@ class PageController extends Controller
 
     public function index()
     {
-        $data = Page::paginate(1);
+        $data = Page::whereuser_id(Auth::id())->orderby('id', 'DESC')->paginate(1);
         $headers = [
 //            ['id' => 'check-i', 'label' => '###'],
             'STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Thể loại', 'Ngày cập nhật', 'Ngày thêm', '###'];

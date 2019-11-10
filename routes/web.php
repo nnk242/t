@@ -24,6 +24,7 @@ Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 Route::prefix('me')->name('me.')->group(function () {
     Route::resource('/', 'MeController')->only('index', 'store');
     Route::get('manager-share', 'MeController@managerShare')->name('managerShare');
+    Route::get('share', 'MeController@share')->name('share');
     Route::post('manager-share', 'MeController@updateStatusManagerShare')->name('updateStatusManagerShare');
     Route::get('access-token', 'MeController@getAccessToken')->name('accessToken');
     Route::get('set-access-token', 'MeController@setAccessToken')->name('setAccessToken');
