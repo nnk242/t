@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Me;
 
 use App\Jobs\ServiceSharePage;
 use App\Model\Page;
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use App\Http\Controllers\Controller;
 
 class MeController extends Controller
 {
@@ -26,37 +27,22 @@ class MeController extends Controller
 //        $log = new Logger(date('Y-m-d H:i:s ') . 'log');
 //        $log->pushHandler(new StreamHandler(storage_path('fb/' . date('Y-m-d') . '-fb.log')), Logger::INFO);
 //        $log->info('OrderLog', ['$arr_log']);
-        $pages = Page::whereuser_id(Auth::id())->get();
-        $user_and_page = UserAndPage::whereuser_child(Auth::id())->wherestatus(1)->get();
+
+        $user_and_page = UserAndPage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(0)->get();
         return view('pages.me.index', compact('pages', 'user_and_page'));
     }
 
     public function store(Request $request)
     {
-        $validate = Validator::make(
-            $request->all(),
-            [
-                'arr_page_id' => 'required|array',
-                'email' => 'required'
-            ], [
-            'required' => ':attribute phải có dữ liệu',
-            'array' => ':attribute phải là 1 array',
-        ], [
-                'arr_page_id' => 'Page',
-                'email' => 'Email'
-            ]
-        );
-
-        if ($validate->fails()) {
-            return redirect()->back()->with('error', $validate->errors()->first());
+        $user_and_page = UserAndPage::findorfail($request->id);
+        if ($user_and_page->user_child === Auth::id()) {
+            $user_and_page->update(
+                [
+                    'type' => $request->type
+                ]
+            );
         }
-        $arr_page_id = $request->arr_page_id;
-        $email = $request->email;
-
-        $arr_email = explode(',', $email);
-        $this->dispatch(new ServiceSharePage(['arr_page_id' => $arr_page_id, 'arr_email' => $arr_email]));
-
-        return redirect()->back()->with('success', 'Gửi thành công');
+        return redirect()->back()->with('success', 'Đã set thành công');
     }
 
     public function managerShare()
@@ -70,18 +56,6 @@ class MeController extends Controller
     {
         $pages = Page::whereuser_id(Auth::id())->get();
         return view('pages.me.share', compact('pages'));
-    }
-
-    public function updateStatusManagerShare(Request $request)
-    {
-        try {
-            $id = $request->id;
-            UserAndPage::findorfail($id)->update(['status' => $request->is_checked === 'true' ? 0 : 1]);
-            $user_and_page = UserAndPage::findorfail($id);
-            return $user_and_page->status;
-        } catch (\Exception $exception) {
-            return $exception->getMessage();
-        }
     }
 
     public function getAccessToken()
@@ -100,7 +74,6 @@ class MeController extends Controller
             'read_page_mailboxes',
             'pages_messaging'
         ];
-
         try {
             return Socialite::driver('facebook')->scopes($facebookScope)->redirect();
         } catch (\Exception $exception) {
@@ -122,6 +95,5 @@ class MeController extends Controller
         } catch (\Exception $exception) {
             return redirect()->route('me.index')->with('error', 'Code: ' . $exception->getCode() . '. Message:' . $exception->getMessage());
         }
-
     }
 }

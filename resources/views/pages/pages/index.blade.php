@@ -24,10 +24,12 @@
                                                                     href="{{ 'https://fb.com/' . $value->fb_page_id }}"><img
                                                     width="15"
                                                     src="{{ asset('icons/actions/globe.svg') }}"></a></span>
-                                        <span title="Update page"><a
-                                                href="{{ route('page.show', ['page' => $value->id]) }}"><img
-                                                    width="15"
-                                                    src="{{ asset('icons/actions/circle-notch.svg') }}"></a></span>
+                                        @if($value->user_id === \Illuminate\Support\Facades\Auth::id())
+                                            <span title="Update page"><a
+                                                    href="{{ route('page.show', ['page' => $value->id]) }}"><img
+                                                        width="15"
+                                                        src="{{ asset('icons/actions/circle-notch.svg') }}"></a></span>
+                                        @endif
                                         <span title="Delete page"><a data-toggle="modal" data-target="#delete-modal"
                                                                      data-id="{{ $value->id }}"
                                                                      data-page-id="{{ $value->fb_page_id }}"

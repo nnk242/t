@@ -16,10 +16,11 @@
                                     <td>{{$value->page->fb_page_id}}</td>
                                     <td>{{$value->page->name}}</td>
                                     <td><img src="{{$value->page->picture}}"></td>
-                                    <td><code>{{$value->user->email}}</code></td>
-                                    <td>{!! $value->type === 0 ? '<span class="badge badge-pill badge-warning">Đã gửi</span>' :
+                                    <td><code>{{$value->userChild->email}}</code></td>
+                                    <td>{!! $value->type === 0 ? '<span class="badge badge-pill badge-info">Đã gửi</span>' :
                                      ($value->type === 1 ? '<span class="badge badge-pill badge-success">Chấp nhận</span>' :
-                                      '<span class="badge badge-pill badge-danger">Từ chối</span>') !!}</td>
+                                      ($value->type === 2 ?'<span class="badge badge-pill badge-warning">Từ chối</span>' :
+                                       '<span class="badge badge-pill badge-danger">Đã xoá</span>')) !!}</td>
                                     <td>
                                         <div class="custom-control custom-switch">
                                             <input type="checkbox" class="custom-control-input status"
@@ -28,8 +29,6 @@
                                                    for="switch-{{ $key }}" data-id="{{ $value->id }}"></label>
                                         </div>
                                     </td>
-                                    <td>{!! $value->updated_at->timestamp === $value->created_at->timestamp ?
-                                     '<span class="badge badge-pill badge-warning">Chưa chấp nhận</span>' : $value->updated_at !!}</td>
                                     <td>{{$value->created_at}}</td>
                                     <td><span title="Delete page"><a data-toggle="modal" data-target="#delete-modal"
                                                                      data-id="{{ $value->id }}"

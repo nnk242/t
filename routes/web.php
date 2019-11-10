@@ -22,10 +22,13 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 
 Route::prefix('me')->name('me.')->group(function () {
-    Route::resource('/', 'MeController')->only('index', 'store');
-    Route::get('manager-share', 'MeController@managerShare')->name('managerShare');
-    Route::get('share', 'MeController@share')->name('share');
-    Route::post('manager-share', 'MeController@updateStatusManagerShare')->name('updateStatusManagerShare');
-    Route::get('access-token', 'MeController@getAccessToken')->name('accessToken');
-    Route::get('set-access-token', 'MeController@setAccessToken')->name('setAccessToken');
+    Route::resource('/', 'Me\MeController')->only('index', 'store');
+    Route::resource('manager-share', 'Me\ManagerShareController')->only('index', 'store');
+    Route::resource('share', 'Me\ShareController')->only('index', 'store');
+//    Route::post('manager-share', 'MeController@managerShareStore')->name('managerShare');
+//    Route::get('share', 'MeController@share')->name('share.index');
+//    Route::post('share', 'MeController@shareStore')->name('share');
+//    Route::post('manager-share', 'MeController@updateStatusManagerShare')->name('update-status-manager-share');
+    Route::get('access-token', 'Me\MeController@getAccessToken')->name('access-token');
+    Route::get('set-access-token', 'Me\MeController@setAccessToken')->name('set-access-token');
 });

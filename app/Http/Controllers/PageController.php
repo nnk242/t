@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Components\Facebook;
 use App\Model\Page;
+use App\Model\UserAndPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
@@ -80,7 +81,10 @@ class PageController extends Controller
 
     public function index()
     {
-        $data = Page::whereuser_id(Auth::id())->orderby('id', 'DESC')->paginate(1);
+        $arr_user_page_id = UserAndPage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
+//        dd($arr_user_page_id);
+        $data = Page::whereuser_id(Auth::id())->orWhereIn('id', $arr_user_page_id)->orderby('id', 'DESC')->paginate(10);
+//        dd($data);
         $headers = [
 //            ['id' => 'check-i', 'label' => '###'],
             'STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Thể loại', 'Ngày cập nhật', 'Ngày thêm', '###'];
@@ -128,6 +132,10 @@ class PageController extends Controller
     {
         if (Auth::id() === $page->user_id) {
             $page->delete();
+            return redirect()->back()->with('success', 'Xoá page thành công!');
+        } else {
+            $user_and_page = UserAndPage::wheretype(1)->wherestatus(1)->wherepage_id($page->id)
+                ->whereuser_child(Auth::id())->firstorfail()->update(['type' => 4]);
             return redirect()->back()->with('success', 'Xoá page thành công!');
         }
         return abort(404);

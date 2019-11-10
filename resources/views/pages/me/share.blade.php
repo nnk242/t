@@ -8,7 +8,7 @@
             <div class="col-md-12 py-5">
                 @include('pages.me.header.index')
                 @if($pages->count())
-                    <form method="POST" action="{{ route('me.store') }}">
+                    <form method="POST" action="{{ route('me.share.store') }}">
                         @csrf
                         <div class="mt2 mb-2">
                         <span class="badge badge-secondary p-2 cursor-pointer" id="pick-all"
