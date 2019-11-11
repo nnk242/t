@@ -8,7 +8,7 @@ class CreatePagesTable extends Migration
 {
     public function up()
     {
-        Schema::create('pages', function (Blueprint $table) {
+        Schema::connection('mongodb')->create('pages', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('fb_page_id');
             $table->string('user_id_fb_page_id')->unique();
@@ -25,6 +25,6 @@ class CreatePagesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('pages');
+        Schema::connection('mongodb')->dropIfExists('pages');
     }
 }

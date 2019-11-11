@@ -177,6 +177,7 @@ return [
 
         Laravel\Socialite\SocialiteServiceProvider::class,
         Scottybo\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
     ],
 
     /*
@@ -229,6 +230,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Facebook' => Scottybo\LaravelFacebookSdk\FacebookFacade::class,
+        'JenssegersMongoDB' => Jenssegers\Mongodb\MongodbQueueServiceProvider::class
     ],
 
 ];

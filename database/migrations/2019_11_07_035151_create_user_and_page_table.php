@@ -8,7 +8,7 @@ class CreateUserAndPageTable extends Migration
 {
     public function up()
     {
-        Schema::create('user_and_page', function (Blueprint $table) {
+        Schema::connection('mongodb')->create('user_and_page', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('page_id')->unsigned();
             $table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
@@ -24,6 +24,6 @@ class CreateUserAndPageTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('user_and_page');
+        Schema::connection('mongodb')->dropIfExists('user_and_page');
     }
 }

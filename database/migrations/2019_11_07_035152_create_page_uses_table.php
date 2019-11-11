@@ -8,7 +8,7 @@ class CreatePageUsesTable extends Migration
 {
     public function up()
     {
-        Schema::create('page_uses', function (Blueprint $table) {
+        Schema::connection('mongodb')->create('page_uses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('page_id')->unsigned();
             $table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
@@ -20,6 +20,6 @@ class CreatePageUsesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('page_uses');
+        Schema::connection('mongodb')->dropIfExists('page_uses');
     }
 }

@@ -3,10 +3,12 @@
 namespace App\Model;
 
 use App\User;
-use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 
 class Page extends Model
 {
+    protected $connection = 'mongodb';
+
     protected $table = 'pages';
 
     protected $fillable = ['fb_page_id', 'name', 'picture', 'category', 'access_token', 'user_id', 'user_id_fb_page_id'];

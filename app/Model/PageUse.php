@@ -3,10 +3,12 @@
 namespace App\Model;
 
 use App\User;
-use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 
 class PageUse extends Model
 {
+    protected $connection = 'mongodb';
+
     protected $table = 'pages';
 
     protected $fillable = ['page_id', 'user_id'];
