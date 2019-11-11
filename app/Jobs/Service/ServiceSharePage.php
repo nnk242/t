@@ -37,7 +37,7 @@ class ServiceSharePage implements ShouldQueue
             $count_page = Page::whereid($item)->whereuser_id($user_id)->count();
             if ($count_page) {
                 foreach ($arr_email as $value) {
-                    if ($value !== Auth::user()->email) {
+                    if ($value !== User::findorfail($user_id)->email) {
                         $user = User::whereemail($value)->first();
                         if (isset($user)) {
                             UserAndPage::updateorcreate(['user_parent' => $user_id, 'page_id' => $item, 'user_child' => $user->id, 'type' => 0], [
