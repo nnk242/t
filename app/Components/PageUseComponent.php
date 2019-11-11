@@ -2,34 +2,20 @@
 
 namespace App\Components;
 
-use Illuminate\Support\Facades\App;
+use App\Model\Page;
+use App\Model\UserAndPage;
+use Illuminate\Support\Facades\Auth;
 
-class Facebook
+class PageUseComponent
 {
-
-    public static function get($access_token, $url, $after = '', $data = [])
+    public static function getPage()
     {
-        $fb = App::make('Scottybo\LaravelFacebookSdk\LaravelFacebookSdk');
-        try {
-            $after = strlen($after) ? '&after=' . $after : $after;
-            $response = $fb->get($url . $after, $access_token)->getDecodedBody();
-            $data = array_merge($response['data'], $data);
-            if (isset($response['paging']['next'])) {
-                return self::getData($access_token, $url, $response['paging']['cursors']['after'], $data);
-            }
-            return $data;
-        } catch (\Exception $exception) {
-            return $data;
-        }
+        return Page::whereuser_id(Auth::id())->get();
     }
 
-    public static function post($access_token, $url, $data)
+    public static function getPageChild()
     {
-        $fb = App::make('Scottybo\LaravelFacebookSdk\LaravelFacebookSdk');
-        try {
-            return $fb->post($url, $data, $access_token);
-        } catch (\Exception $exception) {
-            return false;
-        }
+        $arr_user_page_id = UserAndPage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
+        return Page::whereIn('id', $arr_user_page_id)->get();
     }
 }

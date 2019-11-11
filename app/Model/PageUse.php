@@ -5,18 +5,19 @@ namespace App\Model;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
-class Page extends Model
+class PageUse extends Model
 {
     protected $table = 'pages';
 
-    protected $fillable = ['fb_page_id', 'name', 'picture', 'category', 'access_token', 'user_id', 'user_id_fb_page_id'];
-
-    protected $hidden = [
-        'access_token'
-    ];
+    protected $fillable = ['page_id', 'user_id'];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function page()
+    {
+        return $this->belongsTo(Page::class, 'page_id', 'id');
     }
 }

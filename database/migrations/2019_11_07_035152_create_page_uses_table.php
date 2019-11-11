@@ -4,26 +4,22 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserAndPageTable extends Migration
+class CreatePageUsesTable extends Migration
 {
     public function up()
     {
-        Schema::create('user_and_page', function (Blueprint $table) {
+        Schema::create('page_uses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('page_id')->unsigned();
             $table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
-            $table->bigInteger('user_parent')->unsigned();
-            $table->foreign('user_parent')->references('id')->on('users')->onDelete('cascade');
-            $table->bigInteger('user_child')->unsigned();
-            $table->foreign('user_child')->references('id')->on('users')->onDelete('cascade');
-            $table->smallInteger('status')->default(0);
-            $table->smallInteger('type')->default(0);
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('user_and_page');
+        Schema::dropIfExists('page_uses');
     }
 }

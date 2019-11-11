@@ -1,3 +1,5 @@
+$(".dropdown-trigger").dropdown()
 $(document).ready(function () {
-    $('.toast').toast('show')
-});
+    $('.sidenav').sidenav()
+    $('select').formSelect()
+})

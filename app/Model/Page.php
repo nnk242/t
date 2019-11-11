@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Page extends Model
@@ -13,4 +14,9 @@ class Page extends Model
     protected $hidden = [
         'access_token'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

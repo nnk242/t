@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Me;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ServiceSharePage;
+use App\Jobs\Service\ServiceSharePage;
 use App\Model\Page;
 use App\Model\UserAndPage;
 use App\User;
