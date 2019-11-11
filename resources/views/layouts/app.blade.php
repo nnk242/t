@@ -30,8 +30,19 @@
             <ul class="right hide-on-med-and-down">
             @include('layouts.sidepnav.index')
             <!-- Dropdown Trigger -->
-                <li><a class="dropdown-trigger" href="#!" data-target="dropdown-user">{{ Auth::user()->name }}<i
-                            class="material-icons right">arrow_drop_down</i></a></li>
+                @guest
+                    <li>
+                        <a href="{{ route('login') }}">{{ __('Login') }}</a>
+                    </li>
+                    @if (Route::has('register'))
+                        <li>
+                            <a href="{{ route('register') }}">{{ __('Register') }}</a>
+                        </li>
+                    @endif
+                @else
+                    <li><a class="dropdown-trigger" href="#!" data-target="dropdown-user">{{ Auth::user()->name }}<i
+                                class="material-icons right">arrow_drop_down</i></a></li>
+                @endguest
             </ul>
             <!-- Mobile -->
             <ul class="sidenav" id="mobile">
@@ -76,17 +87,26 @@
     </nav>
     <main>
         <div class="section no-pad-bot">
-            @include('components.notification.index')
+            {{--            @include('components.notification.index')--}}
             @yield('content')
         </div>
     </main>
 </div>
 
 <!-- Scripts -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="{{ asset('js/jquery.min.js') }}"></script>
 {{--<script src="{{ asset('js/app.js') }}" defer></script>--}}
 <script src="{{ asset('js/materialize.min.js') }}" defer></script>
 <script src="{{ asset('js/common.js') }}" defer></script>
 @yield('js')
+@if (\Session::has('error') || \Session::has('success') || \Session::has('warning'))
+
+    <script>
+        $(document).ready(function () {
+            var toastHTML = '<span>{!!\Session::get('success') . \Session::get('warning') . \Session::get('error') !!}</span><button class="btn-flat toast-action {{ \Session::has('success') ? 'green-text' : (\Session::has('warning') ? 'yellow-text' : 'red-text')}}"><i class="large material-icons">adjust</i></button>';
+            M.toast({html: toastHTML})
+        })
+    </script>
+@endif
 </body>
 </html>
