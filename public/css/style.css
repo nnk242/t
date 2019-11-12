@@ -7,10 +7,11 @@
 }
 
 .item-element {
-    max-width: 100px;
-    width: 100px;
-    max-height: 120px;
-    height: 120px;
+    max-width: 99px;
+    width: 99px;
+    max-height: 99px;
+    height: 99px;
+    float: left;
 }
 
 .scream-item {

@@ -1,8 +1,3 @@
-$('input[name="email"]').amsifySuggestags({
-    tagLimit: 5,
-    isEmail: true
-})
-
 function check(_this) {
     let check = parseInt(_this.attr('check'))
     if (check === 0) {

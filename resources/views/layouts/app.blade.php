@@ -86,10 +86,10 @@
         </ul>
     </nav>
     <main>
-        <div class="section no-pad-bot">
+{{--        <div class="section no-pad-bot">--}}
             {{--            @include('components.notification.index')--}}
             @yield('content')
-        </div>
+{{--        </div>--}}
     </main>
 </div>
 
