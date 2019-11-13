@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Facebook;
 use App\Http\Controllers\Controller;
 use App\Jobs\Facebook\FacebookSaveData;
 use App\Jobs\Service\ServiceSharePage;
+use App\Model\Page;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
 use Illuminate\Http\Request;
@@ -19,7 +20,6 @@ class WebHookController extends Controller
         $mode = $request->hub_mode;
         $token = $request->hub_verify_token;
         $challenge = $request->hub_challenge;
-
         // Checks if a token and mode is in the query string of the request
         if ($mode && $token) {
             // Checks the mode and token sent is correct
@@ -46,8 +46,10 @@ class WebHookController extends Controller
 
             $this->dispatch(new FacebookSaveData($request->all()));
 
+            $count_pages = Page::wherefb_page_id($request['entry'][0]['id'])->count();
+
             $client->initialize();
-            $client->emit('data', array($request->all()));
+            $client->emit('data', array($request->all(), $count_pages));
             $client->close();
         } catch (\Exception $exception) {
             return $exception->getMessage();

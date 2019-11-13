@@ -10,7 +10,13 @@ class FbProcess extends Model
 
     protected $table = 'fb_process';
 
-    protected $fillable = ['data', 'status'];
+    public function __construct(array $attributes = [])
+    {
+        $this->attributes['status'] = 1;
+        parent::__construct($attributes);
+    }
 
     protected $attributes = ['status' => 1];
+
+    protected $fillable = ['data', 'status'];
 }

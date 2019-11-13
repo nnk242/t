@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Me;
 
-use App\Jobs\ServiceSharePage;
+use App\Jobs\Service\ServiceSharePage;
 use App\Model\Page;
-use App\Model\UserAndPage;
+use App\Model\UserRolePage;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +28,7 @@ class MeController extends Controller
 //        $log->pushHandler(new StreamHandler(storage_path('fb/' . date('Y-m-d') . '-fb.log')), Logger::INFO);
 //        $log->info('OrderLog', ['$arr_log']);
 
-        $user_and_page = UserAndPage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(0)->get();
+        $user_and_page = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(0)->get();
         return view('pages.me.index', compact('pages', 'user_and_page'));
     }
 

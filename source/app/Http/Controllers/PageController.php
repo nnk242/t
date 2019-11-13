@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Components\Facebook;
 use App\Model\Page;
 use App\Model\UserAndPage;
+use App\Model\UserPage;
+use App\Model\UserRolePage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
@@ -18,26 +20,40 @@ class PageController extends Controller
 
     private function model()
     {
-        return Page::class;
+        return UserPage::class;
     }
 
     private function updateOrCreate($data)
     {
-        return $this->model()::updateorcreate(['user_id_fb_page_id' => Auth::id() . '_' . $data['id']], [
+
+        $page = Page::updateorcreate(['fb_page_id' => $data['id']], [
             'picture' => $data['picture']['data']['url'],
-            'access_token' => $data['access_token'],
             'name' => $data['name'],
             'fb_page_id' => $data['id'],
-            'user_id' => Auth::id(),
             'category' => $data['category']
         ]);
+        return $this->model()::updateorcreate(['user_page_id' => Auth::id() . '_' . $data['id']], [
+            'user_page_id' => Auth::id() . '_' . $data['id'],
+            'page_id' => $page->id,
+            'access_token' => $data['access_token'],
+            'user_id' => Auth::id()
+        ]);
+//        $this->model()::updateorcreate(['user_id_fb_page_id' => Auth::id() . '_' . $data['id']], [
+//            'picture' => $data['picture']['data']['url'],
+//            'access_token' => $data['access_token'],
+//            'name' => $data['name'],
+//            'fb_page_id' => $data['id'],
+//            'user_id' => Auth::id(),
+//            'category' => $data['category']
+//        ]);
     }
 
     private function type($data, $type = null, $arr_fb_page_id = [])
     {
         switch ((int)$type) {
             case 1:
-                $arr_fb_page_id = $this->model()::pluck('fb_page_id')->toArray();
+                $arr_page_id = $this->model()::whereuser_id(Auth::id())->pluck('page_id')->toArray();
+                $arr_fb_page_id = Page::wherein('_id', $arr_page_id)->pluck('fb_page_id')->toArray();
                 if (!in_array($data['id'], $arr_fb_page_id)) {
                     return $this->updateOrCreate($data);
                 } else {
@@ -81,10 +97,9 @@ class PageController extends Controller
 
     public function index()
     {
-        $arr_user_page_id = UserAndPage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
+        $arr_user_page_id = UserRolePage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
 //        dd($arr_user_page_id);
-        $data = Page::whereuser_id(Auth::id())->orWhereIn('id', $arr_user_page_id)->orderby('id', 'DESC')->paginate(10);
-//        dd($data);
+        $data = UserPage::whereuser_id(Auth::id())->orWhereIn('page_id', $arr_user_page_id)->orderby('id', 'DESC')->paginate(10);
         $headers = [
 //            ['id' => 'check-i', 'label' => '###'],
             'STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Thể loại', 'Ngày cập nhật', 'Ngày thêm', '###'];
@@ -95,7 +110,6 @@ class PageController extends Controller
     public function store(Request $request)
     {
         $type = (int)$request->type;
-
         $access_token = Auth::user()->access_token;
         if (!$access_token) {
             return redirect()->back()->with('warning', 'Cần cập nhật access token');
@@ -113,12 +127,13 @@ class PageController extends Controller
         return $is_message ? redirect()->back()->with('success', 'Cập nhật page thành công!') : redirect()->back()->with('warning', $message);
     }
 
-    public function show(Page $page)
+    public function show($id)
     {
+        $user_page = $this->model()::where_id($id)->firstorfail();
         try {
             $user = Auth::user();
-            $data = Facebook::get($user->access_token, 'me/accounts?fields=picture,access_token,name,id,category&limit=150&page_id=' . $page->fb_page_id);
-            $subscribed_fields = $this->subscribedFields($data, 3, [$page->fb_page_id]);
+            $data = Facebook::get($user->access_token, 'me/accounts?fields=picture,access_token,name,id,category&limit=150&page_id=' . $user_page->page->fb_page_id);
+            $subscribed_fields = $this->subscribedFields($data, 3, [$user_page->page->fb_page_id]);
             $message = $subscribed_fields['message'];
             $is_message = $subscribed_fields['is_message'];
         } catch (\Exception $exception) {
@@ -128,13 +143,14 @@ class PageController extends Controller
         return $is_message ? redirect()->back()->with('success', 'Cập nhật page thành công!') : redirect()->back()->with('warning', $message);
     }
 
-    public function destroy(Page $page)
+    public function destroy($id)
     {
-        if (Auth::id() === $page->user_id) {
-            $page->delete();
+        $user_page = $this->model()::where_id($id)->firstorfail();
+        if (Auth::id() === $user_page->user_id) {
+            $user_page->delete();
             return redirect()->back()->with('success', 'Xoá page thành công!');
         } else {
-            $user_and_page = UserAndPage::wheretype(1)->wherestatus(1)->wherepage_id($page->id)
+            UserRolePage::wheretype(1)->wherestatus(1)->wherepage_id($user_page->page_id)
                 ->whereuser_child(Auth::id())->firstorfail()->update(['type' => 4]);
             return redirect()->back()->with('success', 'Xoá page thành công!');
         }

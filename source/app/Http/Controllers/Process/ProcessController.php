@@ -16,7 +16,7 @@ class ProcessController extends Controller
 
     public function index(Request $request)
     {
-        dd(FbProcess::orderby('id', 'DESC')->first()->status);
+//        dd(FbProcess::orderby('id', 'DESC')->first()->status);
         return view('pages.process.index');
     }
 }

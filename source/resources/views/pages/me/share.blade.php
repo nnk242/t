@@ -6,20 +6,20 @@
     @include('pages.me.header.index')
     <div class="row">
         <div class="col s12">
-            @if($pages->count())
+            @if($user_pages->count())
                 <form method="POST" action="{{ route('me.share.store') }}">
                     @csrf
                     <span class="new badge pink cursor-pointer" id="pick-all" data-badge-caption="Chọn tất cả"
                           check="0"></span>
                     <div class="scream-item mb-3">
-                        @foreach($pages as $page)
-                            <div class="item-element" title="{{ $page->name }}">
+                        @foreach($user_pages as $value)
+                            <div class="item-element" title="{{ $value->name }}">
                                 <p>
                                     <label>
-                                        <input type="checkbox" id="p_{{ $page->user_id_fb_page_id }}" class="pick"
-                                               name="arr_page_id[]" value="{{ $page->id }}"/>
-                                        <span><img src="{{ $page->picture }}" class="btn-floating"/></span>
-                                <p class="center-align">{{ Str::limit($page->name, 11) }}</p>
+                                        <input type="checkbox" id="p_{{ $value->user_page_id }}" class="pick"
+                                               name="arr_user_page_id[]" value="{{ $value->id }}"/>
+                                        <span><img src="{{ $value->page->picture }}" class="btn-floating"/></span>
+                                <p class="center-align">{{ Str::limit($value->name, 11) }}</p>
                                 </label>
                                 </p>
                             </div>
@@ -82,10 +82,6 @@
                             $(this).remove()
                         }
                     })
-
-
-                    // console.log(val.values(object1))
-                    // console.log(val)
                 }
             })
         })

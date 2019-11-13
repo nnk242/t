@@ -13,9 +13,9 @@
                             @foreach($data as $key=>$value)
                                 <tr>
                                     <td>{{ $key +  1 }}</td>
-                                    <td>{{$value->page->fb_page_id}}</td>
-                                    <td>{{$value->page->name}}</td>
-                                    <td><img src="{{$value->page->picture}}"></td>
+                                    <td>{{$value->userPage->page->fb_page_id}}</td>
+                                    <td>{{$value->userPage->page->name}}</td>
+                                    <td><img src="{{$value->userPage->page->picture}}"></td>
                                     <td><code>{{$value->userChild->email}}</code></td>
                                     <td>{!! $value->type === 0 ? '<span class="badge badge-pill badge-info">Đã gửi</span>' :
                                      ($value->type === 1 ? '<span class="badge badge-pill badge-success">Chấp nhận</span>' :
