@@ -14,21 +14,22 @@ io.on('connection', function (socket) {
     console.log('a user connected')
     socket.on('data', function (msg) {
         const authorization = socket.request.headers.authorization
-        serverHttpIO.emit('message_1086408651532297', msg)
         console.log(msg)
-        if (key == authorization) {
-            console.log(msg['page_id'])
-            if (msg['webhook'] == 'messager') {
-                serverHttpIO.emit('message_' + msg['page_id'], msg)
-            }
-            // serverHttpIO.emit('message_1086408651532297', msg)
-
-            // io.emit('message_' + msg['page_id'], msg)
-        } else {
-            // serverHttpIO.emit('message_1086408651532297', msg)
-
-            console.log('authorization is error')
-        }
+        io.emit('data', msg)
+        //     console.log(msg)
+        //     if (key == authorization) {
+        //         console.log(msg['page_id'])
+        //         if (msg['webhook'] == 'messager') {
+        //             serverHttpIO.emit('message_' + msg['page_id'], msg)
+        //         }
+        //         // serverHttpIO.emit('message_1086408651532297', msg)
+        //
+        //         // io.emit('message_' + msg['page_id'], msg)
+        //     } else {
+        //         // serverHttpIO.emit('message_1086408651532297', msg)
+        //
+        //         console.log('authorization is error')
+        //     }
     })
-    console.log(socket)
+    // console.log(socket)
 })

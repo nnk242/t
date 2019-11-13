@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Facebook;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\Facebook\FacebookSaveData;
+use App\Jobs\Service\ServiceSharePage;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WebHookController extends Controller
 {
@@ -37,14 +40,18 @@ class WebHookController extends Controller
         try {
             $client = new Client(new Version2X($url, [
                 'headers' => [
-                    'Authorization: ' . env('KEY_CONNECTION' || '')
+                    'Authorization: ' . env('KEY_CONNECTION')
                 ]
             ]));
+
+            $this->dispatch(new FacebookSaveData($request->all()));
+
             $client->initialize();
-            $client->emit('data', array($request->all(), 'page_id' => $request['entry'][0]['id']));
+            $client->emit('data', array($request->all()));
             $client->close();
         } catch (\Exception $exception) {
             return $exception->getMessage();
         }
+        return $request->all();
     }
 }

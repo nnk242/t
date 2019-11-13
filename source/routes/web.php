@@ -24,6 +24,10 @@ Route::group(['namespace' => 'Facebook', 'prefix' => 'facebook'], function () {
     Route::post('webhook', 'WebHookController@store');
 });
 
+Route::group(['namespace' => 'Process', 'prefix' => 'process'], function () {
+    Route::get('/{id}', 'ProcessController@index');
+});
+
 Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 
 Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function () {
