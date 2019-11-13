@@ -27,18 +27,17 @@ class ShareController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
         $validate = Validator::make(
             $request->all(),
             [
                 'arr_page_id' => 'required|array',
-                'email' => 'required'
+                'arr_email' => 'required|array'
             ], [
             'required' => ':attribute phải có dữ liệu',
             'array' => ':attribute phải là 1 array',
         ], [
                 'arr_page_id' => 'Page',
-                'email' => 'Email'
+                'arr_email' => 'Email'
             ]
         );
 
@@ -46,9 +45,8 @@ class ShareController extends Controller
             return redirect()->back()->with('error', $validate->errors()->first());
         }
         $arr_page_id = $request->arr_page_id;
-        $email = $request->email;
 
-        $arr_email = explode(',', $email);
+        $arr_email = $request->arr_email;
         $this->dispatch(new ServiceSharePage(['arr_page_id' => $arr_page_id, 'arr_email' => $arr_email, 'user_id' => Auth::id()]));
 
         return redirect()->back()->with('success', 'Gửi thành công');

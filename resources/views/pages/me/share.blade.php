@@ -49,12 +49,6 @@
     <script src="{{ asset('js/me_.js') }}"></script>
     <script>
         $(document).ready(function () {
-            // var chip = {
-            //     tag: 'chip content',
-            //     image: '', //optional
-            // }
-            // $('.chips').chips()
-
             $('.chips-placeholder').chips({
                 placeholder: 'Nhập email',
                 secondaryPlaceholder: '+Email',
@@ -64,7 +58,7 @@
                     let length = val.length
 
                     if (validateEmail(val[length - 1].tag)) {
-                        $('#arr_email').append('<input key="' + val[length - 1].tag + '" name="arr_email[]" class="arr_email" value="' + val[length - 1].tag + '">')
+                        $('#arr_email').append('<input name="arr_email[]" class="arr_email" hidden value="' + val[length - 1].tag + '">')
                     } else {
                         this.chipsData.pop()
                         $('.chip').last().remove()
@@ -74,19 +68,22 @@
                     // console.log(val.length);
                 },
                 onChipDelete: function () {
-                    let outVal = []
                     let val = this.chipsData
-                    $('#arr_email input').each(function (idx, el) {
-                        outVal.push($(this).attr('key'))
-                    })
+                    let chip_data = []
 
                     val.forEach(function (element, key) {
-                        if (outVal.indexOf(element.tag) != -1) {
-                            console.log(element.tag)
+                        chip_data.push(element.tag)
+                    })
+
+                    $('#arr_email input').each(function (idx, el) {
+                        if (chip_data.indexOf($(this).attr('value')) != -1) {
+                            console.log($(this).attr('value'))
                         } else {
-                            $('#arr_email .arr_email').find(`[key='${element}']`).remove()
+                            $(this).remove()
                         }
                     })
+
+
                     // console.log(val.values(object1))
                     // console.log(val)
                 }
