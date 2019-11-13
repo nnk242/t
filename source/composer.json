@@ -1,10 +1,10 @@
 {
-    "name": "laravel/laravel",
+    "name": "App",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "App.",
     "keywords": [
-        "framework",
-        "laravel"
+        "tool",
+        "App"
     ],
     "license": "MIT",
     "require": {
@@ -14,7 +14,8 @@
         "laravel/framework": "^6.2",
         "laravel/socialite": "^4.2",
         "laravel/tinker": "^1.0",
-        "scottybo/laravel-facebook-sdk": "^4.0"
+        "scottybo/laravel-facebook-sdk": "^4.0",
+        "wisembly/elephant.io": "^3.3"
     },
     "require-dev": {
         "facade/ignition": "^1.4",

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Facebook;
 
 use App\Http\Controllers\Controller;
+use ElephantIO\Client;
+use ElephantIO\Engine\SocketIO\Version2X;
 use Illuminate\Http\Request;
 
 class WebHookController extends Controller
@@ -29,8 +31,20 @@ class WebHookController extends Controller
         return 2;
     }
 
-    public function store()
+    public function store(Request $request)
     {
-
+        $url = 'http://127.0.0.1:3000/';
+        try {
+            $client = new Client(new Version2X($url, [
+                'headers' => [
+                    'Authorization: ' . env('KEY_CONNECTION' || '')
+                ]
+            ]));
+            $client->initialize();
+            $client->emit('data', array($request->all(), 'page_id' => $request['entry'][0]['id']));
+            $client->close();
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
+        }
     }
 }
