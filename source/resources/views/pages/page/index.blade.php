@@ -34,7 +34,7 @@
                                                         src="{{ asset('icons/actions/circle-notch.svg') }}"></a></span>
                                         @endif
                                         <span title="Delete page"><a data-id="{{ $value->id }}"
-                                                                     data-page-id="{{ $value->fb_page_id }}"
+                                                                     data-page-id="{{ $value->page->fb_page_id }}"
                                                                      class="delete-item modal-trigger"
                                                                      href="#delete-modal"><img width="15"
                                                                                                src="{{ asset('icons/actions/trash-alt.svg') }}"></a></span>
@@ -92,7 +92,7 @@
             let id = $(this).attr('data-id')
             let page_id = $(this).attr('data-page-id')
             $('#modal-body-notify').empty()
-            $('#modal-body-notify').append('Bạn chắc chắn muốn xóa <code>' + page_id + '</code>?')
+            $('#modal-body-notify').append('Bạn chắc chắn muốn xóa <span class="red-text">' + page_id + '</span>?')
             $('#delete-modal').find('form').attr('action', window.location.pathname + '/' + id)
         })
     </script>

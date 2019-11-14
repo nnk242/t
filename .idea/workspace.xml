@@ -2,23 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f4a4b9-c516-4431-84da-6a02af519a6a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/source/app/Model/UserPage.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_07_035150_create_user_pages_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/app/Http/Controllers/TestController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/Facebook/WebHookController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/Facebook/WebHookController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/Me/ManagerShareController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/Me/ManagerShareController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/Me/MeController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/Me/MeController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/Me/ShareController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/Me/ShareController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/PageController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/PageController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/Process/ProcessController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/Process/ProcessController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Jobs/Service/ServiceSharePage.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Jobs/Service/ServiceSharePage.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Model/FbProcess.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Model/FbProcess.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Model/Page.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Model/Page.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Model/UserAndPage.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Model/UserRolePage.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/database/migrations/2019_11_07_035150_create_pages_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_07_035150_create_pages_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/database/migrations/2019_11_07_035151_create_user_and_page_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_07_035151_create_user_role_pages_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/resources/views/pages/me/share.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/resources/views/pages/me/share.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/resources/views/pages/pages/index.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/resources/views/pages/pages/index.blade.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/routes/web.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -154,7 +140,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/source/app/Model" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/source/app/Http/Controllers" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -166,19 +152,19 @@
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/source/app/Model" />
-      <recent name="$PROJECT_DIR$/source/database/migrations" />
-      <recent name="$PROJECT_DIR$/source/app/Jobs" />
-      <recent name="$PROJECT_DIR$/source/app/Http/Controllers" />
-      <recent name="$PROJECT_DIR$/service" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/source" />
       <recent name="$PROJECT_DIR$/app/Jobs/Service" />
       <recent name="$PROJECT_DIR$/app/Http/Controllers/Me" />
       <recent name="$PROJECT_DIR$/app/Jobs" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/source/app/Http/Controllers" />
+      <recent name="$PROJECT_DIR$/source/app/Model" />
+      <recent name="$PROJECT_DIR$/source/database/migrations" />
+      <recent name="$PROJECT_DIR$/source/app/Jobs" />
+      <recent name="$PROJECT_DIR$/service" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -231,7 +217,9 @@
       <workItem from="1573631388001" duration="2368000" />
       <workItem from="1573633785897" duration="1471000" />
       <workItem from="1573635285614" duration="6544000" />
-      <workItem from="1573651235014" duration="12513000" />
+      <workItem from="1573651235014" duration="12826000" />
+      <workItem from="1573699226930" duration="26000" />
+      <workItem from="1573719353731" duration="8000000" />
     </task>
     <servers />
   </component>

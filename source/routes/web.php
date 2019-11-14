@@ -37,3 +37,6 @@ Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function ()
     Route::get('access-token', 'MeController@getAccessToken')->name('access-token');
     Route::get('set-access-token', 'MeController@setAccessToken')->name('set-access-token');
 });
+
+//test
+Route::get('test/text', 'TestController@text');
