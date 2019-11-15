@@ -40,6 +40,7 @@ Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function ()
 
 Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.'], function () {
     Route::get('index', 'SettingController@index');
+    Route::resource('persistent-menu', 'PersistentMenuController')->only('index');
 });
 
 //test
