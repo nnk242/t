@@ -17,6 +17,7 @@ class CreateUserPagesTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('_id')->on('users')->onDelete('cascade');
             $table->smallInteger('status')->default(1);
+            $table->smallInteger('run_conversations')->default(1);
             $table->timestamps();
         });
     }

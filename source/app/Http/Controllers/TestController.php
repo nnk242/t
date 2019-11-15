@@ -14,17 +14,17 @@ class TestController extends Controller
     ##  !'_____, *****, ****, ***, ***
     public function text()
     {
-        $time_start = microtime(true);
-
         $text = "Suy ra một điều rằng Trâm. Anh thích 64 :)";
         $text_def = "!'S";
 
         $strlen_def = strlen($text_def);
 
+        $check_text = false;
+
         switch (true) {
             case $strlen_def === 2:
                 if ($text_def === "!'") {
-                    return 1;
+                    $check_text = true;
                 }
                 break;
             case $strlen_def > 2:
@@ -42,7 +42,7 @@ class TestController extends Controller
                     $count_arr_text_def = count($arr_text_def);
                     if ($count_arr_text_def <= 1) {
                         if (gettype(strpos($text, $text_def)) === 'integer') {
-                            dd(1);
+                            $check_text = true;
                         }
                     } else {
 
@@ -52,11 +52,10 @@ class TestController extends Controller
                 }
             default:
                 if ($text === $text_def) {
-                    return 0;
+                    $check_text = true;
                 }
                 break;
         }
-
-        dd(microtime(true) - $time_start);
+        return $check_text;
     }
 }

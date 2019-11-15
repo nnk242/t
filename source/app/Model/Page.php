@@ -11,5 +11,5 @@ class Page extends Model
 
     protected $table = 'pages';
 
-    protected $fillable = ['fb_page_id', 'name', 'picture', 'category'];
+    protected $fillable = ['fb_page_id', 'name', 'picture', 'category', 'status', 'run_conversations'];
 }

@@ -32,10 +32,14 @@ Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 
 Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function () {
     Route::resource('/', 'MeController')->only('index', 'store');
-    Route::resource('manager-share', 'ManagerShareController')->only('index', 'store');
+    Route::resource('manager-share', 'ManagerShareController')->only('index', 'store', 'destroy');
     Route::resource('share', 'ShareController')->only('index', 'store');
     Route::get('access-token', 'MeController@getAccessToken')->name('access-token');
     Route::get('set-access-token', 'MeController@setAccessToken')->name('set-access-token');
+});
+
+Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.'], function () {
+    Route::get('index', 'SettingController@index');
 });
 
 //test

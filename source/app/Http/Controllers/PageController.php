@@ -104,7 +104,7 @@ class PageController extends Controller
 //            ['id' => 'check-i', 'label' => '###'],
             'STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Thể loại', 'Ngày cập nhật', 'Ngày thêm', '###'];
 
-        return view('pages.pages.index', compact('data', 'headers'));
+        return view('pages.page.index', compact('data', 'headers'));
     }
 
     public function store(Request $request)

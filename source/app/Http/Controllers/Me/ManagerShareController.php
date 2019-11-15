@@ -38,4 +38,10 @@ class ManagerShareController extends Controller
             return $exception->getMessage();
         }
     }
+
+    public function destroy($id)
+    {
+        UserRolePage::whereuser_parent(Auth::id())->where_id($id)->firstorfail()->delete();
+        return redirect()->back()->with('success', 'Xoá page thành công!');
+    }
 }

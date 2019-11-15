@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Process;
+namespace App\Http\Controllers\Setting;
 
 use App\Http\Controllers\Controller;
 
-use App\Model\FbProcess;
 use Illuminate\Http\Request;
 
-class ProcessController extends Controller
+class SettingController extends Controller
 {
     public function __construct()
     {

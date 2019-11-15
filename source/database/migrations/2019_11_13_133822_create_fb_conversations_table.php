@@ -4,12 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserFbPagesTable extends Migration
+class CreateFbConversationsTable extends Migration
 {
     public function up()
     {
-        #2016433678466136?fields=gender,first_name,last_name,name,id,locale,timezone
-        Schema::connection('mongodb')->create('user_fb_pages', function (Blueprint $table) {
+        Schema::connection('mongodb')->create('fb_conversations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('page_id');
             $table->foreign('page_id')->references('_id')->on('pages')->onDelete('cascade');
@@ -26,6 +25,6 @@ class CreateUserFbPagesTable extends Migration
 
     public function down()
     {
-        Schema::connection('mongodb')->dropIfExists('user_messages');
+        Schema::connection('mongodb')->dropIfExists('fb_conversations');
     }
 }
