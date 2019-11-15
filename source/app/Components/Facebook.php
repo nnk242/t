@@ -13,11 +13,15 @@ class Facebook
         try {
             $after = strlen($after) ? '&after=' . $after : $after;
             $response = $fb->get($url . $after, $access_token)->getDecodedBody();
-            $data = array_merge($response['data'], $data);
-            if (isset($response['paging']['next'])) {
-                return self::getData($access_token, $url, $response['paging']['cursors']['after'], $data);
+            if (isset($response['data'])) {
+                $data = array_merge($response['data'], $data);
+                if (isset($response['paging']['next'])) {
+                    return self::get($access_token, $url, $response['paging']['cursors']['after'], $data);
+                }
+                return $data;
+            } else {
+                return $response;
             }
-            return $data;
         } catch (\Exception $exception) {
             return $data;
         }

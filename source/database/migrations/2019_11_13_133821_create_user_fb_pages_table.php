@@ -10,17 +10,30 @@ class CreateUserFbPagesTable extends Migration
     {
         #2016433678466136?fields=gender,first_name,last_name,name,id,locale,timezone
         Schema::connection('mongodb')->create('user_fb_pages', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->index('id');
+            $table->index('m_user_fb_id');
             $table->string('page_id');
             $table->foreign('page_id')->references('_id')->on('pages')->onDelete('cascade');
             $table->string('user_fb_id');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('name');
             $table->string('profile_pic')->nullable();
             $table->string('gender')->nullable();
             $table->string('locale')->nullable();
-            $table->float('timezone')->nullable();
+            $table->integer('timezone')->nullable();
             $table->timestamps();
+
+//            $table->index('page_id');
+//            $table->index('user_fb_id');
+//            $table->index('first_name');
+//            $table->index('name');
+//            $table->index('profile_pic');
+//            $table->index('gender');
+//            $table->index('locale');
+//            $table->index('timezone');
+//
+//            $table->index(['page_id', 'user_fb_id', 'first_name', 'last_name', 'name', 'profile_pic', 'gender', 'locale', 'timezone']);
         });
     }
 

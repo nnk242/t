@@ -20,6 +20,7 @@
                                     <td>{{$value->page->fb_page_id}}</td>
                                     <td>{{$value->page->name}} {!! $value->user_id === \Illuminate\Support\Facades\Auth::id() ? '<span class="new badge blue" data-badge-caption="Cá nhân"></span>' : '<span class="new badge" data-badge-caption="' . $value->user->email . '"></span>' !!}</td>
                                     <td><img src="{{$value->page->picture}}"></td>
+{{--                                    <td>{{$value->access_token}}</td>--}}
                                     <td>{{$value->page->category}}</td>
                                     <td>{{$value->updated_at}}</td>
                                     <td>{{$value->created_at}}</td>

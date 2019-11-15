@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Components\Facebook;
+use App\Jobs\Console\AddUserPage;
 use App\Model\Page;
 use App\Model\UserAndPage;
 use App\Model\UserPage;
 use App\Model\UserRolePage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Scottybo\LaravelFacebookSdk\LaravelFacebookSdk;
 
@@ -36,7 +38,8 @@ class PageController extends Controller
             'user_page_id' => Auth::id() . '_' . $data['id'],
             'page_id' => $page->id,
             'access_token' => $data['access_token'],
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
+            'run_conversations' => 1
         ]);
 //        $this->model()::updateorcreate(['user_id_fb_page_id' => Auth::id() . '_' . $data['id']], [
 //            'picture' => $data['picture']['data']['url'],
@@ -123,7 +126,7 @@ class PageController extends Controller
         } catch (\Exception $exception) {
             return redirect()->back()->with('error', $exception->getMessage());
         }
-
+        $this->dispatch(new AddUserPage());
         return $is_message ? redirect()->back()->with('success', 'Cập nhật page thành công!') : redirect()->back()->with('warning', $message);
     }
 

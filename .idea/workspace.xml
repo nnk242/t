@@ -2,8 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f4a4b9-c516-4431-84da-6a02af519a6a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/app/Console/Commands/CommandTest.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/app/Jobs/Console/AddUserPage.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/app/Model/FbConversation.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/source/app/Model/UserFbPage.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/app/Components/Facebook.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Components/Facebook.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/app/Console/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Console/Kernel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/PageController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/PageController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/TestController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/TestController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/app/Model/UserMessage.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/app/Model/UserPage.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Model/UserPage.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133821_create_user_fb_pages_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133821_create_user_fb_pages_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133822_create_fb_conversations_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133822_create_fb_conversations_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/resources/views/pages/page/index.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/resources/views/pages/page/index.blade.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -139,7 +151,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/source/app/Jobs" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -151,19 +163,19 @@
     <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/source/app/Jobs" />
+      <recent name="$PROJECT_DIR$/source/app/Console/Commands/Facebook" />
+      <recent name="$PROJECT_DIR$/source/app/Model" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/source/app/Jobs/Service" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/source/app/Console/Commands" />
+      <recent name="$PROJECT_DIR$/source/app/Console/Commands/Facebook" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/source" />
       <recent name="$PROJECT_DIR$/app/Jobs/Service" />
-      <recent name="$PROJECT_DIR$/app/Http/Controllers/Me" />
-      <recent name="$PROJECT_DIR$/app/Jobs" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/source/app/Jobs/Service" />
-      <recent name="$PROJECT_DIR$/source/database/migrations" />
-      <recent name="$PROJECT_DIR$/source/app/Http/Controllers" />
-      <recent name="$PROJECT_DIR$/source/resources/views/pages" />
-      <recent name="$PROJECT_DIR$/source/app/Model" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -221,7 +233,7 @@
       <workItem from="1573719353731" duration="8990000" />
       <workItem from="1573738998803" duration="5374000" />
       <workItem from="1573747054440" duration="3321000" />
-      <workItem from="1573783483228" duration="956000" />
+      <workItem from="1573783483228" duration="13176000" />
     </task>
     <servers />
   </component>

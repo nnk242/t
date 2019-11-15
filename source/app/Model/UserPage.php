@@ -14,12 +14,13 @@ class UserPage extends Model
     public function __construct(array $attributes = [])
     {
         $this->attributes['status'] = 1;
+        $this->attributes['run_conversations'] = 1;
         parent::__construct($attributes);
     }
 
-    protected $attributes = ['status' => 1];
+    protected $attributes = ['status' => 1, 'run_conversations' => 1];
 
-    protected $fillable = ['user_page_id', 'page_id', 'access_token', 'user_id', 'status'];
+    protected $fillable = ['user_page_id', 'page_id', 'access_token', 'user_id', 'status', 'run_conversations'];
 
     protected $hidden = [
         'access_token'

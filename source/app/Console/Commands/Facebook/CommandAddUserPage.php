@@ -1,27 +1,34 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Commands\Facebook;
 
 use App\Components\Facebook;
 use App\Model\FbConversation;
-use App\Model\Page;
 use App\Model\UserFbPage;
 use App\Model\UserPage;
-use Illuminate\Http\Request;
-use Mockery\Exception;
+use Illuminate\Console\Command;
 
-class TestController extends Controller
+class CommandAddUserPage extends Command
 {
-    #defined text
-    #default
-    ##  !'value, first, last, min, max
-    ##  !'_____, *****, ****, ***, ***
-    public function text()
+    protected $signature = 'command:AddUserPage';
+
+    protected $description = 'Run every 5 mins';
+
+    public function __construct()
     {
+        parent::__construct();
+    }
+
+    public function handle()
+    {
+        $this->info('[' . date('Y-m-d H:i:s') . ']' . 'Start run add user page' . PHP_EOL);
+//        $this->info('Start run add user page' . PHP_EOL);
         $user_pages = UserPage::whererun_conversations(1)->get();
         foreach ($user_pages as $user_page) {
-            $access_token = $user_page->access_token;
             $page_id = $user_page->page_id;
+            $this->info('[' . date('Y-m-d H:i:s') . ']' . ' Start with page_fb_id ' . $page_id . PHP_EOL);
+//            dd($user_page->page->fb_page_id);
+            $access_token = $user_page->access_token;
             $conversations = Facebook::get($access_token, 'me/conversations?fields=id,updated_time,senders,snippet');
             foreach ($conversations as $conversation) {
                 $conversation_id = $conversation['id'];
@@ -56,55 +63,8 @@ class TestController extends Controller
                 }
             }
             UserPage::find($user_page->_id)->update(['run_conversations' => 0]);
-            dd(UserPage::find($user_page->_id));
+            $this->info('[' . date('Y-m-d H:i:s') . ']' . 'End with page_fb_id ' . $page_id . PHP_EOL);
         }
-        dd(UserFbPage::first());
-//        foreach ()
-        dd(Page::all());
-
-        ###
-        $text = "Suy ra một điều rằng Trâm. Anh thích 64 :)";
-        $text_def = "!'S";
-
-        $strlen_def = strlen($text_def);
-
-        $check_text = false;
-
-        switch (true) {
-            case $strlen_def === 2:
-                if ($text_def === "!'") {
-                    $check_text = true;
-                }
-                break;
-            case $strlen_def > 2:
-                if ($text_def[0] === '!' and $text_def[1] === "'") {
-                    $arr_text_def = explode("!'", $text_def);
-
-                    try {
-                        unset($arr_text_def[0]);
-                    } catch (Exception $exception) {
-                    }
-
-                    $text_def = implode($arr_text_def, "!'");
-                    //
-                    $arr_text_def = explode(",", $text_def);
-                    $count_arr_text_def = count($arr_text_def);
-                    if ($count_arr_text_def <= 1) {
-                        if (gettype(strpos($text, $text_def)) === 'integer') {
-                            $check_text = true;
-                        }
-                    } else {
-
-                    }
-//                    dd($text_def);
-                    break;
-                }
-            default:
-                if ($text === $text_def) {
-                    $check_text = true;
-                }
-                break;
-        }
-        return $check_text;
+        $this->info('Final');
     }
 }

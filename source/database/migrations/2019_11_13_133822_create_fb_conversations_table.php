@@ -9,16 +9,12 @@ class CreateFbConversationsTable extends Migration
     public function up()
     {
         Schema::connection('mongodb')->create('fb_conversations', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('page_id');
-            $table->foreign('page_id')->references('_id')->on('pages')->onDelete('cascade');
-            $table->string('user_fb_id');
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('profile_pic')->nullable();
-            $table->string('gender')->nullable();
-            $table->string('locale')->nullable();
-            $table->float('timezone')->nullable();
+            $table->index('id');
+            $table->string('user_fb_page_id');
+            $table->foreign('user_fb_page_id')->references('_id')->on('user_fb_pages')->onDelete('cascade');
+            $table->index('conversation_id');
+            $table->text('snippet')->nullable();
+            $table->string('updated_time');
             $table->timestamps();
         });
     }
