@@ -2,20 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6f4a4b9-c516-4431-84da-6a02af519a6a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/Me/ManagerShareController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/Me/ManagerShareController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/PageController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/PageController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/Setting/SettingController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/Setting/SettingController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Http/Controllers/TestController.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Http/Controllers/TestController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Jobs/Service/ServiceGetUserPageAndConversation.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Jobs/Service/ServiceGetUserPageAndConversation.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/app/Model/Page.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/app/Model/Page.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/config/app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/database/migrations/2019_11_07_035150_create_user_pages_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_07_035150_create_user_pages_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133821_create_user_fb_pages_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133821_create_user_fb_pages_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133822_create_fb_conversations_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/database/migrations/2019_11_13_133822_create_fb_conversations_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/resources/views/pages/me/manager-share.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/resources/views/pages/me/manager-share.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/resources/views/pages/setting/index.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/resources/views/pages/setting/index.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/source/routes/web.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -151,7 +139,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/source/app/Jobs/Service" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -233,6 +221,7 @@
       <workItem from="1573719353731" duration="8990000" />
       <workItem from="1573738998803" duration="5374000" />
       <workItem from="1573747054440" duration="3321000" />
+      <workItem from="1573783483228" duration="956000" />
     </task>
     <servers />
   </component>
