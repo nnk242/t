@@ -14,6 +14,7 @@ class CreateFbConversationsTable extends Migration
             $table->foreign('user_fb_page_id')->references('_id')->on('user_fb_pages')->onDelete('cascade');
             $table->index('conversation_id');
             $table->text('snippet')->nullable();
+            $table->integer('read_watermark')->nullable();
             $table->string('updated_time');
             $table->timestamps();
         });

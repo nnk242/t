@@ -5,7 +5,7 @@ namespace App\Console\Commands\Facebook;
 use App\Components\Facebook;
 use App\Model\FbConversation;
 use App\Model\Page;
-use App\Model\UserFbPage;
+use App\Model\FbUserPage;
 use App\Model\UserPage;
 use Illuminate\Console\Command;
 
@@ -59,8 +59,7 @@ class CommandAddUserPage extends Command
                 $conversation_id = $conversation['id'];
                 $data_conversation = [
                     'conversation_id' => $conversation_id,
-                    'snippet' => $conversation['snippet'],
-                    'updated_time' => $conversation['updated_time']
+                    'snippet' => $conversation['snippet']
                 ];
                 foreach ($conversation['senders']['data'] as $sender) {
                     if ($page->fb_page_id !== $sender['id']) {
@@ -87,7 +86,7 @@ class CommandAddUserPage extends Command
                                 'locale' => isset($get_user_page['locale']) ? $get_user_page['locale'] : '',
                                 'timezone' => isset($get_user_page['timezone']) ? $get_user_page['timezone'] : ''
                             ];
-                            $user_fb_page = UserFbPage::updateorcreate(['m_page_user_id' => $m_page_user_id], $data_user_fb_page);
+                            $user_fb_page = FbUserPage::updateorcreate(['m_page_user_id' => $m_page_user_id], $data_user_fb_page);
                             $data_conversation = array_merge($data_conversation, ['user_fb_page_id' => $user_fb_page->_id]);
 
                             FbConversation::updateorcreate(['conversation_id' => $conversation_id], $data_conversation);

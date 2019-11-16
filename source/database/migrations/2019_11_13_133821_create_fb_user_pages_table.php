@@ -4,12 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserFbPagesTable extends Migration
+class CreateFbUserPagesTable extends Migration
 {
     public function up()
     {
         #2016433678466136?fields=gender,first_name,last_name,name,id,locale,timezone
-        Schema::connection('mongodb')->create('user_fb_pages', function (Blueprint $table) {
+        Schema::connection('mongodb')->create('fb_user_pages', function (Blueprint $table) {
             $table->index('id');
             ##$fb_page_id + '_' + $page_user_id
             $table->index('m_page_user_id');
@@ -24,22 +24,11 @@ class CreateUserFbPagesTable extends Migration
             $table->string('locale')->nullable();
             $table->integer('timezone')->nullable();
             $table->timestamps();
-
-//            $table->index('page_id');
-//            $table->index('user_fb_id');
-//            $table->index('first_name');
-//            $table->index('name');
-//            $table->index('profile_pic');
-//            $table->index('gender');
-//            $table->index('locale');
-//            $table->index('timezone');
-//
-//            $table->index(['page_id', 'user_fb_id', 'first_name', 'last_name', 'name', 'profile_pic', 'gender', 'locale', 'timezone']);
         });
     }
 
     public function down()
     {
-        Schema::connection('mongodb')->dropIfExists('user_fb_pages');
+        Schema::connection('mongodb')->dropIfExists('fb_user_pages');
     }
 }

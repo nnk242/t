@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use App\User;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class FbConversation extends Model
@@ -11,11 +10,10 @@ class FbConversation extends Model
 
     protected $table = 'fb_conversations';
 
-    protected $fillable = ['user_fb_page_id', 'conversation_id', 'snippet', 'updated_time'];
+    protected $fillable = ['user_fb_page_id', 'conversation_id', 'snippet', 'read_watermark'];
 
-
-    public function userFbPage()
+    public function fbUserPage()
     {
-        return $this->belongsTo(UserFbPage::class, 'user_fb_page_id');
+        return $this->belongsTo(FbUserPage::class, 'user_fb_page_id');
     }
 }

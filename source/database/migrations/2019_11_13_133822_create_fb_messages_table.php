@@ -17,6 +17,16 @@ class CreateFbMessagesTable extends Migration
             $table->string('sender_id');
             $table->text('text')->nullable();
             $table->text('attachments')->nullable();
+            $table->string('reply_to_mid')->nullable();
+            $table->string('sticker_id')->nullable();
+
+            $table->string('reaction')->nullable();
+            $table->string('reaction_action')->nullable();
+            $table->string('reaction_emoji')->nullable();
+
+            $table->integer('delivery_watermark')->nullable();
+
+            $table->string('payload')->nullable();
             $table->integer('timestamp');
             $table->timestamps();
         });
