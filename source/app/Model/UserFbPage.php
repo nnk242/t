@@ -11,10 +11,10 @@ class UserFbPage extends Model
 
     protected $table = 'user_fb_pages';
 
-    protected $fillable = ['page_id', 'user_fb_id', 'first_name', 'last_name', 'name', 'profile_pic', 'gender', 'locale', 'timezone', 'm_user_fb_id'];
+    protected $fillable = ['m_page_user_id', 'fb_page_id', 'user_fb_id', 'first_name', 'last_name', 'name', 'profile_pic', 'gender', 'locale', 'timezone'];
 
     public function page()
     {
-        return $this->belongsTo(Page::class, 'page_id');
+        return $this->belongsTo(Page::class, 'fb_page_id', 'fb_page_id');
     }
 }

@@ -4,11 +4,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFbProcessTable extends Migration
+class CreatePersistentMenusTable extends Migration
 {
     public function up()
     {
-        Schema::connection('mongodb')->create('fb_process', function (Blueprint $table) {
+        Schema::connection('mongodb')->create('persistent_menus', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('page_id')->unsigned();
             $table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
@@ -25,6 +25,6 @@ class CreateFbProcessTable extends Migration
 
     public function down()
     {
-        Schema::connection('mongodb')->dropIfExists('fb_process');
+        Schema::connection('mongodb')->dropIfExists('persistent_menus');
     }
 }

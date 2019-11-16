@@ -11,9 +11,10 @@ class CreateUserFbPagesTable extends Migration
         #2016433678466136?fields=gender,first_name,last_name,name,id,locale,timezone
         Schema::connection('mongodb')->create('user_fb_pages', function (Blueprint $table) {
             $table->index('id');
-            $table->index('m_user_fb_id');
-            $table->string('page_id');
-            $table->foreign('page_id')->references('_id')->on('pages')->onDelete('cascade');
+            ##$fb_page_id + '_' + $page_user_id
+            $table->index('m_page_user_id');
+            $table->string('fb_page_id');
+            $table->foreign('fb_page_id')->references('fb_page_id')->on('pages')->onDelete('cascade');
             $table->string('user_fb_id');
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();

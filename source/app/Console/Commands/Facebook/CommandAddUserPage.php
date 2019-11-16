@@ -4,13 +4,14 @@ namespace App\Console\Commands\Facebook;
 
 use App\Components\Facebook;
 use App\Model\FbConversation;
+use App\Model\Page;
 use App\Model\UserFbPage;
 use App\Model\UserPage;
 use Illuminate\Console\Command;
 
 class CommandAddUserPage extends Command
 {
-    protected $signature = 'command:AddUserPage';
+    protected $signature = 'command:AddUserPage {--page_user_id=} {--fb_page_id=} {--is_run=}';
 
     protected $description = 'Run every 5 mins';
 
@@ -21,14 +22,38 @@ class CommandAddUserPage extends Command
 
     public function handle()
     {
+        $run_default = false;
+        $fb_page_id = $this->option('fb_page_id');
+        $page_user_id = $this->option('page_user_id');
+        $is_run = $this->option('is_run');
+        if ($fb_page_id) {
+            $where = [
+                'fb_page_id' => $fb_page_id,
+            ];
+
+            if ($is_run) {
+                $where = array_merge($where, [
+                    'run_conversations' => $$this->option('is_run') === 'yes' ? 1 : 0
+                ]);
+            }
+        } else {
+            $run_default = true;
+            $run_conversations = 1;
+            if ($this->option('is_run')) {
+                $run_conversations = $this->option('is_run') === 'yes' ? 1 : 0;
+            }
+
+            $where = ['run_conversations' => $run_conversations];
+        }
+
         $this->info('[' . date('Y-m-d H:i:s') . ']' . 'Start run add user page' . PHP_EOL);
 //        $this->info('Start run add user page' . PHP_EOL);
-        $user_pages = UserPage::whererun_conversations(1)->get();
-        foreach ($user_pages as $user_page) {
-            $page_id = $user_page->page_id;
-            $this->info('[' . date('Y-m-d H:i:s') . ']' . ' Start with page_fb_id ' . $page_id . PHP_EOL);
-//            dd($user_page->page->fb_page_id);
-            $access_token = $user_page->access_token;
+        $pages = Page::where($where)->get();
+        foreach ($pages as $page) {
+            $fb_page_id = $page->fb_page_id;
+            $this->info('[' . date('Y-m-d H:i:s') . ']' . ' Start with page_fb_id ' . $fb_page_id . PHP_EOL);
+
+            $access_token = $page->access_token;
             $conversations = Facebook::get($access_token, 'me/conversations?fields=id,updated_time,senders,snippet');
             foreach ($conversations as $conversation) {
                 $conversation_id = $conversation['id'];
@@ -38,32 +63,45 @@ class CommandAddUserPage extends Command
                     'updated_time' => $conversation['updated_time']
                 ];
                 foreach ($conversation['senders']['data'] as $sender) {
-                    if ($user_page->page->fb_page_id !== $sender['id']) {
+                    if ($page->fb_page_id !== $sender['id']) {
                         $get_user_page = Facebook::get($access_token, $sender['id'] . '?fields=gender,first_name,last_name,name,id,locale,timezone');
                         if (isset($get_user_page['id'])) {
-                            $m_user_fb_id = $page_id . '_' . $get_user_page['id'];
+                            $is_break = false;
+                            if ($page_user_id) {
+                                if ($get_user_page['id'] === $page_user_id) {
+                                    $is_break = true;
+                                } else {
+                                    continue;
+                                }
+                            }
+                            $this->info('[' . date('Y-m-d H:i:s') . ']' . ' Page_fb_id ' . $fb_page_id . ' User_id ' . $sender['id'] . PHP_EOL);
+                            $m_page_user_id = $fb_page_id . '_' . $get_user_page['id'];
                             $data_user_fb_page = [
-                                'm_user_fb_id' => $m_user_fb_id,
+                                'm_page_user_id' => $m_page_user_id,
+                                'fb_page_id' => $fb_page_id,
+                                'user_fb_id' => $sender['id'],
                                 'name' => $sender['name'],
-                                'user_fb_id' => $get_user_page['id'],
                                 'gender' => isset($get_user_page['gender']) ? $get_user_page['gender'] : '',
                                 'first_name' => isset($get_user_page['first_name']) ? $get_user_page['first_name'] : '',
                                 'last_name' => isset($get_user_page['last_name']) ? $get_user_page['last_name'] : '',
                                 'locale' => isset($get_user_page['locale']) ? $get_user_page['locale'] : '',
-                                'timezone' => isset($get_user_page['timezone']) ? $get_user_page['timezone'] : '',
-                                'page_id' => $page_id
+                                'timezone' => isset($get_user_page['timezone']) ? $get_user_page['timezone'] : ''
                             ];
-                            $user_fb_page = UserFbPage::updateorcreate(['m_user_fb_id' => $m_user_fb_id], $data_user_fb_page);
+                            $user_fb_page = UserFbPage::updateorcreate(['m_page_user_id' => $m_page_user_id], $data_user_fb_page);
                             $data_conversation = array_merge($data_conversation, ['user_fb_page_id' => $user_fb_page->_id]);
 
                             FbConversation::updateorcreate(['conversation_id' => $conversation_id], $data_conversation);
+                            if ($is_break) {
+                                break;
+                            }
                         }
-                        break;
                     }
                 }
             }
-            UserPage::find($user_page->_id)->update(['run_conversations' => 0]);
-            $this->info('[' . date('Y-m-d H:i:s') . ']' . 'End with page_fb_id ' . $page_id . PHP_EOL);
+            if ($run_default) {
+                Page::find($page->_id)->update(['run_conversations' => 0]);
+            }
+            $this->info('[' . date('Y-m-d H:i:s') . ']' . 'End with page_fb_id ' . $fb_page_id . PHP_EOL);
         }
         $this->info('Final');
     }

@@ -27,20 +27,22 @@ class PageController extends Controller
 
     private function updateOrCreate($data)
     {
-
-        $page = Page::updateorcreate(['fb_page_id' => $data['id']], [
-            'picture' => $data['picture']['data']['url'],
-            'name' => $data['name'],
+        return Page::updateorcreate(['fb_page_id' => $data['id']], [
             'fb_page_id' => $data['id'],
-            'category' => $data['category']
-        ]);
-        return $this->model()::updateorcreate(['user_page_id' => Auth::id() . '_' . $data['id']], [
-            'user_page_id' => Auth::id() . '_' . $data['id'],
-            'page_id' => $page->id,
+            'name' => $data['name'],
+            'picture' => $data['picture']['data']['url'],
+            'category' => $data['category'],
             'access_token' => $data['access_token'],
             'user_id' => Auth::id(),
             'run_conversations' => 1
         ]);
+//        return $this->model()::updateorcreate(['user_page_id' => Auth::id() . '_' . $data['id']], [
+//            'user_page_id' => Auth::id() . '_' . $data['id'],
+//            'page_id' => $page->id,
+//            'access_token' => $data['access_token'],
+//            'user_id' => Auth::id(),
+//            'run_conversations' => 1
+//        ]);
 //        $this->model()::updateorcreate(['user_id_fb_page_id' => Auth::id() . '_' . $data['id']], [
 //            'picture' => $data['picture']['data']['url'],
 //            'access_token' => $data['access_token'],
@@ -100,9 +102,9 @@ class PageController extends Controller
 
     public function index()
     {
+//        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
         $arr_user_page_id = UserRolePage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
-//        dd($arr_user_page_id);
-        $data = UserPage::whereuser_id(Auth::id())->orWhereIn('page_id', $arr_user_page_id)->orderby('id', 'DESC')->paginate(10);
+        $data = Page::whereuser_id(Auth::id())->orWhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);
         $headers = [
 //            ['id' => 'check-i', 'label' => '###'],
             'STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Thể loại', 'Ngày cập nhật', 'Ngày thêm', '###'];
