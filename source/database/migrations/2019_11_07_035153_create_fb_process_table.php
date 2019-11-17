@@ -11,6 +11,8 @@ class CreateFbProcessTable extends Migration
         Schema::connection('mongodb')->create('fb_process', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->text('data');
+            $table->integer('code')->nullable();
+            $table->string('message')->nullable();
             $table->smallInteger('status')->default(1);
             $table->timestamps();
         });

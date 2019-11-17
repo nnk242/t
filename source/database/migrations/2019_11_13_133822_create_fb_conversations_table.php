@@ -15,7 +15,6 @@ class CreateFbConversationsTable extends Migration
             $table->index('conversation_id');
             $table->text('snippet')->nullable();
             $table->integer('read_watermark')->nullable();
-            $table->string('updated_time');
             $table->timestamps();
         });
     }

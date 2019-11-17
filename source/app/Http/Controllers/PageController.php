@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Components\Facebook;
+use App\Components\Facebook\Facebook;
+use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Jobs\Console\AddUserPage;
+use App\Model\FbProcess;
 use App\Model\Page;
-use App\Model\UserAndPage;
 use App\Model\UserPage;
 use App\Model\UserRolePage;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class PageController extends Controller
 
     private function updateOrCreate($data)
     {
-        return Page::updateorcreate(['fb_page_id' => $data['id']], [
+        return UpdateOrCreate::page([
             'fb_page_id' => $data['id'],
             'name' => $data['name'],
             'picture' => $data['picture']['data']['url'],
@@ -36,20 +37,14 @@ class PageController extends Controller
             'user_id' => Auth::id(),
             'run_conversations' => 1
         ]);
-//        return $this->model()::updateorcreate(['user_page_id' => Auth::id() . '_' . $data['id']], [
-//            'user_page_id' => Auth::id() . '_' . $data['id'],
-//            'page_id' => $page->id,
+//        return Page::updateorcreate(['fb_page_id' => $data['id']], [
+//            'fb_page_id' => $data['id'],
+//            'name' => $data['name'],
+//            'picture' => $data['picture']['data']['url'],
+//            'category' => $data['category'],
 //            'access_token' => $data['access_token'],
 //            'user_id' => Auth::id(),
 //            'run_conversations' => 1
-//        ]);
-//        $this->model()::updateorcreate(['user_id_fb_page_id' => Auth::id() . '_' . $data['id']], [
-//            'picture' => $data['picture']['data']['url'],
-//            'access_token' => $data['access_token'],
-//            'name' => $data['name'],
-//            'fb_page_id' => $data['id'],
-//            'user_id' => Auth::id(),
-//            'category' => $data['category']
 //        ]);
     }
 
@@ -102,6 +97,7 @@ class PageController extends Controller
 
     public function index()
     {
+        dd(FbProcess::wherestatus(1)->limit(2)->get());
 //        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
         $arr_user_page_id = UserRolePage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
         $data = Page::whereuser_id(Auth::id())->orWhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Components;
+namespace App\Components\Facebook;
 
 use Illuminate\Support\Facades\App;
 

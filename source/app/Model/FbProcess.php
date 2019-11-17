@@ -18,5 +18,5 @@ class FbProcess extends Model
 
     protected $attributes = ['status' => 1];
 
-    protected $fillable = ['data', 'status'];
+    protected $fillable = ['data', 'status', 'code', 'message'];
 }

@@ -2,7 +2,8 @@
 
 namespace App\Console\Commands\Facebook;
 
-use App\Components\Facebook;
+use App\Components\Console\Notify;
+use App\Components\Facebook\Facebook;
 use App\Model\FbConversation;
 use App\Model\Page;
 use App\Model\FbUserPage;
@@ -46,12 +47,11 @@ class CommandAddUserPage extends Command
             $where = ['run_conversations' => $run_conversations];
         }
 
-        $this->info('[' . date('Y-m-d H:i:s') . ']' . 'Start run add user page' . PHP_EOL);
-//        $this->info('Start run add user page' . PHP_EOL);
+        $this->info(Notify::notify('Start run add user page' . $fb_page_id));
         $pages = Page::where($where)->get();
         foreach ($pages as $page) {
             $fb_page_id = $page->fb_page_id;
-            $this->info('[' . date('Y-m-d H:i:s') . ']' . ' Start with page_fb_id ' . $fb_page_id . PHP_EOL);
+            $this->info(Notify::notify('Start with page_fb_id ' . $fb_page_id));
 
             $access_token = $page->access_token;
             $conversations = Facebook::get($access_token, 'me/conversations?fields=id,updated_time,senders,snippet');
@@ -100,8 +100,8 @@ class CommandAddUserPage extends Command
             if ($run_default) {
                 Page::find($page->_id)->update(['run_conversations' => 0]);
             }
-            $this->info('[' . date('Y-m-d H:i:s') . ']' . 'End with page_fb_id ' . $fb_page_id . PHP_EOL);
+            $this->info(Notify::notify('End with page_fb_id ' . $fb_page_id));
         }
-        $this->info('Final');
+        $this->info(Notify::notify('Final'));
     }
 }
