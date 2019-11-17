@@ -33,7 +33,8 @@ class ProcessDataMessaging
         $text = isset($message_['text']) ? $message_['text'] : null;
         $attachments = isset($message_['attachments']) ? $message_['attachments'] : null;
         $reply_to_mid = isset($message_['reply_to']['mid']) ? $message_['reply_to']['mid'] : null;
-        $sticker_id = isset($message_['$sticker_id']) ? $message_['$sticker_id'] : null;
+        $sticker_id = isset($message_['sticker_id']) ? $message_['sticker_id'] : null;
+        $quick_reply_payload = isset($message_['quick_reply']['payload']) ? $message_['quick_reply']['payload'] : null;
 
         $data = [
             'conversation_id' => $conversation_id,
@@ -44,7 +45,8 @@ class ProcessDataMessaging
             'attachments' => json_encode($attachments),
             'reply_to_mid' => $reply_to_mid,
             'sticker_id' => $sticker_id,
-            'timestamp' => $timestamp
+            'timestamp' => $timestamp,
+            'quick_reply_payload' => $quick_reply_payload
         ];
         UpdateOrCreate::fbConversation(['conversation_id' => $conversation_id, 'snippet' => $text ? $text : ($attachments ? 'You sent attachments.' : "[Error 0]Don't know.")]);
         UpdateOrCreate::fbMessage($data);

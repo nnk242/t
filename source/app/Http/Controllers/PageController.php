@@ -97,7 +97,7 @@ class PageController extends Controller
 
     public function index()
     {
-        dd(FbProcess::wherestatus(1)->limit(2)->get());
+//        dd(FbProcess::wherestatus(1)->limit(2)->get());
 //        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
         $arr_user_page_id = UserRolePage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
         $data = Page::whereuser_id(Auth::id())->orWhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);

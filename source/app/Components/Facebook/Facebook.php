@@ -33,7 +33,7 @@ class Facebook
         try {
             return $fb->post($url, $data, $access_token);
         } catch (\Exception $exception) {
-            return false;
+            return $exception->getMessage();
         }
     }
 }

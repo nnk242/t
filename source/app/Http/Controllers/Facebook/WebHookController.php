@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Facebook;
 
+use App\Components\Facebook\Facebook;
 use App\Components\Facebook\ProcessDataMessaging;
 use App\Http\Controllers\Controller;
 use App\Jobs\Facebook\FacebookMessaging;
@@ -47,13 +48,104 @@ class WebHookController extends Controller
             $this->dispatch(new FacebookMessaging($request->all()));
 
             ###
+            $entry = $request['entry'] ? $request['entry'] : null;
+            if (isset($entry[0]['id'])) {
+                $fb_page_id = $entry[0]['id'];
+                $page = Page::wherefb_page_id($fb_page_id)->first();
+                if (isset($page)) {
+                    if (isset($entry[0]['messaging'])) {
+                        $sender_id = isset($entry[0]['messaging'][0]['sender']['id']) ? $entry[0]['messaging'][0]['sender']['id'] : null;
+                        $recipient_id = isset($entry[0]['messaging'][0]['recipient']['id']) ? $entry[0]['messaging'][0]['recipient']['id'] : null;
+                        $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
+                        #### Get user fb page
+                        if ($sender_id === $fb_page_id) {
+                            $person_id = $recipient_id;
+                        } else {
+                            $person_id = $sender_id;
+                        }
 
-            $client->initialize();
-            $client->emit('data', array($request->all()));
-            $client->close();
+                        $user_fb_page = ProcessDataMessaging::userFbPage($person_id, $fb_page_id);
+                        ## run process
+                        $access_token = null;
+
+                        if (isset($user_fb_page)) {
+                            $access_token = $user_fb_page->page->access_token;
+                            if ($text === "Aaa") {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    "messaging_type" => "RESPONSE",
+                                    'message' => [
+                                        'text' => 'Pick a color:',
+                                        'quick_replies' => [
+                                            [
+                                                "content_type" => "text",
+                                                "title" => "Red",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                                "payload" => "POSTBACK_PAYLOAD"
+                                            ]
+                                        ]
+                                    ]
+                                ];
+                            }
+
+                            if ($text === 'Phone') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    "messaging_type" => "RESPONSE",
+                                    'message' => [
+                                        'text' => 'Pick a color:',
+                                        'quick_replies' => [
+                                            [
+                                                "content_type" => "text",
+                                                "title" => "Red",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                                "payload" => "POSTBACK_PAYLOAD"
+                                            ], [
+                                                "content_type" => "text",
+                                                "title" => "Red1",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                                "payload" => "POSTBACK_PAYLOAD1"
+                                            ], [
+                                                "content_type" => "user_phone_number",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                            ], [
+                                                "content_type" => "user_phone_number",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                            ]
+                                        ]
+                                    ]
+                                ];
+                            }
+                            if (isset($data)) {
+                                $send = Facebook::post($access_token, 'me/messages', $data);
+                            }
+                        }
+
+                        $client->initialize();
+                        $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page, '$send' => isset($send) ? $send : 'No response'));
+                        $client->close();
+                    } else {
+                        $client->initialize();
+                        $client->emit('data', array($request->all(), 'Can not message'));
+                        $client->close();
+                    }
+                } else {
+                    $client->initialize();
+                    $client->emit('data', array($request->all(), 'not found page'));
+                    $client->close();
+                }
+            }
+
+//            $client->initialize();
+//            $client->emit('data', array($request->all()));
+//            $client->close();
         } catch (\Exception $exception) {
             $client->initialize();
-            $client->emit('data', array($request->all(), 'error' => [$exception->getMessage(), $exception]));
+            $client->emit('data', array($request->all(), 'error' => [$exception->getMessage(), $exception->getCode()]));
             $client->close();
         }
         return $request->all();

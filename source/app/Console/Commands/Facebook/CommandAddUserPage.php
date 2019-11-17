@@ -7,7 +7,6 @@ use App\Components\Facebook\Facebook;
 use App\Model\FbConversation;
 use App\Model\Page;
 use App\Model\FbUserPage;
-use App\Model\UserPage;
 use Illuminate\Console\Command;
 
 class CommandAddUserPage extends Command

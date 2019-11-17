@@ -10,7 +10,7 @@ class FbConversation extends Model
 
     protected $table = 'fb_conversations';
 
-    protected $fillable = ['user_fb_page_id', 'conversation_id', 'snippet', 'read_watermark'];
+    protected $fillable = ['user_fb_page_id', 'conversation_id', 'snippet', 'read_watermark', 'quick_reply_phone'];
 
     public function fbUserPage()
     {

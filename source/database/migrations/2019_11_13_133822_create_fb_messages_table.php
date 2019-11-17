@@ -27,6 +27,7 @@ class CreateFbMessagesTable extends Migration
             $table->integer('delivery_watermark')->nullable();
 
             $table->string('payload')->nullable();
+            $table->string('quick_reply_payload')->nullable();
             $table->integer('timestamp');
             $table->timestamps();
         });

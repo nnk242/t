@@ -11,7 +11,7 @@ class FbMessage extends Model
     protected $table = 'fb_messages';
 
     protected $fillable = ['conversation_id', 'mid', 'recipient_id', 'sender_id', 'text', 'attachments', 'reply_to_mid',
-        'sticker_id', 'reaction', 'reaction_action', 'reaction_emoji', 'delivery_watermark', 'payload', 'timestamp'];
+        'sticker_id', 'reaction', 'reaction_action', 'reaction_emoji', 'delivery_watermark', 'payload', 'timestamp', 'quick_reply_payload'];
 
     public function fbConversation()
     {
