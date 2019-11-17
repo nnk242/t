@@ -5,7 +5,9 @@ namespace App\Components\Facebook;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Model\FbMessage;
 use App\Model\FbUserPage;
+use App\Model\Page;
 use Illuminate\Support\Facades\Artisan;
+use Mockery\Exception;
 
 class ProcessDataMessaging
 {
@@ -165,5 +167,37 @@ class ProcessDataMessaging
             'reaction_action' => $reaction_action,
             'reaction_emoji' => $reaction_emoji
         ];
+    }
+
+    public static function index($data)
+    {
+        try {
+            $entry = isset($data['entry']) ? $data['entry'] : null;
+            if (isset($entry[0]['id'])) {
+                $fb_page_id = $entry[0]['id'];
+                $page = Page::wherefb_page_id($fb_page_id)->first();
+                if (isset($page)) {
+                    if (isset($entry[0]['messaging'])) {
+                        $sender_id = isset($entry[0]['messaging'][0]['sender']['id']) ? $entry[0]['messaging'][0]['sender']['id'] : null;
+                        $recipient_id = isset($entry[0]['messaging'][0]['recipient']['id']) ? $entry[0]['messaging'][0]['recipient']['id'] : null;
+
+                        #### Get user fb page
+                        if ($sender_id === $fb_page_id) {
+                            $person_id = $recipient_id;
+                        } else {
+                            $person_id = $sender_id;
+                        }
+
+                        self::userFbPage($person_id, $fb_page_id);
+                        ## run process
+                        self::handle($entry, $person_id, $sender_id, $recipient_id);
+                    }
+                }
+            }
+            return true;
+        } catch (Exception $exception) {
+            return false;
+        }
+
     }
 }
