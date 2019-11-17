@@ -16,10 +16,10 @@ class CreatePagesTable extends Migration
             $table->string('category')->nullable();
             #
             $table->string('access_token', 255);
-            $table->string('user_id');
-            $table->foreign('user_id')->references('_id')->on('users')->onDelete('cascade');
             $table->smallInteger('status')->default(1);
             $table->smallInteger('run_conversations')->default(1);
+            $table->string('user_id');
+            $table->foreign('user_id')->references('_id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

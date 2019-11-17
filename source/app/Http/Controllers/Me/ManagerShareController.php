@@ -22,7 +22,7 @@ class ManagerShareController extends Controller
 
     public function index(Request $request)
     {
-        $data = UserRolePage::whereuser_parent(Auth::id())->paginate(1);
+        $data = UserRolePage::whereuser_parent(Auth::id())->paginate(10);
         $headers = ['STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Người nhận', 'Thể loại', 'status', 'Ngày thêm', '###'];
         return view('pages.me.manager-share', compact('data', 'headers'));
     }

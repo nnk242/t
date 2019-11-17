@@ -27,3 +27,9 @@
 .visibility-hidden {
     visibility: hidden;
 }
+
+.text_ {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

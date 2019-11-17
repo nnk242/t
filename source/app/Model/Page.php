@@ -19,14 +19,9 @@ class Page extends Model
 
     protected $attributes = ['status' => 1, 'run_conversations' => 1];
 
-    protected $fillable = ['fb_page_id', 'name', 'picture', 'category', 'access_token', 'user_id', 'status', 'access_token'];
+    protected $fillable = ['fb_page_id', 'name', 'picture', 'category', 'access_token', 'status', 'access_token'];
 
     protected $hidden = [
         'access_token'
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 }

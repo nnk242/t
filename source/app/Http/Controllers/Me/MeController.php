@@ -34,11 +34,11 @@ class MeController extends Controller
 
     public function store(Request $request)
     {
-        $user_and_page = UserAndPage::findorfail($request->id);
+        $user_and_page = UserRolePage::findorfail($request->id);
         if ($user_and_page->user_child === Auth::id()) {
             $user_and_page->update(
                 [
-                    'type' => $request->type
+                    'type' => (int)$request->type
                 ]
             );
         }

@@ -23,37 +23,34 @@ class PageController extends Controller
 
     private function model()
     {
-        return UserPage::class;
+        return Page::class;
     }
 
     private function updateOrCreate($data)
     {
+        UpdateOrCreate::userRolePage([
+            'fb_page_parent' => $data['id'] . '_' . Auth::id(),
+            'fb_page_id' => $data['id'],
+            'user_parent' => Auth::id(),
+            'user_child' => Auth::id(),
+            'type' => 1,
+            'status' => 1
+        ]);
         return UpdateOrCreate::page([
             'fb_page_id' => $data['id'],
             'name' => $data['name'],
             'picture' => $data['picture']['data']['url'],
             'category' => $data['category'],
             'access_token' => $data['access_token'],
-            'user_id' => Auth::id(),
             'run_conversations' => 1
         ]);
-//        return Page::updateorcreate(['fb_page_id' => $data['id']], [
-//            'fb_page_id' => $data['id'],
-//            'name' => $data['name'],
-//            'picture' => $data['picture']['data']['url'],
-//            'category' => $data['category'],
-//            'access_token' => $data['access_token'],
-//            'user_id' => Auth::id(),
-//            'run_conversations' => 1
-//        ]);
     }
 
     private function type($data, $type = null, $arr_fb_page_id = [])
     {
         switch ((int)$type) {
             case 1:
-                $arr_page_id = $this->model()::whereuser_id(Auth::id())->pluck('page_id')->toArray();
-                $arr_fb_page_id = Page::wherein('_id', $arr_page_id)->pluck('fb_page_id')->toArray();
+                $arr_fb_page_id = $this->model()::pluck('fb_page_id')->toArray();
                 if (!in_array($data['id'], $arr_fb_page_id)) {
                     return $this->updateOrCreate($data);
                 } else {
@@ -99,8 +96,8 @@ class PageController extends Controller
     {
 //        dd(FbProcess::wherestatus(1)->limit(2)->get());
 //        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
-        $arr_user_page_id = UserRolePage::wheretype(1)->wherestatus(1)->whereuser_child(Auth::id())->pluck('page_id')->toArray();
-        $data = Page::whereuser_id(Auth::id())->orWhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);
+        $data = UserRolePage::whereuser_child(Auth::id())->whereuser_parent(Auth::id())->paginate(10);
+//        $data = Page::WhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);
         $headers = [
 //            ['id' => 'check-i', 'label' => '###'],
             'STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Thể loại', 'Ngày cập nhật', 'Ngày thêm', '###'];
@@ -115,7 +112,6 @@ class PageController extends Controller
         if (!$access_token) {
             return redirect()->back()->with('warning', 'Cần cập nhật access token');
         }
-
         try {
             $data = Facebook::get($access_token, 'me/accounts?fields=picture,access_token,name,id,category&limit=150');
             $subscribed_fields = $this->subscribedFields($data, $type);
@@ -130,7 +126,7 @@ class PageController extends Controller
 
     public function show($id)
     {
-        $user_page = $this->model()::where_id($id)->firstorfail();
+        $user_page = $this->model()::wherefb_page_id($id)->firstorfail();
         try {
             $user = Auth::user();
             $data = Facebook::get($user->access_token, 'me/accounts?fields=picture,access_token,name,id,category&limit=150&page_id=' . $user_page->page->fb_page_id);
@@ -146,12 +142,12 @@ class PageController extends Controller
 
     public function destroy($id)
     {
-        $user_page = $this->model()::where_id($id)->firstorfail();
-        if (Auth::id() === $user_page->user_id) {
-            $user_page->delete();
+        $page = $this->model()::wherefb_page_id($id)->firstorfail();
+        if (Auth::id() === $page->user_id) {
+            $page->delete();
             return redirect()->back()->with('success', 'Xoá page thành công!');
         } else {
-            UserRolePage::wheretype(1)->wherestatus(1)->wherepage_id($user_page->page_id)
+            UserRolePage::wheretype(1)->wherestatus(1)->wherefb_page_id($page->fb_page_id)
                 ->whereuser_child(Auth::id())->firstorfail()->update(['type' => 4]);
             return redirect()->back()->with('success', 'Xoá page thành công!');
         }

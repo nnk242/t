@@ -9,12 +9,13 @@ class CreateUserRolePagesTable extends Migration
     public function up()
     {
         Schema::connection('mongodb')->create('user_role_pages', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('user_page_id')->unsigned();
-            $table->foreign('user_page_id')->references('_id')->on('user_pages')->onDelete('cascade');
-            $table->bigInteger('user_parent')->unsigned();
+            $table->index('id');
+            $table->index('fb_page_parent');
+            $table->string('fb_page_id');
+            $table->foreign('fb_page_id')->references('fb_page_id')->on('pages')->onDelete('cascade');
+            $table->string('user_parent');
             $table->foreign('user_parent')->references('_id')->on('users')->onDelete('cascade');
-            $table->bigInteger('user_child')->unsigned();
+            $table->string('user_child');
             $table->foreign('user_child')->references('_id')->on('users')->onDelete('cascade');
             $table->smallInteger('status')->default(0);
             $table->smallInteger('type')->default(0);

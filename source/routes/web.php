@@ -46,3 +46,4 @@ Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.
 
 //test
 Route::get('test/text', 'TestController@text');
+Route::get('test/', 'TestController@index');

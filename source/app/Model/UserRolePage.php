@@ -20,11 +20,11 @@ class UserRolePage extends Model
 
     protected $attributes = ['status' => 0, 'type' => 0];
 
-    protected $fillable = ['user_page_id', 'user_parent', 'user_child', 'status', 'type'];
+    protected $fillable = ['fb_page_parent', 'fb_page_id', 'user_parent', 'user_child', 'status', 'type'];
 
-    public function userPage()
+    public function page()
     {
-        return $this->belongsTo(UserPage::class, 'user_page_id');
+        return $this->belongsTo(Page::class, 'fb_page_id', 'fb_page_id');
     }
 
     public function userParent()

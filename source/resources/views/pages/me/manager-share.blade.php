@@ -13,10 +13,10 @@
                             @foreach($data as $key=>$value)
                                 <tr>
                                     <td>{{ $key +  1 }}</td>
-                                    <td>{{$value->userPage->page->fb_page_id}}</td>
-                                    <td>{{$value->userPage->page->name}}</td>
-                                    <td><img src="{{$value->userPage->page->picture}}"></td>
-                                    <td><code>{{$value->userChild->email}}</code></td>
+                                    <td>{{$value->fb_page_id}}</td>
+                                    <td>{{$value->page->name}}</td>
+                                    <td><img src="{{$value->page->picture}}"></td>
+                                    <td class="red-text">{{$value->userChild->email}}</td>
                                     <td>{!! $value->type === 0 ? '<span class="new badge" data-badge-caption="Đã gửi"></span>' :
                                      ($value->type === 1 ? '<span class="green badge" data-badge-caption="Chấp nhận"></span>' :
                                       ($value->type === 2 ?'<span class="yellow badge">Từ chối</span>' :
@@ -36,7 +36,7 @@
                                     <td>{{$value->created_at}}</td>
                                     <td><span title="Delete page">
                                             <a data-id="{{ $value->id }}"
-                                               data-page-id="{{ $value->userPage->page->fb_page_id }}"
+                                               data-page-id="{{ $value->fb_page_id }}"
                                                class="delete-item modal-trigger"
                                                href="#delete-modal">
                                                 <img width="15"

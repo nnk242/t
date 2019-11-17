@@ -20,7 +20,7 @@
                                     <td>{{$value->fb_page_id}}</td>
                                     <td>{{$value->name}} {!! $value->user_id === \Illuminate\Support\Facades\Auth::id() ? '<span class="new badge blue" data-badge-caption="Cá nhân"></span>' : '<span class="new badge" data-badge-caption="' . $value->user->email . '"></span>' !!}</td>
                                     <td><img src="{{$value->picture}}"></td>
-{{--                                    <td>{{$value->access_token}}</td>--}}
+                                    {{--                                    <td>{{$value->access_token}}</td>--}}
                                     <td>{{$value->category}}</td>
                                     <td>{{$value->updated_at}}</td>
                                     <td>{{$value->created_at}}</td>
@@ -30,11 +30,11 @@
                                                     src="{{ asset('icons/actions/globe.svg') }}"></a></span>
                                         @if($value->user_id === \Illuminate\Support\Facades\Auth::id())
                                             <span title="Update page"><a
-                                                    href="{{ route('page.show', ['page' => $value->id]) }}"><img
+                                                    href="{{ route('page.show', ['page' => $value->fb_page_id]) }}"><img
                                                         width="15"
                                                         src="{{ asset('icons/actions/circle-notch.svg') }}"></a></span>
                                         @endif
-                                        <span title="Delete page"><a data-id="{{ $value->id }}"
+                                        <span title="Delete page"><a data-id="{{ $value->fb_page_id }}"
                                                                      data-page-id="{{ $value->fb_page_id }}"
                                                                      class="delete-item modal-trigger"
                                                                      href="#delete-modal"><img width="15"

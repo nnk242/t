@@ -6,6 +6,7 @@ use App\Model\FbConversation;
 use App\Model\FbMessage;
 use App\Model\FbProcess;
 use App\Model\Page;
+use App\Model\UserRolePage;
 
 class UpdateOrCreate
 {
@@ -26,14 +27,11 @@ class UpdateOrCreate
 
     public static function page($data)
     {
-        return Page::updateorcreate(['fb_page_id' => $data['id']], [
-            'fb_page_id' => $data['id'],
-            'name' => $data['name'],
-            'picture' => $data['picture']['data']['url'],
-            'category' => $data['category'],
-            'access_token' => $data['access_token'],
-            'user_id' => $data['user_id'],
-            'run_conversations' => 1
-        ]);
+        return Page::updateorcreate(['fb_page_id' => $data['fb_page_id']], $data);
+    }
+
+    public static function userRolePage($data)
+    {
+        return UserRolePage::updateorcreate(['fb_page_parent' => $data['fb_page_parent']], $data);
     }
 }

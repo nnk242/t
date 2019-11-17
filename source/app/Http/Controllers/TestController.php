@@ -107,4 +107,9 @@ class TestController extends Controller
         }
         return $check_text;
     }
+
+    public function index()
+    {
+        return view('pages.test');
+    }
 }
