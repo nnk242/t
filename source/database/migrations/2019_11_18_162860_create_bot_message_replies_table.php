@@ -10,12 +10,21 @@ class CreateBotMessageRepliesTable extends Migration
     {
         Schema::connection('mongodb')->create('bot_message_replies', function (Blueprint $table) {
             $table->index('id');
-            $table->enum('type', ['normal', 'quick_replies']);
-            $table->string('message_template_text_id')->nullable();
-            $table->foreign('message_template_text_id')->references('_id')->on('message_template_texts')->onDelete('cascade');
+            $table->string('type_message');
+            $table->string('type_notify');
+            $table->string('bot_message_head_id')->nullable();
+            $table->foreign('bot_message_head_id')->references('_id')->on('bot_message_heads')->onDelete('cascade');
             $table->string('fb_page_id');
             $table->foreign('fb_page_id')->references('fb_page_id')->on('pages')->onDelete('cascade');
+            ##normal
+            $table->text('text')->nullable();
 
+            ##Timer
+            $table->string('begin_time_open')->nullable();
+            $table->string('end_time_open')->nullable();
+            $table->string('begin_time_active')->nullable();
+            $table->string('end_time_active')->nullable();
+            $table->smallInteger('status')->default(1);
             $table->timestamps();
         });
     }

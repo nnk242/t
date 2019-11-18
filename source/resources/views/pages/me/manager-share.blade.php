@@ -3,9 +3,9 @@
 
 @endsection
 @section('content')
-    <div class="container-fluid bg-white">
-        <div class="row justify-content-center">
-            <div class="col-md-12 py-5">
+    <div class="no-pad-top">
+        <div class="row">
+            <div class="col s12">
                 @include('pages.me.header.index')
                 @if($data->count())
                     @component('components.table.index', ['headers' => $headers])

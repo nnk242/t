@@ -13,6 +13,7 @@ class CreateBotMessageHeadsTable extends Migration
             $table->text('text');
             $table->string('fb_page_id');
             $table->foreign('fb_page_id')->references('fb_page_id')->on('pages')->onDelete('cascade');
+            $table->smallInteger('status')->default(1);
             $table->timestamps();
         });
     }
