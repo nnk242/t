@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class ShareController extends Controller
+class PageUseController extends Controller
 {
     public function __construct()
     {
@@ -19,8 +19,9 @@ class ShareController extends Controller
 
     public function index(Request $request)
     {
-        $pages = UserRolePage::whereuser_parent(Auth::id())->whereuser_child(Auth::id())->get();
-        return view('pages.me.share', compact('pages'));
+        $pages = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->get();
+        $page_use = gettype(json_decode(Auth::user()->page_use)) === 'array' ? json_decode(Auth::user()->page_use) : [];
+        return view('pages.me.page-use', compact('pages', 'page_use'));
     }
 
     public function store(Request $request)
@@ -28,14 +29,11 @@ class ShareController extends Controller
         $validate = Validator::make(
             $request->all(),
             [
-                'arr_user_page_id' => 'required|array',
-                'arr_email' => 'required|array'
+                'arr_user_page_id' => 'required|array'
             ], [
-            'required' => ':attribute phải có dữ liệu',
-            'array' => ':attribute phải là 1 array',
+            'required' => ':attribute phải có dữ liệu'
         ], [
-                'arr_user_page_id' => 'Page',
-                'arr_email' => 'Email'
+                'arr_user_page_id' => 'Page'
             ]
         );
 
@@ -44,9 +42,10 @@ class ShareController extends Controller
         }
         $arr_user_page_id = $request->arr_user_page_id;
 
-        $arr_email = $request->arr_email;
+        User::updateorcreate(['_id' => Auth::id()], [
+            'page_use' => json_encode($arr_user_page_id)
+        ]);
 
-        $this->dispatch(new ServiceSharePage(['arr_user_page_id' => $arr_user_page_id, 'arr_email' => $arr_email, 'user_id' => Auth::id()]));
         return redirect()->back()->with('success', 'Gửi thành công');
     }
 }

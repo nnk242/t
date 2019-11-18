@@ -16,10 +16,10 @@
                             <div class="item-element" title="{{ $value->name }}">
                                 <p>
                                     <label>
-                                        <input type="checkbox" id="p_{{ $value->user_page_id }}" class="pick"
+                                        <input type="checkbox" class="pick"
                                                name="arr_user_page_id[]" value="{{ $value->fb_page_id }}"/>
-                                        <span><img src="{{ $value->picture }}" class="btn-floating"/></span>
-                                <p class="center-align">{{ Str::limit($value->name, 11) }}</p>
+                                        <span><img src="{{ $value->page->picture }}" class="btn-floating"/></span>
+                                <p class="center-align">{{ Str::limit($value->page->name, 11) }}</p>
                                 </label>
                                 </p>
                             </div>
@@ -64,8 +64,6 @@
                         $('.chip').last().remove()
                         return false
                     }
-                    // $('#arr_email').append('<input key="' + (val.length - 1) + '" name="arr_email[]">')
-                    // console.log(val.length);
                 },
                 onChipDelete: function () {
                     let val = this.chipsData

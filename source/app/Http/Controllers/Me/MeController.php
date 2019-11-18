@@ -14,6 +14,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use App\Http\Controllers\Controller;
+use mysql_xdevapi\Exception;
 
 class MeController extends Controller
 {
@@ -34,28 +35,15 @@ class MeController extends Controller
 
     public function store(Request $request)
     {
-        $user_and_page = UserRolePage::findorfail($request->id);
+        $user_and_page = UserRolePage::wherestatus(1)->findorfail($request->id);
         if ($user_and_page->user_child === Auth::id()) {
             $user_and_page->update(
                 [
-                    'type' => (int)$request->type
+                    'type' => (int)$request->type === 1 ? 1 : 2
                 ]
             );
         }
         return redirect()->back()->with('success', 'Đã set thành công');
-    }
-
-    public function managerShare()
-    {
-        $data = UserAndPage::whereuser_parent(Auth::id())->paginate(1);
-        $headers = ['STT', 'ID Page', 'Tên page', 'Hình ảnh', 'Người nhận', 'Thể loại', 'status', 'Ngày chấp nhận', 'Ngày thêm', '###'];
-        return view('pages.me.manager-share', compact('data', 'headers'));
-    }
-
-    public function share()
-    {
-        $pages = Page::whereuser_id(Auth::id())->get();
-        return view('pages.me.share', compact('pages'));
     }
 
     public function getAccessToken()
@@ -94,6 +82,22 @@ class MeController extends Controller
             return redirect()->route('me.index')->with('success', 'Lấy access token thành công!');
         } catch (\Exception $exception) {
             return redirect()->route('me.index')->with('error', 'Code: ' . $exception->getCode() . '. Message:' . $exception->getMessage());
+        }
+    }
+
+    public function pageSelected(Request $request)
+    {
+        try {
+            $arr_user_role_page = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->pluck('fb_page_id')->toArray();
+            $page_id = $request->page_id;
+            if (in_array($page_id, $arr_user_role_page)) {
+                $user = User::where(['_id' => Auth::id()])->firstorfail();
+                $user->page_selected = $page_id;
+                $user->save();
+                return redirect()->back()->with('success', 'Chọn thành công!');
+            }
+        } catch (Exception $exception) {
+            return redirect()->back()->with('error', 'Chọn không thành công!');
         }
     }
 }

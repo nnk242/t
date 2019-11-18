@@ -17,7 +17,8 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('facebook_id')->nullable();
             $table->string('access_token')->nullable();
-            $table->string('page_selected')->nullable();
+            $table->text('page_selected')->nullable();
+            $table->text('page_use')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

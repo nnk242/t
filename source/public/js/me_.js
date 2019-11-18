@@ -11,11 +11,6 @@ function check(_this) {
     }
 }
 
-$(document).ready(function () {
-    $('.pick').prop('checked', false)
-    $('#pick-all').attr('check', 0)
-})
-
 $(document).on('click', '#pick-all', function () {
     let check = parseInt($(this).attr('check'))
     if (check === 0) {

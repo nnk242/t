@@ -1,6 +1,17 @@
 function validateEmail(email) {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(String(email).toLowerCase())
+}
+
+function delay(callback, ms) {
+    var timer = 0;
+    return function() {
+        var context = this, args = arguments;
+        clearTimeout(timer)
+        timer = setTimeout(function () {
+            callback.apply(context, args)
+        }, ms || 0)
+    }
 }
 
 function stripUnicode(str) {
@@ -61,11 +72,5 @@ function stripUnicode(str) {
         }
     }
 
-    return str;
+    return str
 }
-
-$(".dropdown-trigger").dropdown()
-$(document).ready(function () {
-    $('.sidenav').sidenav()
-    $('select').formSelect()
-})

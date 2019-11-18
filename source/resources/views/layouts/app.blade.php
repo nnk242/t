@@ -86,26 +86,78 @@
         </ul>
     </nav>
     <main>
-{{--        <div class="section no-pad-bot">--}}
-            {{--            @include('components.notification.index')--}}
-            @yield('content')
-{{--        </div>--}}
+        @yield('content')
     </main>
 </div>
+@guest
+@else
+    <!-- Get Page -->
+    <div class="fixed-action-btn direction-top active" style="bottom: 45px; right: 24px;">
+        <a id="menu" class="waves-effect waves-light btn btn-floating cyan btn-large"
+           onclick="$('.tap-target').tapTarget('open')"><i
+                class="material-icons">menu</i></a>
+    </div>
 
+    <!-- Tap Target Structure -->
+    <div class="tap-target cyan" data-target="menu">
+        <form class="tap-target-content" method="POST" action="{{ route('me.page-selected') }}">
+            @csrf
+            <div class="chips chips-initial input-field">
+                <?php
+                $page_selected = App\Components\Page\PageComponent::pageSelected();
+                $user_role_pages = App\Components\Page\PageComponent::pageUse();
+                ?>
+                @isset($page_selected)
+                    <div class="chip">
+                        <img class="btn-floating" src="{{ $page_selected->page->picture }}">
+                        {{ $page_selected->page->name }}
+                    </div>
+                @endisset
+                <input class="input" placeholder="Tìm kiếm...">
+            </div>
+            <div>
+                <div class="common-item-page">
+                    @foreach($user_role_pages as $item)
+                        <div class="chip">
+                            <img class="btn-floating"
+                                 src="{{ $item->page->picture }}">
+                            <label>
+                                <input type="radio" name="page_id" value="{{ $item->fb_page_id }}"/>
+                                <span>{{ $item->page->name }}</span>
+                            </label>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="no-pad-bot">
+                    <button class="btn red waves-effect waves-green">Gửi</button>
+                </div>
+            </div>
+        </form>
+    </div>
+@endguest
 <!-- Scripts -->
 <script src="{{ asset('js/jquery.min.js') }}"></script>
-{{--<script src="{{ asset('js/app.js') }}" defer></script>--}}
 <script src="{{ asset('js/materialize.min.js') }}" defer></script>
-<script src="{{ asset('js/common.js') }}" defer></script>
+<script src="{{ asset('js/common.js') }}"></script>
 @yield('js')
 @if (\Session::has('error') || \Session::has('success') || \Session::has('warning'))
     <script>
         $(document).ready(function () {
             var toastHTML = '<span>{!!\Session::get('success') . \Session::get('warning') . \Session::get('error') !!}</span><button class="btn-flat toast-action {{ \Session::has('success') ? 'green-text' : (\Session::has('warning') ? 'yellow-text' : 'red-text')}}"><i class="large material-icons">adjust</i></button>';
             M.toast({html: toastHTML})
+
+            $('.sidenav').sidenav()
+            $('select').formSelect()
         })
     </script>
 @endif
+@guest
+@else
+    <script>
+        $(document).ready(function () {
+            $('.tap-target').tapTarget()
+        })
+    </script>
+@endguest
 </body>
 </html>

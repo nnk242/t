@@ -34,14 +34,18 @@ Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function ()
     Route::resource('/', 'MeController')->only('index', 'store');
     Route::resource('manager-share', 'ManagerShareController')->only('index', 'store', 'destroy');
     Route::resource('share', 'ShareController')->only('index', 'store');
+    Route::resource('page-use', 'PageUseController')->only('index', 'store');
     Route::get('access-token', 'MeController@getAccessToken')->name('access-token');
     Route::get('set-access-token', 'MeController@setAccessToken')->name('set-access-token');
+
+    ##save page selected
+    Route::post('page-selected', 'MeController@pageSelected')->name('page-selected');
 });
 
 Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.'], function () {
     Route::get('index', 'SettingController@index');
     Route::resource('persistent-menu', 'PersistentMenuController')->only('index', 'store');
-    Route::resource('message', 'MessageController')->only('index', 'store');
+//    Route::resource('message', 'MessageController')->only('index', 'store');
 });
 
 //test

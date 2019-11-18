@@ -17,11 +17,11 @@
                                 <tr>
                                     {{--                                <td><input type="checkbox" name="name"></td>--}}
                                     <td>{{ $key +  1 }}</td>
-                                    <td>{{$value->fb_page_id}}</td>
-                                    <td>{{$value->name}} {!! $value->user_id === \Illuminate\Support\Facades\Auth::id() ? '<span class="new badge blue" data-badge-caption="Cá nhân"></span>' : '<span class="new badge" data-badge-caption="' . $value->user->email . '"></span>' !!}</td>
-                                    <td><img src="{{$value->picture}}"></td>
+                                    <td>{{$value->page->fb_page_id}}</td>
+                                    <td>{{$value->page->name}} {!! $value->user_parent === \Illuminate\Support\Facades\Auth::id() ? '<span class="new badge blue" data-badge-caption="Cá nhân"></span>' : '<span class="new badge" data-badge-caption="' . $value->userParent->email . '"></span>' !!}</td>
+                                    <td><img src="{{$value->page->picture}}"></td>
                                     {{--                                    <td>{{$value->access_token}}</td>--}}
-                                    <td>{{$value->category}}</td>
+                                    <td>{{$value->page->category}}</td>
                                     <td>{{$value->updated_at}}</td>
                                     <td>{{$value->created_at}}</td>
                                     <td><span title="Go to page"><a target="_blank"
@@ -34,7 +34,7 @@
                                                         width="15"
                                                         src="{{ asset('icons/actions/circle-notch.svg') }}"></a></span>
                                         @endif
-                                        <span title="Delete page"><a data-id="{{ $value->fb_page_id }}"
+                                        <span title="Delete page"><a data-id="{{ $value->_id }}"
                                                                      data-page-id="{{ $value->fb_page_id }}"
                                                                      class="delete-item modal-trigger"
                                                                      href="#delete-modal"><img width="15"

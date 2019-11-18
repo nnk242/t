@@ -13,7 +13,7 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
-        'name', 'email', 'password', 'facebook_id', 'access_token', 'page_selected'
+        'name', 'email', 'password', 'facebook_id', 'access_token', 'page_use', 'page_selected'
     ];
 
     protected $hidden = [

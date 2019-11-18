@@ -24,6 +24,10 @@
     display: none;
 }
 
+.display-block {
+    display: block;
+}
+
 .visibility-hidden {
     visibility: hidden;
 }
@@ -32,4 +36,29 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
+
+.common-item-page {
+    max-height: 85px;
+    min-height: 85px;
+    margin-bottom: 10px;
+    overflow-y: auto;
+}
+
+.common-item-page::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+    background-color: #F5F5F5;
+}
+
+.common-item-page::-webkit-scrollbar
+{
+    width: 5px;
+    background-color: #F5F5F5;
+}
+
+.common-item-page::-webkit-scrollbar-thumb
+{
+    background-color: #000000;
+    border: 2px solid #555555;
 }

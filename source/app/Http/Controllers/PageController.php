@@ -96,7 +96,7 @@ class PageController extends Controller
     {
 //        dd(FbProcess::wherestatus(1)->limit(2)->get());
 //        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
-        $data = UserRolePage::whereuser_child(Auth::id())->whereuser_parent(Auth::id())->paginate(10);
+        $data = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->paginate(10);
 //        $data = Page::WhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);
         $headers = [
 //            ['id' => 'check-i', 'label' => '###'],
@@ -142,12 +142,12 @@ class PageController extends Controller
 
     public function destroy($id)
     {
-        $page = $this->model()::wherefb_page_id($id)->firstorfail();
-        if (Auth::id() === $page->user_id) {
-            $page->delete();
+        $user_role_page = UserRolePage::where_id($id)->firstorfail();
+        if (Auth::id() === $user_role_page->user_parent) {
+            $user_role_page->delete();
             return redirect()->back()->with('success', 'Xoá page thành công!');
         } else {
-            UserRolePage::wheretype(1)->wherestatus(1)->wherefb_page_id($page->fb_page_id)
+            UserRolePage::wheretype(1)->wherestatus(1)->wherefb_page_id($user_role_page->fb_page_id)
                 ->whereuser_child(Auth::id())->firstorfail()->update(['type' => 4]);
             return redirect()->back()->with('success', 'Xoá page thành công!');
         }
