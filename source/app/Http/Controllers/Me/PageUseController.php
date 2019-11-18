@@ -42,9 +42,15 @@ class PageUseController extends Controller
         }
         $arr_user_page_id = $request->arr_user_page_id;
 
-        User::updateorcreate(['_id' => Auth::id()], [
+        $data = [
             'page_use' => json_encode($arr_user_page_id)
-        ]);
+        ];
+
+        if (count($arr_user_page_id) == 1) {
+            $data = array_merge(['page_selected' => $arr_user_page_id[0]], $data);
+        }
+
+        User::updateorcreate(['_id' => Auth::id()], $data);
 
         return redirect()->back()->with('success', 'Gửi thành công');
     }

@@ -15,6 +15,11 @@
         </a>
     </div>
     <div class="col-xl-3 text-center mb-2">
+        <a href="{{route('me.page-use.index')}}">
+            <button class="btn {{ \App\Components\ActiveComponent::isActiveSide(['/me/page-use', '/me/page-share/index'])? 'btn-outline-primary' : 'btn-primary' }}">{{__('Page sử dụng')}}</button>
+        </a>
+    </div>
+    <div class="col-xl-3 text-center mb-2">
         <a href="{{route('me.access-token')}}">
             <button class="btn btn-primary">{{__('Cập nhật access token cá nhân')}}</button>
         </a>

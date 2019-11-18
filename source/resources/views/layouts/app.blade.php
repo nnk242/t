@@ -113,16 +113,21 @@
                         {{ $page_selected->page->name }}
                     </div>
                 @endisset
-                <input class="input" placeholder="Tìm kiếm...">
+                <input class="input" placeholder="Tìm kiếm..." id="search-input-app">
             </div>
-            <div>
+
+            <div class="center-align display-none" id="preloader-app">
+                @include('components.preloader.indeterminate')
+            </div>
+            <div id="form-app">
                 <div class="common-item-page">
                     @foreach($user_role_pages as $item)
-                        <div class="chip">
+                        <div class="chip chip-item-element" title="{{ $item->fb_page_id . $item->page->name }}">
                             <img class="btn-floating"
                                  src="{{ $item->page->picture }}">
                             <label>
-                                <input type="radio" name="page_id" value="{{ $item->fb_page_id }}"/>
+                                <input type="radio" name="page_id"
+                                       value="{{ $item->fb_page_id }}" {{ isset($page_selected) ? ($page_selected->fb_page_id === $item->fb_page_id ? 'checked' : '') : '' }}/>
                                 <span>{{ $item->page->name }}</span>
                             </label>
                         </div>
@@ -157,6 +162,33 @@
         $(document).ready(function () {
             $('.tap-target').tapTarget()
         })
+        $('#search-input-app').on('keyup', function () {
+            $('#preloader-app').addClass('display-block')
+            $('#preloader-app').removeClass('display-none')
+
+            $('#form-app').addClass('display-none')
+            $('#form-app').removeClass('display-block')
+        })
+
+        $('#search-input-app').on('keyup',
+            delay(function (e) {
+                $('#preloader-app').addClass('display-none')
+                $('#preloader-app').removeClass('display-block')
+
+                $('#form-app').addClass('display-block')
+                $('#form-app').removeClass('display-none')
+
+                let str_search = stripUnicode($(this).val()).toUpperCase()
+                $('.chip-item-element').each(function () {
+                    let str = stripUnicode($(this).attr('title')).toUpperCase()
+                    if (str.indexOf(str_search) >= 0) {
+                        $(this).removeClass('display-none')
+                    } else {
+                        $(this).addClass('display-none')
+                    }
+                })
+            }, 500)
+        )
     </script>
 @endguest
 </body>
