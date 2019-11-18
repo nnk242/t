@@ -144,24 +144,19 @@
 <script src="{{ asset('js/jquery.min.js') }}"></script>
 <script src="{{ asset('js/materialize.min.js') }}" defer></script>
 <script src="{{ asset('js/common.js') }}"></script>
+<script src="{{ asset('js/common_.js') }}" defer></script>
 @yield('js')
 @if (\Session::has('error') || \Session::has('success') || \Session::has('warning'))
     <script>
         $(document).ready(function () {
             var toastHTML = '<span>{!!\Session::get('success') . \Session::get('warning') . \Session::get('error') !!}</span><button class="btn-flat toast-action {{ \Session::has('success') ? 'green-text' : (\Session::has('warning') ? 'yellow-text' : 'red-text')}}"><i class="large material-icons">adjust</i></button>';
             M.toast({html: toastHTML})
-
-            $('.sidenav').sidenav()
-            $('select').formSelect()
         })
     </script>
 @endif
 @guest
 @else
     <script>
-        $(document).ready(function () {
-            $('.tap-target').tapTarget()
-        })
         $('#search-input-app').on('keyup', function () {
             $('#preloader-app').addClass('display-block')
             $('#preloader-app').removeClass('display-none')

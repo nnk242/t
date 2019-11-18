@@ -120,6 +120,50 @@ class WebHookController extends Controller
                                     ]
                                 ];
                             }
+
+                            if ($text === 'Normal') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'message' => [
+                                        'text' => 'hello world'
+                                    ]
+                                ];
+                            }
+
+                            if ($text === 'Attachment') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'sender_action' => 'typing_on'
+                                ];
+                                $send = Facebook::post($access_token, 'me/messages', $data);
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'message' => [
+                                        'attachment' => [
+                                            "type" => "image",
+                                            "payload" => [
+                                                "url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232583_14372314_1798299803774894_1698740605240530432_o.jpg"
+                                            ]
+                                        ]
+                                    ]
+                                ];
+                            }
+
+                            if ($text === 'Typing') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'sender_action' => 'typing_on'
+                                ];
+                            }
+
                             if (isset($data)) {
                                 $send = Facebook::post($access_token, 'me/messages', $data);
                             }

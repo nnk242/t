@@ -43,7 +43,8 @@ Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function ()
 });
 
 Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.'], function () {
-    Route::get('index', 'SettingController@index');
+    Route::get('index', 'SettingController@index')->name('index');
+    Route::resource('message', 'MessageController');
     Route::resource('persistent-menu', 'PersistentMenuController')->only('index', 'store');
 //    Route::resource('message', 'MessageController')->only('index', 'store');
 });

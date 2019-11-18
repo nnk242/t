@@ -5,7 +5,7 @@ function validateEmail(email) {
 
 function delay(callback, ms) {
     var timer = 0;
-    return function() {
+    return function () {
         var context = this, args = arguments;
         clearTimeout(timer)
         timer = setTimeout(function () {
