@@ -2,12 +2,9 @@
 
 namespace App\Components\Process;
 
-use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
 use App\Components\Facebook\Message;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
-use App\Model\BotMessageHead;
-use App\Model\BotMessageReply;
 use App\Model\FbMessage;
 
 class ProcessMessageComponent

@@ -20,7 +20,8 @@ class MessageController extends Controller
 
     public function index(Request $request)
     {
-        return view('pages.setting.message.index');
+        $bot_message_heads = BotMessageHead::orderby('created_at', 'DESC')->limit(5);
+        return view('pages.setting.message.index', compact('bot_message_heads'));
     }
 
     public function store(Request $request)
