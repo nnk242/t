@@ -2,8 +2,7 @@
 
 namespace App\Jobs\Facebook;
 
-use App\Components\Facebook\ProcessDataMessaging;
-use App\Model\Page;
+use App\Components\Facebook\DataMessaging;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,6 +23,6 @@ class FacebookMessaging implements ShouldQueue
     public function handle()
     {
         $data = $this->data;
-        ProcessDataMessaging::index($data);
+        DataMessaging::index($data);
     }
 }

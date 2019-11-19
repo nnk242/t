@@ -6,15 +6,13 @@ use App\Components\Common\TextComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Jobs\Facebook\FacebookSaveData;
 use App\Jobs\Facebook\FacebookSendMessage;
-use App\Model\BotMessageHead;
-use App\Model\BotMessageReply;
 use App\Model\FbMessage;
 use App\Model\FbUserPage;
 use App\Model\Page;
 use Illuminate\Support\Facades\Artisan;
 use Mockery\Exception;
 
-class ProcessDataMessaging
+class DataMessaging
 {
     public static function userFbPage($person_id, $fb_page_id, $k = 0)
     {
@@ -78,16 +76,24 @@ class ProcessDataMessaging
 
     private static function delivery_($delivery_, $conversation_id, $recipient_id, $sender_id, $timestamp)
     {
-        foreach ($delivery_['mids'] as $mid) {
-            $data = [
-                'conversation_id' => $conversation_id,
-                'mid' => $mid,
-                'recipient_id' => $recipient_id,
-                'sender_id' => $sender_id,
-                'delivery_watermark' => $delivery_['watermark'],
-                'timestamp' => $timestamp
-            ];
-            UpdateOrCreate::fbMessage($data);
+        if (isset($delivery_['mids'])) {
+            foreach ($delivery_['mids'] as $mid) {
+                $data = [
+                    'conversation_id' => $conversation_id,
+                    'mid' => $mid,
+                    'recipient_id' => $recipient_id,
+                    'sender_id' => $sender_id,
+                    'delivery_watermark' => $delivery_['watermark'],
+                    'timestamp' => $timestamp
+                ];
+                UpdateOrCreate::fbMessage($data);
+            }
+        } else {
+            $fb_user_page = FbUserPage::wherem_page_user_id($recipient_id . '_' . $sender_id)->first();
+            if (isset($fb_user_page)) {
+                $conversation_id = $fb_user_page->fbConversation->conversation_id;
+                UpdateOrCreate::fbConversation(['conversation_id' => $conversation_id, 'read_watermark' => $delivery_['watermark']]);
+            }
         }
     }
 

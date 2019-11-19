@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Me;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\Service\ServiceSharePage;
 use App\Model\UserRolePage;
-use App\User;
+use App\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;

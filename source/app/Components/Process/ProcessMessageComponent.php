@@ -5,8 +5,10 @@ namespace App\Components\Process;
 use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
 use App\Components\Facebook\Message;
+use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
+use App\Model\FbMessage;
 
 class ProcessMessageComponent
 {
@@ -39,34 +41,68 @@ class ProcessMessageComponent
         return $is_send;
     }
 
-    public static function index($access_token, $fb_page_id, $text, $person_id)
+    public static function textMessage($bot_message_reply, $entry, $person_id, $user_fb_page, $access_token)
     {
-        $bot_message_heads = BotMessageHead::wherefb_page_id($fb_page_id)->get();
-        foreach ($bot_message_heads as $bot_message_head) {
-            if (!TextComponent::passMessage($text, $bot_message_head->text)) {
-                continue;
-            }
-            $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
-            foreach ($bot_message_replies as $bot_message_reply) {
-                $is_send = true;
-                if ($bot_message_reply->type_message === 'text_messages') {
-                    $data = [
-                        'id' => $person_id,
-                        'text' => $bot_message_reply->text
-                    ];
-                    if ($bot_message_reply->type_notify === "timer") {
-                        $is_send = self::timer($bot_message_reply->begin_time_active,
-                            $bot_message_reply->end_time_active, $bot_message_reply->begin_time_open,
-                            $bot_message_reply->end_time_open);
-                    }
+        $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
 
-                    if ($is_send) {
-                        if (isset($bot_message_reply->text)) {
-                            Facebook::post($access_token, 'me/messages', Message::textMessage($data));
-                        }
-                    }
+        $array_postback = [
+            'payload' => isset($entry[0]['messaging'][0]['postback']['payload']) ? $entry[0]['messaging'][0]['postback']['payload'] : null,
+            'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
+            'conversation_id' => $user_fb_page->fbConversation->conversation_id,
+            'status' => 0
+        ];
+
+        if ($mid !== null) {
+            $fb_message = FbMessage::where(['mid' => $mid, 'status' => 0])->first();
+            if (isset($fb_message)) {
+                return;
+            }
+        } else {
+            $fb_message = FbMessage::where(array_merge(['status' => 0], $array_postback))->first();
+            if (isset($fb_message)) {
+                return;
+            }
+        }
+
+        $time = time();
+        $data = [
+            'id' => $person_id,
+            'text' => $bot_message_reply->text
+        ];
+        $is_send = true;
+        if ($bot_message_reply->type_notify === "timer") {
+            if ($bot_message_reply->begin_time_active) {
+                if ((int)$bot_message_reply->begin_time_active > $time) {
+                    $is_send = false;
                 }
             }
+            if ($bot_message_reply->end_time_active) {
+                if ((int)$bot_message_reply->end_time_active < $time) {
+                    $is_send = false;
+                }
+            }
+            if ($is_send) {
+                $date_now = date('Y-m-d');
+                $date_min = $date_now . ' 00:00:00';
+                $str_to_time_min = strtotime($date_min);
+                if (($str_to_time_min + (int)$bot_message_reply->begin_time_open) > $time) {
+                    $is_send = false;
+                }
+                if (($str_to_time_min + (int)$bot_message_reply->end_time_open) < $time) {
+                    $is_send = false;
+                }
+            }
+        }
+
+        if ($is_send) {
+            if (isset($bot_message_reply->text)) {
+                Facebook::post($access_token, 'me/messages', Message::textMessage($data));
+            }
+        }
+        if ($mid !== null) {
+            UpdateOrCreate::fbMessage(['mid' => $mid, 'status' => 0]);
+        } else {
+            UpdateOrCreate::fbMessage(array_merge(['status' => 0], $array_postback));
         }
     }
 }

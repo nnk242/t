@@ -3,7 +3,7 @@
 namespace App\Console\Commands\Facebook;
 
 use App\Components\Console\Notify;
-use App\Components\Facebook\ProcessDataMessaging;
+use App\Components\Facebook\DataMessaging;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use Illuminate\Console\Command;
 use App\Model\FbProcess;
@@ -33,7 +33,7 @@ class CommandMessaging extends Command
         foreach ($fb_process as $value) {
             try {
                 $data = json_decode($value->data, true);
-                ProcessDataMessaging::index($data);
+                DataMessaging::index($data);
                 UpdateOrCreate::fbProcess(['_id' => $value->_id, 'status' => 0]);
             } catch (Exception $exception) {
                 UpdateOrCreate::fbProcess(['_id' => $value->_id, 'status' => 3, 'code' => $exception->getCode(), 'message' => $exception->getMessage()]);

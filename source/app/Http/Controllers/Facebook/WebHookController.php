@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Facebook;
 use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
 use App\Components\Facebook\Message;
-use App\Components\Facebook\ProcessDataMessaging;
+use App\Components\Facebook\DataMessaging;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Http\Controllers\Controller;
 use App\Jobs\Facebook\FacebookMessaging;
@@ -68,7 +68,7 @@ class WebHookController extends Controller
                             $person_id = $sender_id;
                         }
 
-                        $user_fb_page = ProcessDataMessaging::userFbPage($person_id, $fb_page_id);
+                        $user_fb_page = DataMessaging::userFbPage($person_id, $fb_page_id);
                         ## run process
                         $access_token = null;
 

@@ -23,4 +23,11 @@ class Message
             ]
         ]);
     }
+
+    public static function senderActionTypingOn($data)
+    {
+        return array_merge(self::recipient($data['id']), [
+            'sender_action' => 'typing_on'
+        ]);
+    }
 }

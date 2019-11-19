@@ -23,12 +23,12 @@ class CreateUsersTable extends Migration
             $table->timestamps();
         });
 
-        \App\User::updateorcreate(['email' => 'admin@admin.com'], [
+        \App\Model\User::updateorcreate(['email' => 'admin@admin.com'], [
             'name' => 'Khang',
             'email' => 'admin@admin.com',
             'password' => Hash::make('admin123')
         ]);
-        \App\User::updateorcreate(['email' => 'test@test.com',], [
+        \App\Model\User::updateorcreate(['email' => 'test@test.com',], [
             'name' => 'Test',
             'email' => 'test@test.com',
             'password' => Hash::make('test123')

@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers\Me;
 
-use App\Jobs\Service\ServiceSharePage;
-use App\Model\Page;
 use App\Model\UserRolePage;
-use App\User;
+use App\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use App\Http\Controllers\Controller;
-use mysql_xdevapi\Exception;
 
 class MeController extends Controller
 {
@@ -96,7 +92,7 @@ class MeController extends Controller
                 $user->save();
                 return redirect()->back()->with('success', 'Chọn thành công!');
             }
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             return redirect()->back()->with('error', 'Chọn không thành công!');
         }
     }
