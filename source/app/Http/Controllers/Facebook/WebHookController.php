@@ -6,6 +6,7 @@ use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
 use App\Components\Facebook\Message;
 use App\Components\Facebook\ProcessDataMessaging;
+use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Http\Controllers\Controller;
 use App\Jobs\Facebook\FacebookMessaging;
 use App\Jobs\Facebook\FacebookSaveData;
@@ -74,82 +75,87 @@ class WebHookController extends Controller
                         ## run process
                         $access_token = null;
 
-                        if (isset($user_fb_page) && $is_user) {
-                            $access_token = $user_fb_page->page->access_token;
-
-                            $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->get();
-                            foreach ($bot_message_heads as $bot_message_head) {
-                                if (!TextComponent::passMessage($text, $bot_message_head->text)) {
-                                    continue;
-                                }
-                                $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
-                                foreach ($bot_message_replies as $bot_message_reply) {
-                                    $is_send = true;
-                                    if ($bot_message_reply->type_message === 'text_messages') {
-                                        $time = time();
-                                        $data = [
-                                            'id' => $person_id,
-                                            'text' => $bot_message_reply->text
-                                        ];
-                                        if ($bot_message_reply->type_notify === "timer") {
-                                            if ($bot_message_reply->begin_time_active) {
-                                                if ((int)$bot_message_reply->begin_time_active > $time) {
-                                                    $is_send = false;
-                                                }
-                                            }
-                                            if ($bot_message_reply->end_time_active) {
-                                                if ((int)$bot_message_reply->end_time_active < $time) {
-                                                    $is_send = false;
-                                                }
-                                            }
-                                            if ($is_send) {
-                                                $date_now = date('Y-m-d');
-                                                $date_min = $date_now . ' 00:00:00';
-                                                $str_to_time_min = strtotime($date_min);
-                                                if (($str_to_time_min + (int)$bot_message_reply->begin_time_open) > $time) {
-                                                    $is_send = false;
-                                                }
-                                                if (($str_to_time_min + (int)$bot_message_reply->end_time_open) < $time) {
-                                                    $is_send = false;
-                                                }
-                                            }
-                                        }
-
-
-                                        $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
-
-                                        $array_postback = [
-                                            'payload' => $entry[0]['messaging'][0]['postback']['payload'],
-                                            'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
-                                            'conversation_id' => $user_fb_page->fbConversation->conversation_id,
-                                            'status' => 0
-                                        ];
-
-                                        $client->initialize();
-                                        $client->emit('data', array($request->all(),
-                                                '$user_fb_page' => $user_fb_page,
-                                                '$data' => $data,
-                                                'message' => $text,
-                                                '$bot_message_reply' => $bot_message_reply,
-                                                '$bot_message_heads' => $bot_message_heads,
-                                                '$mid' => $mid,
-                                                '$array_postback' => $array_postback
-                                            )
-                                        );
-                                        $client->close();
-                                        if ($is_send) {
-                                            if (isset($bot_message_reply->text)) {
-                                                Facebook::post($access_token, 'me/messages', Message::textMessage($data));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (isset($data)) {
-                                $send = Facebook::post($access_token, 'me/messages', $data);
-                            }
-                        }
+//                        if (isset($user_fb_page) && $is_user) {
+//                            $access_token = $user_fb_page->page->access_token;
+//
+//                            $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->get();
+//                            foreach ($bot_message_heads as $bot_message_head) {
+//                                if (!TextComponent::passMessage($text, $bot_message_head->text)) {
+//                                    continue;
+//                                }
+//                                $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
+//                                foreach ($bot_message_replies as $bot_message_reply) {
+//                                    $is_send = true;
+//                                    if ($bot_message_reply->type_message === 'text_messages') {
+//                                        $time = time();
+//                                        $data = [
+//                                            'id' => $person_id,
+//                                            'text' => $bot_message_reply->text
+//                                        ];
+//                                        if ($bot_message_reply->type_notify === "timer") {
+//                                            if ($bot_message_reply->begin_time_active) {
+//                                                if ((int)$bot_message_reply->begin_time_active > $time) {
+//                                                    $is_send = false;
+//                                                }
+//                                            }
+//                                            if ($bot_message_reply->end_time_active) {
+//                                                if ((int)$bot_message_reply->end_time_active < $time) {
+//                                                    $is_send = false;
+//                                                }
+//                                            }
+//                                            if ($is_send) {
+//                                                $date_now = date('Y-m-d');
+//                                                $date_min = $date_now . ' 00:00:00';
+//                                                $str_to_time_min = strtotime($date_min);
+//                                                if (($str_to_time_min + (int)$bot_message_reply->begin_time_open) > $time) {
+//                                                    $is_send = false;
+//                                                }
+//                                                if (($str_to_time_min + (int)$bot_message_reply->end_time_open) < $time) {
+//                                                    $is_send = false;
+//                                                }
+//                                            }
+//                                        }
+//
+//
+//                                        $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
+//
+//                                        $array_postback = [
+//                                            'payload' => isset($entry[0]['messaging'][0]['postback']['payload']) ? $entry[0]['messaging'][0]['postback']['payload'] : null,
+//                                            'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
+//                                            'conversation_id' => $user_fb_page->fbConversation->conversation_id,
+//                                            'status' => 0
+//                                        ];
+//
+//                                        $client->initialize();
+//                                        $client->emit('data', array($request->all(),
+//                                                '$user_fb_page' => $user_fb_page,
+//                                                '$data' => $data,
+//                                                'message' => $text,
+//                                                '$bot_message_reply' => $bot_message_reply,
+//                                                '$bot_message_heads' => $bot_message_heads,
+//                                                '$mid' => $mid,
+//                                                '$array_postback' => $array_postback
+//                                            )
+//                                        );
+//                                        $client->close();
+//                                        if ($is_send) {
+//                                            if (isset($bot_message_reply->text)) {
+//                                                Facebook::post($access_token, 'me/messages', Message::textMessage($data));
+//                                            }
+//                                        }
+//                                        if (isset($mid)) {
+//                                            UpdateOrCreate::fbMessage(['mid' => $mid, 'status' => 0]);
+//                                        } else {
+//                                            UpdateOrCreate::fbMessage(array_merge(['status' => 0], $array_postback));
+//                                        }
+//                                    }
+//                                }
+//                            }
+//
+//                            if (isset($data)) {
+//                                $send = Facebook::post($access_token, 'me/messages', $data);
+//                            }
+//                        }
 
                         $client->initialize();
                         $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page, '$send' => isset($send) ? $send : 'No response'));

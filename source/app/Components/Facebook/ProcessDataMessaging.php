@@ -2,7 +2,12 @@
 
 namespace App\Components\Facebook;
 
+use App\Components\Common\TextComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
+use App\Jobs\Facebook\FacebookSaveData;
+use App\Jobs\Facebook\FacebookSendMessage;
+use App\Model\BotMessageHead;
+use App\Model\BotMessageReply;
 use App\Model\FbMessage;
 use App\Model\FbUserPage;
 use App\Model\Page;
@@ -182,17 +187,24 @@ class ProcessDataMessaging
                     if (isset($entry[0]['messaging'])) {
                         $sender_id = isset($entry[0]['messaging'][0]['sender']['id']) ? $entry[0]['messaging'][0]['sender']['id'] : null;
                         $recipient_id = isset($entry[0]['messaging'][0]['recipient']['id']) ? $entry[0]['messaging'][0]['recipient']['id'] : null;
+                        $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
 
                         #### Get user fb page
+                        $is_user = false;
                         if ($sender_id === $fb_page_id) {
                             $person_id = $recipient_id;
                         } else {
+                            $is_user = true;
                             $person_id = $sender_id;
                         }
 
-                        self::userFbPage($person_id, $fb_page_id);
+                        $user_fb_page = self::userFbPage($person_id, $fb_page_id);
                         ## run process
                         self::handle($entry, $person_id, $sender_id, $recipient_id);
+
+                        if ($is_user) {
+                            dispatch(new FacebookSendMessage(['text' => $text, 'user_fb_page' => $user_fb_page, 'person_id' => $person_id, 'entry' => $entry]));
+                        }
                     }
                 }
             }
