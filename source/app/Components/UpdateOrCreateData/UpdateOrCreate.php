@@ -4,18 +4,31 @@ namespace App\Components\UpdateOrCreateData;
 
 use App\Components\Page\PageComponent;
 use App\Model\BotMessageHead;
+use App\Model\BotMessageReply;
 use App\Model\FbConversation;
 use App\Model\FbMessage;
 use App\Model\FbProcess;
 use App\Model\Page;
 use App\Model\UserRolePage;
-use Illuminate\Support\Facades\Auth;
 
 class UpdateOrCreate
 {
     public static function fbMessage($data)
     {
-        return FbMessage::updateorcreate(['mid' => $data['mid']], $data);
+        try {
+
+            if (isset($data['mid'])) {
+                return FbMessage::updateorcreate(['mid' => $data['mid']], $data);
+            } else {
+                return FbMessage::updateorcreate([
+                    'payload' => $data['payload'],
+                    'timestamp' => $data['timestamp'],
+                    'conversation_id' => $data['conversation_id']
+                ], $data);
+            }
+        } catch (\Exception $exception) {
+            return false;
+        }
     }
 
     public static function fbConversation($data)
@@ -25,7 +38,7 @@ class UpdateOrCreate
 
     public static function fbProcess($data)
     {
-        return FbProcess::updateorcreate(['_id' => $data['_id']], $data);
+        return FbProcess::updateorcreate(['_id' => isset($data['_id']) ? $data['_id'] : null], $data);
     }
 
     public static function page($data)
@@ -45,6 +58,23 @@ class UpdateOrCreate
             if ($page_selected->fb_page_id) {
                 $data = array_merge(['fb_page_id' => $page_selected->fb_page_id], $data);
                 $bot_message_head = BotMessageHead::firstorcreate($data);
+                return $bot_message_head;
+            }
+        }
+        return false;
+    }
+
+    public static function botMessageReply($data)
+    {
+        $page_selected = PageComponent::pageSelected();
+        if (isset($page_selected)) {
+            if ($page_selected->fb_page_id) {
+                $data = array_merge(['fb_page_id' => $page_selected->fb_page_id], $data);
+                if (isset($data['_id'])) {
+                    $bot_message_head = BotMessageReply::updateorcreate(['_id' => $data['_id']], $data);
+                } else {
+                    $bot_message_head = BotMessageReply::create($data);
+                }
                 return $bot_message_head;
             }
         }

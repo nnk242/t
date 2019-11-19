@@ -28,6 +28,8 @@ class CreateFbMessagesTable extends Migration
 
             $table->string('payload')->nullable();
             $table->string('quick_reply_payload')->nullable();
+            ###
+            $table->smallInteger('status')->default(1);
             $table->integer('timestamp');
             $table->timestamps();
         });

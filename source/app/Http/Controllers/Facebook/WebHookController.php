@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Facebook;
 
+use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
+use App\Components\Facebook\Message;
 use App\Components\Facebook\ProcessDataMessaging;
 use App\Http\Controllers\Controller;
 use App\Jobs\Facebook\FacebookMessaging;
 use App\Jobs\Facebook\FacebookSaveData;
+use App\Model\BotMessageHead;
+use App\Model\BotMessageReply;
 use App\Model\Page;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
@@ -37,13 +41,13 @@ class WebHookController extends Controller
 
     public function store(Request $request)
     {
-        $url = 'http://127.0.0.1:3000/';
-        $client = new Client(new Version2X($url, [
-            'headers' => [
-                'Authorization: ' . env('KEY_CONNECTION')
-            ]
-        ]));
         try {
+            $url = 'http://127.0.0.1:3000/';
+            $client = new Client(new Version2X($url, [
+                'headers' => [
+                    'Authorization: ' . env('KEY_CONNECTION')
+                ]
+            ]));
             $this->dispatch(new FacebookSaveData($request->all()));
             $this->dispatch(new FacebookMessaging($request->all()));
 
@@ -58,9 +62,11 @@ class WebHookController extends Controller
                         $recipient_id = isset($entry[0]['messaging'][0]['recipient']['id']) ? $entry[0]['messaging'][0]['recipient']['id'] : null;
                         $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
                         #### Get user fb page
+                        $is_user = false;
                         if ($sender_id === $fb_page_id) {
                             $person_id = $recipient_id;
                         } else {
+                            $is_user = true;
                             $person_id = $sender_id;
                         }
 
@@ -68,100 +74,76 @@ class WebHookController extends Controller
                         ## run process
                         $access_token = null;
 
-                        if (isset($user_fb_page)) {
+                        if (isset($user_fb_page) && $is_user) {
                             $access_token = $user_fb_page->page->access_token;
-                            if ($text === "Aaa") {
-                                $data = [
-                                    'recipient' => [
-                                        'id' => $person_id
-                                    ],
-                                    "messaging_type" => "RESPONSE",
-                                    'message' => [
-                                        'text' => 'Pick a color:',
-                                        'quick_replies' => [
-                                            [
-                                                "content_type" => "text",
-                                                "title" => "Red",
-                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
-                                                "payload" => "POSTBACK_PAYLOAD"
-                                            ]
-                                        ]
-                                    ]
-                                ];
-                            }
 
-                            if ($text === 'Phone') {
-                                $data = [
-                                    'recipient' => [
-                                        'id' => $person_id
-                                    ],
-                                    "messaging_type" => "RESPONSE",
-                                    'message' => [
-                                        'text' => 'Pick a color:',
-                                        'quick_replies' => [
-                                            [
-                                                "content_type" => "text",
-                                                "title" => "Red",
-                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
-                                                "payload" => "POSTBACK_PAYLOAD"
-                                            ], [
-                                                "content_type" => "text",
-                                                "title" => "Red1",
-                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
-                                                "payload" => "POSTBACK_PAYLOAD1"
-                                            ], [
-                                                "content_type" => "user_phone_number",
-                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
-                                            ], [
-                                                "content_type" => "user_phone_number",
-                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
-                                            ]
-                                        ]
-                                    ]
-                                ];
-                            }
+                            $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->get();
+                            foreach ($bot_message_heads as $bot_message_head) {
+                                if (!TextComponent::passMessage($text, $bot_message_head->text)) {
+                                    continue;
+                                }
+                                $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
+                                foreach ($bot_message_replies as $bot_message_reply) {
+                                    $is_send = true;
+                                    if ($bot_message_reply->type_message === 'text_messages') {
+                                        $time = time();
+                                        $data = [
+                                            'id' => $person_id,
+                                            'text' => $bot_message_reply->text
+                                        ];
+                                        if ($bot_message_reply->type_notify === "timer") {
+                                            if ($bot_message_reply->begin_time_active) {
+                                                if ((int)$bot_message_reply->begin_time_active > $time) {
+                                                    $is_send = false;
+                                                }
+                                            }
+                                            if ($bot_message_reply->end_time_active) {
+                                                if ((int)$bot_message_reply->end_time_active < $time) {
+                                                    $is_send = false;
+                                                }
+                                            }
+                                            if ($is_send) {
+                                                $date_now = date('Y-m-d');
+                                                $date_min = $date_now . ' 00:00:00';
+                                                $str_to_time_min = strtotime($date_min);
+                                                if (($str_to_time_min + (int)$bot_message_reply->begin_time_open) > $time) {
+                                                    $is_send = false;
+                                                }
+                                                if (($str_to_time_min + (int)$bot_message_reply->end_time_open) < $time) {
+                                                    $is_send = false;
+                                                }
+                                            }
+                                        }
 
-                            if ($text === 'Normal') {
-                                $data = [
-                                    'recipient' => [
-                                        'id' => $person_id
-                                    ],
-                                    'message' => [
-                                        'text' => 'hello world'
-                                    ]
-                                ];
-                            }
 
-                            if ($text === 'Attachment') {
-                                $data = [
-                                    'recipient' => [
-                                        'id' => $person_id
-                                    ],
-                                    'sender_action' => 'typing_on'
-                                ];
-                                $send = Facebook::post($access_token, 'me/messages', $data);
-                                $data = [
-                                    'recipient' => [
-                                        'id' => $person_id
-                                    ],
-                                    'message' => [
-                                        'attachment' => [
-                                            "type" => "image",
-                                            "payload" => [
-                                                "url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232583_14372314_1798299803774894_1698740605240530432_o.jpg"
-                                            ]
-                                        ]
-                                    ]
-                                ];
-                            }
+                                        $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
 
-                            if ($text === 'Typing') {
-                                $data = [
-                                    'recipient' => [
-                                        'id' => $person_id
-                                    ],
-                                    'sender_action' => 'typing_on'
-                                ];
+                                        $array_postback = [
+                                            'payload' => $entry[0]['messaging'][0]['postback']['payload'],
+                                            'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
+                                            'conversation_id' => $user_fb_page->fbConversation->conversation_id,
+                                            'status' => 0
+                                        ];
+
+                                        $client->initialize();
+                                        $client->emit('data', array($request->all(),
+                                                '$user_fb_page' => $user_fb_page,
+                                                '$data' => $data,
+                                                'message' => $text,
+                                                '$bot_message_reply' => $bot_message_reply,
+                                                '$bot_message_heads' => $bot_message_heads,
+                                                '$mid' => $mid,
+                                                '$array_postback' => $array_postback
+                                            )
+                                        );
+                                        $client->close();
+                                        if ($is_send) {
+                                            if (isset($bot_message_reply->text)) {
+                                                Facebook::post($access_token, 'me/messages', Message::textMessage($data));
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
                             if (isset($data)) {

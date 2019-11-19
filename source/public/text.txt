@@ -1,0 +1,93 @@
+if ($text === "Aaa") {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    "messaging_type" => "RESPONSE",
+                                    'message' => [
+                                        'text' => 'Pick a color:',
+                                        'quick_replies' => [
+                                            [
+                                                "content_type" => "text",
+                                                "title" => "Red",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                                "payload" => "POSTBACK_PAYLOAD"
+                                            ]
+                                        ]
+                                    ]
+                                ];
+                            }
+
+                            if ($text === 'Phone') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    "messaging_type" => "RESPONSE",
+                                    'message' => [
+                                        'text' => 'Pick a color:',
+                                        'quick_replies' => [
+                                            [
+                                                "content_type" => "text",
+                                                "title" => "Red",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                                "payload" => "POSTBACK_PAYLOAD"
+                                            ], [
+                                                "content_type" => "text",
+                                                "title" => "Red1",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                                "payload" => "POSTBACK_PAYLOAD1"
+                                            ], [
+                                                "content_type" => "user_phone_number",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                            ], [
+                                                "content_type" => "user_phone_number",
+                                                'image_url' => 'https://www.designhill.com/design-blog/wp-content/uploads/2017/08/Red-color.png',
+                                            ]
+                                        ]
+                                    ]
+                                ];
+                            }
+
+                            if ($text === 'Normal') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'message' => [
+                                        'text' => 'hello world'
+                                    ]
+                                ];
+                            }
+
+                            if ($text === 'Attachment') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'sender_action' => 'typing_on'
+                                ];
+                                $send = Facebook::post($access_token, 'me/messages', $data);
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'message' => [
+                                        'attachment' => [
+                                            "type" => "image",
+                                            "payload" => [
+                                                "url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232583_14372314_1798299803774894_1698740605240530432_o.jpg"
+                                            ]
+                                        ]
+                                    ]
+                                ];
+                            }
+
+                            if ($text === 'Typing') {
+                                $data = [
+                                    'recipient' => [
+                                        'id' => $person_id
+                                    ],
+                                    'sender_action' => 'typing_on'
+                                ];
+                            }

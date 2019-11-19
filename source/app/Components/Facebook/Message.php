@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\App;
 
 class Message
 {
-
     private static function recipient($id)
     {
         return [
@@ -16,8 +15,12 @@ class Message
         ];
     }
 
-    public static function post($access_token, $url, $data)
+    public static function textMessage($data)
     {
-
+        return array_merge(self::recipient($data['id']), [
+            'message' => [
+                'text' => $data['text']
+            ]
+        ]);
     }
 }

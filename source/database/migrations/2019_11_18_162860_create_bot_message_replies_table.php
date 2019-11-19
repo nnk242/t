@@ -20,11 +20,10 @@ class CreateBotMessageRepliesTable extends Migration
             $table->text('text')->nullable();
 
             ##Timer
-            $table->string('begin_time_open')->nullable();
-            $table->string('end_time_open')->nullable();
-            $table->string('begin_time_active')->nullable();
-            $table->string('end_time_active')->nullable();
-            $table->smallInteger('status')->default(1);
+            $table->integer('begin_time_open')->nullable();
+            $table->integer('end_time_open')->nullable();
+            $table->integer('begin_time_active')->nullable();
+            $table->integer('end_time_active')->nullable();
             $table->timestamps();
         });
     }

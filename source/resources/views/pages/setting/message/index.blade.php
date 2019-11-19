@@ -18,7 +18,7 @@
             <form class="container" method="POST">
                 @csrf
                 <input name="type_message" value="text_messages" hidden>
-                <input type="text" name="bot_message_head" hidden>
+                <input id="bot_message_head_id_text_messages" name="bot_message_head_id" hidden>
                 <div class="card-panel">
                     <div class="row">
                         <div class="col s12">
@@ -43,7 +43,7 @@
                                 </select>
                                 <label>Kiểu tin nhắn</label>
                             </div>
-                            <div class="run_">
+                            <div class="run_ display-none">
                                 <div class="input-field">
                                     <div class="col s12">
                                         <label>Thời gian chat trong ngày</label>
@@ -101,25 +101,50 @@
             })
 
             $('.type_notify').on('change', function () {
-                console.log($(this).val())
+                switch ($(this).val()) {
+                    case 'timer':
+                        $('.run_').removeClass('display-none')
+                        break
+                    default:
+                        $('.run_').addClass('display-none')
+                        break
+                }
             })
 
             $('input.search-data-message-head').on('keyup', delay(function (e) {
                 let text = $(this).val()
                 let data = {}
-                $.ajax({
-                    url: "{{ route('setting.message-head') }}" + "?text=" + text,
-                    success: function (response) {
-                        response.forEach(element => {
-                            text_ = element.text
-                            data[text_] = null
-                            console.log(data)
-                            $('input.search-data-message-head').autocomplete({
-                                data,
-                            })
-                        })
-                    }
+                let data_id = {}
+
+                $('input.search-data-message-head').autocomplete({
+                    data
                 })
+
+                async function doAiax() {
+                    const result = await $.ajax({
+                        url: "{{ route('setting.message-head') }}" + "?text=" + text,
+                        success: function (response) {
+                            response.forEach(element => {
+                                text_ = element.text
+                                _id = element._id
+                                data[text_] = null
+                                data_id[text_] = _id
+                                return data
+                            })
+                        }
+                    })
+                    return result
+                }
+
+                doAiax()
+
+                $('input.search-data-message-head').autocomplete({
+                        data,
+                        onAutocomplete: function (val) {
+                            $('#bot_message_head_id_text_messages').attr('value', data_id[val])
+                        }
+                    }
+                )
             }, 500))
         })
     </script>

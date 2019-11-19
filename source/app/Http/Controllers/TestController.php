@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Components\Common\TextComponent;
 use App\Components\Facebook;
 use App\Model\FbConversation;
 use App\Model\Page;
@@ -20,6 +21,9 @@ class TestController extends Controller
     ##  !'_____, *****, ****, ***, ***
     public function text()
     {
+        $text = null;
+        $def = "Z4443u";
+        dd(TextComponent::passMessage($text, $def));
         $user_pages = UserPage::whererun_conversations(1)->get();
         foreach ($user_pages as $user_page) {
             $access_token = $user_page->access_token;
@@ -66,7 +70,7 @@ class TestController extends Controller
 
         ###
         $text = "Suy ra một điều rằng Trâm. Anh thích 64 :)";
-        $text_def = "!'S";
+        $text_def = "!'z";
 
         $strlen_def = strlen($text_def);
 

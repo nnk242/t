@@ -10,8 +10,17 @@ class FbMessage extends Model
 
     protected $table = 'fb_messages';
 
+    public function __construct(array $attributes = [])
+    {
+        $this->attributes['status'] = 1;
+        parent::__construct($attributes);
+    }
+
+    protected $attributes = ['status' => 1];
+
     protected $fillable = ['conversation_id', 'mid', 'recipient_id', 'sender_id', 'text', 'attachments', 'reply_to_mid',
-        'sticker_id', 'reaction', 'reaction_action', 'reaction_emoji', 'delivery_watermark', 'payload', 'timestamp', 'quick_reply_payload'];
+        'sticker_id', 'reaction', 'reaction_action', 'reaction_emoji', 'delivery_watermark', 'payload', 'timestamp',
+        'quick_reply_payload', 'status'];
 
     public function fbConversation()
     {
