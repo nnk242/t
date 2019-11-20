@@ -15,7 +15,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('/login/gmail/redirect', 'Auth\LoginController@redirectToProvider')->name('login.gmail.redirect');
+Route::get('/login/gmail/callback', 'Auth\LoginController@handleProviderCallback')->name('login.gmail.callback');
+
+//Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 

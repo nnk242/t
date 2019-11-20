@@ -15,23 +15,28 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('avatar')->nullable();
             $table->string('facebook_id')->nullable();
+            $table->string('social_id')->nullable();
             $table->string('access_token')->nullable();
             $table->text('page_selected')->nullable();
             $table->text('page_use')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
 
         \App\Model\User::updateorcreate(['email' => 'admin@admin.com'], [
             'name' => 'Khang',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('admin123')
+            'email' => 'khangnn@appota.com',
+            'password' => Hash::make('admin123'),
+            'role' => 'admin'
         ]);
         \App\Model\User::updateorcreate(['email' => 'test@test.com',], [
             'name' => 'Test',
-            'email' => 'test@test.com',
-            'password' => Hash::make('test123')
+            'email' => 'nnk2402@gmail.com',
+            'password' => Hash::make('test123'),
+            'role' => 'normal'
         ]);
     }
 
