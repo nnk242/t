@@ -47,9 +47,7 @@ Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function ()
     Route::post('page-selected', 'MeController@pageSelected')->name('page-selected');
 });
 
-Route::group(['namespace' => 'Event', 'prefix' => 'event', 'as' => 'event.'], function () {
-    Route::resource('event', 'EventController');
-});
+Route::resource('event', 'Event\EventController');
 
 Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.'], function () {
     Route::get('index', 'SettingController@index')->name('index');
