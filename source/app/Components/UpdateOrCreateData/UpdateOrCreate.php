@@ -6,6 +6,7 @@ use App\Components\Page\PageComponent;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\FbConversation;
+use App\Model\FbFeed;
 use App\Model\FbMessage;
 use App\Model\FbProcess;
 use App\Model\Page;
@@ -79,5 +80,10 @@ class UpdateOrCreate
             }
         }
         return false;
+    }
+
+    public static function fbFeed($data)
+    {
+        return FbFeed::updateorcreate(['post_id' => $data['post_id']], $data);
     }
 }

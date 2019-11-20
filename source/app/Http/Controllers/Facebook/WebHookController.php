@@ -12,6 +12,7 @@ use App\Jobs\Facebook\FacebookMessaging;
 use App\Jobs\Facebook\FacebookSaveData;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
+use App\Model\FbPostAction;
 use App\Model\Page;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
@@ -76,20 +77,72 @@ class WebHookController extends Controller
                         $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page, '$send' => isset($send) ? $send : 'No response'));
                         $client->close();
                     } else {
-                        $client->initialize();
-                        $client->emit('data', array($request->all(), 'Can not message'));
-                        $client->close();
+                        if (isset($entry[0]['changes'][0]['field'])) {
+                            $changes = $entry[0]['changes'];
+                            if ($changes[0]['field'] === "feed") {
+                                if (isset($changes[0]['value'])) {
+                                    $value = $changes[0]['value'];
+                                    $parent_id = isset($value['parent_id']) ? $value['parent_id'] : null;
+                                    if ($parent_id === null) {
+                                        $data = [
+                                            'fb_page_id' => $fb_page_id,
+                                            'post_id' => $value['post_id'],
+                                            'message' => isset($value['message']) ? $value['message'] : null,
+                                            'link' => isset($value['link']) ? $value['link'] : null,
+                                            'from_id' => $value['from']['id'],
+                                            'created_time' => $value['created_time'],
+                                            'verb' => $value['verb'],
+                                            'item' => $value['item']
+                                        ];
+                                        UpdateOrCreate::fbFeed($data);
+                                        $client->initialize();
+                                        $client->emit('data', array($request->all(), 'post'));
+                                        $client->close();
+                                    } else {
+                                        $data = ['from_id' => $value['from']['id']];
+                                        if ($value['item'] === "comment") {
+                                            $data = array_merge($data, [
+                                                'comment_id' => $value['comment_id'],
+                                                'created_time' => $value['created_time'],
+                                                'item' => $value['item'],
+                                                'parent_id' => $value['parent_id'],
+                                                'post' => isset($value['post']) ? json_encode($value['post']) : null,
+                                                'post_id' => $value['post_id'],
+                                                'verb' => $value['verb'],
+                                                'photo' => isset($value['photo']) ? $value['photo'] : null
+                                            ]);
+
+                                            FbPostAction::updateorcreate(['comment_id' => $data['comment_id']], $data);
+                                        }
+                                        if ($value['item'] === "like" || $value['item'] === "reaction") {
+                                            $data = array_merge($data, [
+                                                'comment_id' => $value['comment_id'],
+                                                'created_time' => $value['created_time'],
+                                                'item' => 'reaction',
+                                                'parent_id' => $value['parent_id'],
+                                                'post_id' => $value['post_id'],
+                                                'reaction_type' => $value['item'] === "like" ? 'like' : $value['reaction_type'],
+                                                'verb' => $value['verb']
+                                            ]);
+
+                                            FbPostAction::updateorcreate(['parent_id' => $data['parent_id'], 'item' => 'reaction'], $data);
+                                        }
+                                        $client->initialize();
+                                        $client->emit('data', array($request->all(), 'action post'));
+                                        $client->close();
+                                    }
+                                }
+
+                            }
+                        }
                     }
-                } else {
-                    $client->initialize();
-                    $client->emit('data', array($request->all(), 'not found page'));
-                    $client->close();
                 }
+            } else {
+                $client->initialize();
+                $client->emit('data', array($request->all(), 'Data id not found'));
+                $client->close();
             }
 
-//            $client->initialize();
-//            $client->emit('data', array($request->all()));
-//            $client->close();
         } catch (\Exception $exception) {
             $client->initialize();
             $client->emit('data', array($request->all(), 'error' => [$exception->getMessage(), $exception->getCode()]));

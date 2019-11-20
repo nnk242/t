@@ -22,6 +22,7 @@ class MessageController extends Controller
 
     public function index(Request $request)
     {
+//        dd(1574228872, time());
         $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
         $header_bot_heads = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         return view('pages.setting.message.index', compact('bot_message_heads', 'header_bot_heads'));

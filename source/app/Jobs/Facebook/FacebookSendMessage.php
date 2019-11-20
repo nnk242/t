@@ -43,7 +43,6 @@ class FacebookSendMessage implements ShouldQueue
                 $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
                 foreach ($bot_message_replies as $bot_message_reply) {
                     if ($bot_message_reply->type_message === 'text_messages') {
-                        ;
 //                        Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
 //                        sleep(1);
                         ProcessMessageComponent::textMessage($bot_message_reply, $entry, $person_id, $user_fb_page, $access_token);
