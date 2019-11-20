@@ -113,8 +113,7 @@ class WebHookController extends Controller
                                             ]);
 
                                             FbPostAction::updateorcreate(['comment_id' => $data['comment_id']], $data);
-                                        }
-                                        if ($value['item'] === "like" || $value['item'] === "reaction") {
+                                        } elseif ($value['item'] === "like" || $value['item'] === "reaction") {
                                             $data = array_merge($data, [
                                                 'comment_id' => $value['comment_id'],
                                                 'created_time' => $value['created_time'],
