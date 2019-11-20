@@ -17,6 +17,10 @@ class PageComponent
     public static function pageSelected()
     {
         return UserRolePage::whereuser_child(Auth::id())->wherefb_page_id(Auth::user()->page_selected)->wherestatus(1)->wheretype(1)->first();
+    }
 
+    public static function passUserRole($auth_id)
+    {
+        return UserRolePage::whereuser_child($auth_id)->wherestatus(1)->wheretype(1)->pluck('fb_page_id')->toArray();
     }
 }

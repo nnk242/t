@@ -95,9 +95,18 @@
 @section('js')
     <script>
         $(document).ready(function () {
+            $('.modal').modal()
             $('.tabs').tabs()
             $('.datepicker').datepicker({
                 format: 'yyyy-mm-dd'
+            })
+
+            $('.delete-call-bot-message').on('click', function () {
+                let id = $(this).attr('data-id')
+                let text = $(this).attr('data-text')
+                $('#modal-body-notify').empty()
+                $('#modal-body-notify').append('Bạn chắc chắn muốn xóa <span class="red-text">' + text + '</span>?')
+                $('#call-bot-message-modal').find('form').attr('action', '/setting/message-head' + '/' + id)
             })
 
             $('.type_notify').on('change', function () {

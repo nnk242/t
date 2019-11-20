@@ -5,7 +5,7 @@
             @if(gettype($header) === 'string')
                 <th>{{$header}}</th>
             @elseif(gettype($header) === 'array')
-                <th {{isset($header['id']) ? 'id=' . $header['id'] . '' : ''}} {{isset($header['class']) ? 'class="' . $header['class'] . '"' : ''}}>{{$header['label']}}</th>
+                <th {{isset($header['id']) ? 'id=' . $header['id'] . '' : ''}} {{isset($header['class']) ? 'class=' . $header['class'] . '' : ''}}>{{$header['label']}}</th>
             @endif
         @endforeach
     </tr>
@@ -18,4 +18,7 @@
 </table>
 @isset($paginate)
     {{ $paginate }}
+@endisset
+@isset($more)
+    {{ $more }}
 @endisset
