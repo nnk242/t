@@ -1,5 +1,10 @@
 <form class="container" action="{{ route('setting.store-message-head') }}" method="POST">
     @csrf
+    <input id="input-error-begin-time-active" name="text_error_time_active" hidden>
+    <input id="input-error-end-time-active" name="text_error_time_active_id" hidden>
+    <input id="input-error-time-open" name="text_error_time_open_id" hidden>
+    <input id="input-error-giftcode" name="text_error_giftcode_id" hidden>
+    <input id="input-success-id" name="text_success_id" hidden>
     <div class="card-panel">
         <div class="row">
             <div class="col s12">
@@ -10,8 +15,86 @@
                             class="green-text">!'{value}'</span></p>
                 </div>
                 <div class="input-field">
-                    <input placeholder="Nhập tin nhắn nhận từ người dùng" type="text" class="validate"
-                           name="text">
+                    <textarea placeholder="Nhập tin nhắn nhận từ người dùng" type="text"
+                              class="validate materialize-textarea" data-length="20" name="text"></textarea>
+                </div>
+                <div class="input-field">
+                    <select class="type" id="type-head">
+                        <option value="normal" disabled selected>Chọn loại tin nhắn chạy</option>
+                        <option value="normal">Normal</option>
+                        <option value="event">Event</option>
+                    </select>
+                    <label>Kiểu tin nhắn</label>
+                </div>
+
+                <div class="run-event display-none" id="run-event">
+                    <div class="input-field">
+                        <div class="col s12">
+                            <label>Thời gian chat trong ngày</label>
+                            <div class="row">
+                                <div class="col s6">
+                                    <input type="time" name="time_open[]">
+                                </div>
+                                <div class="col s6">
+                                    <input type="time" name="time_open[]">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-field">
+                        <div class="col s12">
+                            <label>Thời gian hoạt động</label>
+                            <div class="row">
+                                <div class="col s4 l2">
+                                    <input type="time" name="time_active[]">
+                                </div>
+                                <div class="col s8 l4">
+                                    <input class="datepicker" name="date_active[]"
+                                           placeholder="Chọn ngày hoạt động">
+                                </div>
+                                <div class="col s4 l2">
+                                    <input type="time" name="time_active[]">
+                                </div>
+                                <div class="col s8 l4">
+                                    <input class="datepicker" name="date_active[]"
+                                           placeholder="Chọn ngày hoạt động">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" class="autocomplete search-success" data-type="search-success">
+                        <label>Tìm kiếm tin nhắn <span
+                                class="amber-text">khi thành công</span></label>
+                    </div>
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" class="autocomplete search-error-begin-time-active"
+                               data-type="search-error-begin-time-active">
+                        <label>Tìm kiếm tin nhắn <span
+                                class="amber-text">khi chưa đến thời gian sự kiện</span></label>
+                    </div>
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" class="autocomplete search-error-end-time-active"
+                               data-type="search-error-end-time-active">
+                        <label>Tìm kiếm tin nhắn <span
+                                class="amber-text">khi quá đến thời gian sự kiện</span></label>
+                    </div>
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" class="autocomplete search-error-time-open"
+                               data-type="search-error-time-open">
+                        <label>Tìm kiếm tin nhắn <span
+                                class="amber-text">khi chưa đến thời gian chat</span></label>
+                    </div>
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix">search</i>
+                        <input type="text" class="autocomplete search-error-giftcode" data-type="search-error-giftcode">
+                        <label>Tìm kiếm tin nhắn <span
+                                class="amber-text">khi hết giftcode</span></label>
+                    </div>
                 </div>
                 <div class="center-align">
                     <button class="btn">Gửi</button>

@@ -27,7 +27,8 @@
                             </div>
                             <div class="input-field col s12">
                                 <i class="material-icons prefix">search</i>
-                                <input type="text" class="autocomplete search-data-message-head">
+                                <input type="text" class="autocomplete search-data-message-head"
+                                       data-type="search-data-message-head">
                                 <label>Tìm kiếm tin nhắn <span class="amber-text">BOT</span></label>
                             </div>
                             <div class="input-field col s12">
@@ -95,6 +96,7 @@
 @section('js')
     <script>
         $(document).ready(function () {
+            $('textarea.materialize-textarea').characterCounter()
             $('.modal').modal()
             $('.tabs').tabs()
             $('.datepicker').datepicker({
@@ -120,12 +122,26 @@
                 }
             })
 
-            $('input.search-data-message-head').on('keyup', delay(function (e) {
+            $('#type-head').on('change', function () {
+                switch ($(this).val()) {
+                    case 'event':
+                        $('#run-event').removeClass('display-none')
+                        break
+                    default:
+                        $('#run-event').addClass('display-none')
+                        break
+                }
+            })
+
+            let attr_search = $('input.search-data-message-head, input.search-success, input.search-error-begin-time-active, input.search-error-end-time-active, input.search-error-time-open, input.search-error-giftcode')
+
+            attr_search.on('keyup', delay(function (e) {
+                console.log($(this).attr('class'))
                 let text = $(this).val()
                 let data = {}
                 let data_id = {}
 
-                $('input.search-data-message-head').autocomplete({
+                attr_search.autocomplete({
                     data
                 })
 
@@ -147,14 +163,32 @@
 
                 doAiax()
 
-                $('input.search-data-message-head').autocomplete({
+                attr_search.autocomplete({
                         data,
                         onAutocomplete: function (val) {
-                            $('#bot_message_head_id_text_messages').attr('value', data_id[val])
+                            if ((this.$el[0]).getAttribute('data-type') === 'search-success') {
+                                $('#input-success-id').attr('value', data_id[val])
+                            }
+                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-giftcode') {
+                                $('#input-error-giftcode').attr('value', data_id[val])
+                            }
+                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-time-open') {
+                                $('#input-error-time-open').attr('value', data_id[val])
+                            }
+                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-begin-time-active') {
+                                $('#input-error-begin-time-active').attr('value', data_id[val])
+                            }
+                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-end-time-active') {
+                                $('#input-error-end-time-active').attr('value', data_id[val])
+                            }
+                            if ((this.$el[0]).getAttribute('data-type') === 'search-data-message-head') {
+                                $('#bot_message_head_id_text_messages').attr('value', data_id[val])
+                            }
                         }
                     }
                 )
             }, 500))
+
         })
     </script>
 @endsection

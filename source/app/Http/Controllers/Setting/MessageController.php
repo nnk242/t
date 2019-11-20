@@ -88,11 +88,12 @@ class MessageController extends Controller
         $validate = Validator::make(
             $request->all(),
             [
-                'text' => 'required'
+                'text' => 'required|max:20'
             ], [
-            'required' => ':attribute phải có dữ liệu'
+            'required' => ':attribute phải có dữ liệu',
+            'max' => 'Tin gửi người dùng không được quá 20 ký tự'
         ]);
-
+        dd($request->all());
         if ($validate->fails()) {
             return redirect()->back()->with('error', $validate->errors()->first());
         }
