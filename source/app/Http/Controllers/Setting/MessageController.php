@@ -23,6 +23,7 @@ class MessageController extends Controller
     public function index(Request $request)
     {
 //        dd(1574228872, time());
+        dd(BotMessageReply::wherebot_message_head_id('5dd63bb171b56747db3edac3')->get());
         $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
         $header_bot_heads = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         return view('pages.setting.message.index', compact('bot_message_heads', 'header_bot_heads'));
@@ -85,7 +86,7 @@ class MessageController extends Controller
 
     public function messageHead(Request $request)
     {
-        return BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->limit(10)->get();
+        return BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->wheretype('normal')->limit(10)->get();
     }
 
     public function storeMessageHead(Request $request)
