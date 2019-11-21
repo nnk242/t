@@ -62,6 +62,7 @@ class WebHookController extends Controller
                     if (isset($entry[0]['messaging'])) {
                         $sender_id = isset($entry[0]['messaging'][0]['sender']['id']) ? $entry[0]['messaging'][0]['sender']['id'] : null;
                         $recipient_id = isset($entry[0]['messaging'][0]['recipient']['id']) ? $entry[0]['messaging'][0]['recipient']['id'] : null;
+                        $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
                         #### Get user fb page
                         if ($sender_id === $fb_page_id) {
                             $person_id = $recipient_id;
@@ -72,7 +73,33 @@ class WebHookController extends Controller
                         $user_fb_page = DataMessaging::userFbPage($person_id, $fb_page_id);
                         ## run process
                         $access_token = null;
-
+//
+                        if ($text === 'Attachment') {
+                            $data = [
+                                'recipient' => [
+                                    'id' => $person_id
+                                ],
+                                'sender_action' => 'typing_on'
+                            ];
+                            $send = Facebook::post($access_token, 'me/messages', $data);
+                            $data = [
+                                'recipient' => [
+                                    'id' => $person_id
+                                ],
+                                'message' => [
+                                    'attachment' => [
+                                        "type" => "image",
+                                        "payload" => [
+                                            "url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232583_14372314_1798299803774894_1698740605240530432_o.jpg"
+                                        ]
+                                    ]
+                                ]
+                            ];
+                            if (isset($data)) {
+                                Facebook::post($access_token, 'me/messages', $data);
+                            }
+                        }
+//
                         $client->initialize();
                         $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page, '$send' => isset($send) ? $send : 'No response'));
                         $client->close();

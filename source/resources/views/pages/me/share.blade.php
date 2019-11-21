@@ -29,8 +29,7 @@
                     <div class="row">
                         <div class="col s12">
                             <label for="mail">Email của user bạn muốn phân quyền</label>
-                            <div class="chips chips-placeholder">
-                            </div>
+                            <div class="chips chips-placeholder"></div>
                             <div id="arr_email"></div>
                             <button class="btn">Gửi người dùng</button>
                         </div>

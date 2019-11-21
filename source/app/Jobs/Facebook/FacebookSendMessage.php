@@ -4,7 +4,6 @@ namespace App\Jobs\Facebook;
 
 use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
-use App\Components\Facebook\Message;
 use App\Components\Process\ProcessMessageComponent;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
@@ -35,7 +34,7 @@ class FacebookSendMessage implements ShouldQueue
         if (isset($user_fb_page)) {
             $access_token = $user_fb_page->page->access_token;
 
-            $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->get();
+            $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->wheretype('normal')->get();
             foreach ($bot_message_heads as $bot_message_head) {
                 if (!TextComponent::passMessage($text, $bot_message_head->text)) {
                     continue;
@@ -43,8 +42,6 @@ class FacebookSendMessage implements ShouldQueue
                 $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
                 foreach ($bot_message_replies as $bot_message_reply) {
                     if ($bot_message_reply->type_message === 'text_messages') {
-//                        Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
-//                        sleep(1);
                         ProcessMessageComponent::textMessage($bot_message_reply, $entry, $person_id, $user_fb_page, $access_token);
                     }
                 }

@@ -1,0 +1,39 @@
+<form class="container" method="POST">
+    @csrf
+    <input name="type_message" value="text_messages" hidden>
+    <input id="bot_message_head_id_text_messages" name="bot_message_head_id" hidden>
+    <div class="card-panel">
+        <div class="row">
+            <div class="col s12">
+                <div class="input-field">
+                    <h4>Text Messages</h4>
+                </div>
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">search</i>
+                    <input type="text" class="autocomplete search-data-message-head"
+                           data-type="search-data-message-head">
+                    <label>Tìm kiếm tin nhắn <span class="amber-text">BOT</span></label>
+                </div>
+                <div class="input-field col s12">
+                    <label>Nhập tin nhắn trả lời người dùng</label>
+                    <textarea class="validate materialize-textarea"
+                              placeholder="Nhập tin nhắn gửi đến người dùng" name="text" data-length="630"></textarea>
+                </div>
+                <div class="input-field col s12">
+                    <select name="type_notify" class="type_notify">
+                        <option value="normal" disabled selected>Chọn loại tin nhắn chạy</option>
+                        <option value="normal">Normal</option>
+                        <option value="timer">Timer</option>
+                    </select>
+                    <label>Kiểu tin nhắn</label>
+                </div>
+                <div class="run_ display-none">
+                    @include('components.common.form-date')
+                </div>
+                <div class="center-align">
+                    <button class="btn">Gửi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

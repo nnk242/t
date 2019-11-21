@@ -78,6 +78,11 @@ class MessageController extends Controller
         }
     }
 
+    public function messageReply(Request $request)
+    {
+        return BotMessageReply::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->limit(10)->get();
+    }
+
     public function messageHead(Request $request)
     {
         return BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->limit(10)->get();
@@ -93,11 +98,31 @@ class MessageController extends Controller
             'required' => ':attribute phải có dữ liệu',
             'max' => 'Tin gửi người dùng không được quá 20 ký tự'
         ]);
-        dd($request->all());
         if ($validate->fails()) {
             return redirect()->back()->with('error', $validate->errors()->first());
         }
-        if (UpdateOrCreate::botMessageHead(['text' => $request->text])) {
+
+        if ($request->type === 'event') {
+            $data = ['type' => 'event'];
+            $time_open = $request->time_open;
+            $data = array_merge($data, DateComponent::timeOpen($time_open));
+            ###
+            $date_active = $request->date_active;
+            $time_active = $request->time_active;
+            $data = array_merge($data, DateComponent::date($date_active, $time_active));
+        } else {
+            $data = ['type' => 'normal'];
+        }
+        $data = array_merge($data, [
+            'text_error_begin_time_active_id' => $request->text_error_begin_time_active_id,
+            'text_error_end_time_active_id' => $request->text_error_end_time_active_id,
+            'text_error_time_open_id' => $request->text_error_time_open_id,
+            'text_error_gift_id' => $request->text_error_gift_id,
+            'text_success_id' => $request->text_success_id,
+            'text' => $request->text
+        ]);
+
+        if (UpdateOrCreate::botMessageHead($data)) {
             return redirect()->back()->with('success', 'Thêm tin nhắn thành công!');
         } else {
             return redirect()->back()->with('error', 'Thêm tin nhắn không thành công!');

@@ -56,6 +56,8 @@ Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.
     Route::get('message-head', 'MessageController@messageHead')->name('message-head');
     Route::post('message-head', 'MessageController@storeMessageHead')->name('store-message-head');
     Route::delete('message-head/{id}', 'MessageController@destroyMessageHead')->name('destroy-message-head');
+
+    Route::get('message-reply', 'MessageController@messageReply')->name('message-reply');
     Route::resource('persistent-menu', 'PersistentMenuController')->only('index', 'store');
 //    Route::resource('message', 'MessageController')->only('index', 'store');
 });

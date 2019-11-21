@@ -56,9 +56,16 @@ class UpdateOrCreate
     {
         $page_selected = PageComponent::pageSelected();
         if (isset($page_selected)) {
+            $data = array_merge(['fb_page_id' => $page_selected->fb_page_id], $data);
             if ($page_selected->fb_page_id) {
-                $data = array_merge(['fb_page_id' => $page_selected->fb_page_id], $data);
-                $bot_message_head = BotMessageHead::firstorcreate($data);
+                switch ($data['type']) {
+                    case 'event':
+                        $bot_message_head = BotMessageHead::create($data);
+                        break;
+                    default:
+                        $bot_message_head = BotMessageHead::firstorcreate($data);
+                        break;
+                }
                 return $bot_message_head;
             }
         }

@@ -61,34 +61,14 @@ class ProcessMessageComponent
             }
         }
 
-        $time = time();
         $data = [
             'id' => $person_id,
             'text' => $bot_message_reply->text
         ];
         $is_send = true;
         if ($bot_message_reply->type_notify === "timer") {
-            if ($bot_message_reply->begin_time_active) {
-                if ((int)$bot_message_reply->begin_time_active > $time) {
-                    $is_send = false;
-                }
-            }
-            if ($bot_message_reply->end_time_active) {
-                if ((int)$bot_message_reply->end_time_active < $time) {
-                    $is_send = false;
-                }
-            }
-            if ($is_send) {
-                $date_now = date('Y-m-d');
-                $date_min = $date_now . ' 00:00:00';
-                $str_to_time_min = strtotime($date_min);
-                if (($str_to_time_min + (int)$bot_message_reply->begin_time_open) > $time) {
-                    $is_send = false;
-                }
-                if (($str_to_time_min + (int)$bot_message_reply->end_time_open) < $time) {
-                    $is_send = false;
-                }
-            }
+            $is_send = self::timer($bot_message_reply->begin_time_active, $bot_message_reply->end_time_active,
+                $bot_message_reply->begin_time_open, $bot_message_reply->end_time_open);
         }
 
         if ($is_send) {

@@ -15,14 +15,17 @@ class CreateBotMessageHeadsTable extends Migration
             $table->foreign('fb_page_id')->references('fb_page_id')->on('pages')->onDelete('cascade');
             #message
             $table->string('text_success_id')->nullable();
-            $table->string('text_success_id')->nullable();
+            $table->string('text_error_begin_time_active_id')->nullable();
+            $table->string('text_error_end_time_active_id')->nullable();
+            $table->string('text_error_time_open_id')->nullable();
+            $table->string('text_error_gift_id')->nullable();
 
             ##Timer
             $table->integer('begin_time_open')->nullable();
             $table->integer('end_time_open')->nullable();
             $table->integer('begin_time_active')->nullable();
             $table->integer('end_time_active')->nullable();
-            $table->smallInteger('is_event')->default(0);
+            $table->string('type')->default('normal');
             $table->smallInteger('status')->default(1);
             $table->timestamps();
         });

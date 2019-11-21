@@ -1,9 +1,9 @@
 <form class="container" action="{{ route('setting.store-message-head') }}" method="POST">
     @csrf
-    <input id="input-error-begin-time-active" name="text_error_time_active" hidden>
-    <input id="input-error-end-time-active" name="text_error_time_active_id" hidden>
+    <input id="input-error-begin-time-active" name="text_error_begin_time_active_id" hidden>
+    <input id="input-error-end-time-active" name="text_error_end_time_active_id" hidden>
     <input id="input-error-time-open" name="text_error_time_open_id" hidden>
-    <input id="input-error-giftcode" name="text_error_giftcode_id" hidden>
+    <input id="input-error-gift" name="text_error_gift_id" hidden>
     <input id="input-success-id" name="text_success_id" hidden>
     <div class="card-panel">
         <div class="row">
@@ -19,7 +19,7 @@
                               class="validate materialize-textarea" data-length="20" name="text"></textarea>
                 </div>
                 <div class="input-field">
-                    <select class="type" id="type-head">
+                    <select class="type" id="type-head" name="type">
                         <option value="normal" disabled selected>Chọn loại tin nhắn chạy</option>
                         <option value="normal">Normal</option>
                         <option value="event">Event</option>
@@ -28,40 +28,7 @@
                 </div>
 
                 <div class="run-event display-none" id="run-event">
-                    <div class="input-field">
-                        <div class="col s12">
-                            <label>Thời gian chat trong ngày</label>
-                            <div class="row">
-                                <div class="col s6">
-                                    <input type="time" name="time_open[]">
-                                </div>
-                                <div class="col s6">
-                                    <input type="time" name="time_open[]">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="input-field">
-                        <div class="col s12">
-                            <label>Thời gian hoạt động</label>
-                            <div class="row">
-                                <div class="col s4 l2">
-                                    <input type="time" name="time_active[]">
-                                </div>
-                                <div class="col s8 l4">
-                                    <input class="datepicker" name="date_active[]"
-                                           placeholder="Chọn ngày hoạt động">
-                                </div>
-                                <div class="col s4 l2">
-                                    <input type="time" name="time_active[]">
-                                </div>
-                                <div class="col s8 l4">
-                                    <input class="datepicker" name="date_active[]"
-                                           placeholder="Chọn ngày hoạt động">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @include('components.common.form-date')
                     <div class="input-field col s12">
                         <i class="material-icons prefix">search</i>
                         <input type="text" class="autocomplete search-success" data-type="search-success">
