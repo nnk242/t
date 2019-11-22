@@ -38,29 +38,8 @@ class ProcessMessageComponent
         return $is_send;
     }
 
-    public static function textMessage($bot_message_reply, $entry, $person_id, $user_fb_page, $access_token)
+    public static function textMessage($bot_message_reply, $person_id, $access_token)
     {
-        $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
-
-        $array_postback = [
-            'payload' => isset($entry[0]['messaging'][0]['postback']['payload']) ? $entry[0]['messaging'][0]['postback']['payload'] : null,
-            'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
-            'conversation_id' => $user_fb_page->fbConversation->conversation_id,
-            'status' => 0
-        ];
-
-        if ($mid !== null) {
-            $fb_message = FbMessage::where(['mid' => $mid, 'status' => 0])->first();
-            if (isset($fb_message)) {
-                return;
-            }
-        } else {
-            $fb_message = FbMessage::where(array_merge(['status' => 0], $array_postback))->first();
-            if (isset($fb_message)) {
-                return;
-            }
-        }
-
         $data = [
             'id' => $person_id,
             'text' => $bot_message_reply->text
@@ -76,10 +55,14 @@ class ProcessMessageComponent
                 Facebook::post($access_token, 'me/messages', Message::textMessage($data));
             }
         }
-        if ($mid !== null) {
-            UpdateOrCreate::fbMessage(['mid' => $mid, 'status' => 0]);
-        } else {
-            UpdateOrCreate::fbMessage(array_merge(['status' => 0], $array_postback));
+    }
+
+    public static function message($bot_message_replies, $person_id, $access_token)
+    {
+        foreach ($bot_message_replies as $bot_message_reply) {
+            if ($bot_message_reply->type_message === 'text_messages') {
+                self::textMessage($bot_message_reply, $person_id, $access_token);
+            }
         }
     }
 }

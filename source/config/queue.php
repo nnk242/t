@@ -38,7 +38,7 @@ return [
             'driver' => 'mongodb',
             'table' => 'jobs',
             'queue' => 'default',
-            'retry_after' => 90,
+            'retry_after' => 900,
         ],
 
         'beanstalkd' => [

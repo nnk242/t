@@ -5,8 +5,10 @@ namespace App\Jobs\Facebook;
 use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
 use App\Components\Process\ProcessMessageComponent;
+use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
+use App\Model\FbMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -24,14 +26,43 @@ class FacebookSendMessage implements ShouldQueue
         $this->data = $data;
     }
 
+    public $timeout = 300;
+
+    public function retryUntil()
+    {
+        return now()->addSeconds(1);
+    }
+
     public function handle()
     {
         $text = $this->data['text'];
         $person_id = $this->data['person_id'];
         $entry = $this->data['entry'];
         $user_fb_page = $this->data['user_fb_page'];
-//        dd($user_fb_page);
+
         if (isset($user_fb_page)) {
+            ###
+            $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
+
+            $array_postback = [
+                'payload' => isset($entry[0]['messaging'][0]['postback']['payload']) ? $entry[0]['messaging'][0]['postback']['payload'] : null,
+                'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
+                'conversation_id' => $user_fb_page->fbConversation->conversation_id,
+                'status' => 0
+            ];
+
+            if ($mid !== null) {
+                $fb_message = FbMessage::where(['mid' => $mid, 'status' => 0])->first();
+                if (isset($fb_message)) {
+                    return;
+                }
+            } else {
+                $fb_message = FbMessage::where(array_merge(['status' => 0], $array_postback))->first();
+                if (isset($fb_message)) {
+                    return;
+                }
+            }
+            ###
             $access_token = $user_fb_page->page->access_token;
 
             $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->wheretype('normal')->get();
@@ -40,15 +71,22 @@ class FacebookSendMessage implements ShouldQueue
                     continue;
                 }
                 $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
-                foreach ($bot_message_replies as $bot_message_reply) {
-                    if ($bot_message_reply->type_message === 'text_messages') {
-                        ProcessMessageComponent::textMessage($bot_message_reply, $entry, $person_id, $user_fb_page, $access_token);
-                    }
-                }
+                ProcessMessageComponent::message($bot_message_replies, $person_id, $access_token);
+//                foreach ($bot_message_replies as $bot_message_reply) {
+//                    if ($bot_message_reply->type_message === 'text_messages') {
+//                        ProcessMessageComponent::textMessage($bot_message_reply, $entry, $person_id, $user_fb_page, $access_token);
+//                    }
+//                }
 
                 if (isset($data)) {
                     Facebook::post($access_token, 'me/messages', $data);
                 }
+            }
+
+            if ($mid !== null) {
+                UpdateOrCreate::fbMessage(['mid' => $mid, 'status' => 0]);
+            } else {
+                UpdateOrCreate::fbMessage(array_merge(['status' => 0], $array_postback));
             }
         }
     }

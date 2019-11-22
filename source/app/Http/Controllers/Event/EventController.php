@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Event;
 
 use App\Http\Controllers\Controller;
 
+use App\Model\BotMessageReply;
 use App\Model\FbProcess;
 use Illuminate\Http\Request;
 
