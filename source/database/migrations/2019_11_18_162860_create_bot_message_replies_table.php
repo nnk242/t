@@ -19,9 +19,10 @@ class CreateBotMessageRepliesTable extends Migration
             ##normal
             $table->text('text')->nullable();
             ##attachment
-            $table->text('attachment_type')->nullable();
-            $table->text('attachment_payload_url')->nullable();
-            ##Timer
+            $table->string('attachment_type')->nullable();
+            $table->string('attachment_payload_url')->nullable();
+            ##template
+            ##timer
             $table->integer('begin_time_open')->nullable();
             $table->integer('end_time_open')->nullable();
             $table->integer('begin_time_active')->nullable();

@@ -124,4 +124,9 @@ class TextComponent
             return false;
         }
     }
+
+    public static function payload($str)
+    {
+        return str_replace(' ', '_', strtoupper(self::stripUnicode($str))) . '_PAYLOAD';
+    }
 }

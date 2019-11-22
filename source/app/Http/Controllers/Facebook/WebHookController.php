@@ -75,47 +75,64 @@ class WebHookController extends Controller
                         $access_token = null;
 //
                         if ($text === 'Attachment') {
-                            $bot_message_reply = BotMessageReply::orderby('_id', 'DESC')->first();
+//                            $bot_message_reply = BotMessageReply::orderby('_id', 'DESC')->first();
+                            //                                Message::assetAttachment([
+//                                'id' => $person_id,
+//                                'attachment_type' => $bot_message_reply->attachment_type,
+//                                'attachment_payload_url' => $bot_message_reply->attachment_payload_url
+//                            ]);
                             if (isset($user_fb_page)) {
                                 $access_token = $user_fb_page->page->access_token;
                             }
+
+//                            Message::senderActionTypingOn(['id' => $person_id]);
+                            $send = Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
                             $data = [
                                 'recipient' => [
                                     'id' => $person_id
                                 ],
-                                'sender_action' => 'typing_on'
+                                "message" => [
+                                    "attachment" => [
+                                        "type" => "template",
+                                        "payload" => [
+                                            "template_type" => "generic",
+                                            "elements" => [
+                                                [
+                                                    "title" => "Welcome!",
+                                                    "image_url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232581_13458709_1754337424837799_8896947914071725008_o.jpg",
+                                                    "subtitle" => "We have the right hat for everyone.",
+//                                                    "default_action" => [
+//                                                        "type" => "web_url",
+//                                                        "url" => "https://gamota.com/games",
+//                                                        "messenger_extensions" => false,
+//                                                        "webview_height_ratio" => "tall"
+//                                                    ],
+                                                    "buttons" => [
+                                                        [
+                                                            "type" => "web_url",
+                                                            "url" => "https://gamota.com/",
+                                                            "title" => "View Website"
+                                                        ],
+                                                        [
+                                                            "type" => "postback",
+                                                            "title" => "Start Chatting",
+                                                            "payload" => "DEVELOPER_DEFINED_PAYLOAD"
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
                             ];
-//                            Message::senderActionTypingOn(['id' => $person_id]);
-                            $send = Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
-                            $data = Message::assetAttachment([
-                                'id' => $person_id,
-                                'attachment_type' => $bot_message_reply->attachment_type,
-                                'attachment_payload_url' => $bot_message_reply->attachment_payload_url
-                            ]);
-//                                [
-//                                'recipient' => [
-//                                    'id' => $person_id
-//                                ],
-//                                'message' => [
-//                                    'attachment' => [
-//                                        "type" => "image",
-//                                        "payload" => [
-//                                            [
-//                                                "url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232583_14372314_1798299803774894_1698740605240530432_o.jpg"
-//                                            ]
-//                                        ]
-//                                    ]
-//                                ]
-//                            ];
                             if (isset($data)) {
-                                Facebook::post($access_token, 'me/messages', $data);
+                                $send = Facebook::post($access_token, 'me/messages', $data);
                             }
                         }
 //
                         $client->initialize();
-                        $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page
-                        , '$send' => isset($send) ? $send : 'No response',
-                            '$bot_message_reply' => isset($bot_message_reply) ? $bot_message_reply : 'No $bot_message_reply'));
+                        $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page,
+                            '$send' => isset($send) ? $send : 'No response'));
                         $client->close();
                     } else {
                         if (isset($entry[0]['changes'][0]['field'])) {
@@ -183,7 +200,8 @@ class WebHookController extends Controller
                 $client->close();
             }
 
-        } catch (\Exception $exception) {
+        } catch
+        (\Exception $exception) {
             $client->initialize();
             $client->emit('data', array($request->all(), 'error' => [$exception->getMessage(), $exception->getCode()]));
             $client->close();

@@ -5,6 +5,7 @@ namespace App\Components\UpdateOrCreateData;
 use App\Components\Page\PageComponent;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
+use App\Model\BotPayloadElement;
 use App\Model\FbConversation;
 use App\Model\FbFeed;
 use App\Model\FbMessage;
@@ -47,6 +48,11 @@ class UpdateOrCreate
         return Page::updateorcreate(['fb_page_id' => $data['fb_page_id']], $data);
     }
 
+    public static function fbFeed($data)
+    {
+        return FbFeed::updateorcreate(['post_id' => $data['post_id']], $data);
+    }
+
     public static function userRolePage($data)
     {
         return UserRolePage::updateorcreate(['fb_page_parent' => $data['fb_page_parent']], $data);
@@ -81,7 +87,7 @@ class UpdateOrCreate
                 if (isset($data['_id'])) {
                     $bot_message_head = BotMessageReply::updateorcreate(['_id' => $data['_id']], $data);
                 } else {
-                    $bot_message_head = BotMessageReply::create($data);
+                    $bot_message_head = BotMessageReply::updateorcreate($data);
                 }
                 return $bot_message_head;
             }
@@ -89,8 +95,24 @@ class UpdateOrCreate
         return false;
     }
 
-    public static function fbFeed($data)
+    public static function botPayloadElement($data)
     {
-        return FbFeed::updateorcreate(['post_id' => $data['post_id']], $data);
+        try {
+            return BotPayloadElement::updateorcreate($data);
+        } catch (\Exception $exception) {
+        }
+        return false;
+    }
+
+    public static function botElementButton($data)
+    {
+        try {
+            if (isset($data['_id'])) {
+                return BotPayloadElement::updateorcreate(['_id' => $data['_id']], $data);
+            }
+            return BotPayloadElement::create($data);
+        } catch (\Exception $exception) {
+        }
+        return false;
     }
 }

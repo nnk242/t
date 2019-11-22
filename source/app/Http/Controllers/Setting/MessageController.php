@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Setting;
 
+use App\Components\Common\TextComponent;
 use App\Components\Page\PageComponent;
 use App\Components\Process\DateComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Http\Controllers\Controller;
+use App\Model\BotElementButton;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
+use App\Model\BotPayloadElement;
 use App\Model\UserRolePage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,8 +87,108 @@ class MessageController extends Controller
                 ]);
                 UpdateOrCreate::botMessageReply($data);
                 return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
+            case 'message-templates':
+                $data = array_merge($data, [
+                    'type_message' => 'message_templates',
+                    'attachment_type' => $request->attachment_type,
+                    'bot_message_head_id' => $request->bot_message_head_id
+                ]);
+                $bot_message_reply = UpdateOrCreate::botMessageReply($data);
+
+                $data_bot_payload_element = [
+                    'bot_message_reply_id' => $bot_message_reply->_id,
+                    'title' => $request->title,
+                    'image_url' => $request->image_url,
+                    'subtitle' => $request->subtitle,
+                    'default_action_type' => $request->default_action_type,
+                    'default_action_url' => $request->default_action_url,
+                    'default_action_messenger_extensions' => $request->default_action_messenger_extensions,
+                    'default_action_messenger_webview_height_ratio' => $request->default_action_messenger_webview_height_ratio,
+                    'group' => $request->group
+                ];
+
+                $bot_payload_element = UpdateOrCreate::botPayloadElement($data_bot_payload_element);
+
+                $bot_element_buttons = BotElementButton::wherebot_payload_element_id($bot_payload_element->_id)->get();
+                dd($bot_element_buttons->count());
+                $button_type = isset($request->button_type) ? $request->button_type : null;
+                $button_url = isset($request->button_url) ? $request->button_url : null;
+                $button_title = isset($request->button_title) ? $request->button_title : null;
+                if ($bot_element_buttons->count()) {
+                    foreach ($bot_element_buttons as $k => $bot_element_button) {
+                        if ($k >= 3) {
+                            break;
+                        }
+                        $title = isset($button_title[$k]) ? $button_title[$k] : null;
+                        $url = isset($button_url[$k]) ? $button_url[$k] : null;
+                        $type = isset($button_type[$k]) ? $button_type[$k] : null;
+                        $payload = $title !== null ? TextComponent::payload($title) : null;
+                        if ($button_type === 'web_url') {
+                            $payload = null;
+                        } elseif ($button_type === 'postback') {
+                            $url = null;
+                        } elseif ($button_type === 'phone_number') {
+                            $url = null;
+                            $payload = isset($payload) ? $request->payload[$k] : $payload;
+                        }
+                        $data_bot_element_button = [
+                            'bot_payload_element_id' => $bot_payload_element->_id,
+                            '_id' => $bot_element_button->_id,
+                            'type' => $type,
+                            'url' => $url,
+                            'title' => $title,
+                            'payload' => $payload
+                        ];
+
+                        UpdateOrCreate::botElementButton($data_bot_element_button);
+                    }
+                    if ($k <= 2) {
+                        for ($i = 0; $i <= (2 - $k); $i++) {
+
+                        }
+                    }
+                }
+                if (gettype($request->button_type) === 'array') {
+                    foreach ($request->button_type as $key => $button_type) {
+                        $title = isset($request->button_title[$key]) ? $request->button_title[$key] : null;
+                        $url = isset($request->button_url[$key]) ? $request->button_url[$key] : null;
+                        $payload = $title === null ? TextComponent::payload($title) : null;
+                        if ($button_type === 'web_url') {
+                            $payload = null;
+                        } elseif ($button_type === 'postback') {
+                            $url = null;
+                        } elseif ($button_type === 'phone_number') {
+                            $url = null;
+                            $payload = isset($request->payload[$key]) ? $request->payload[$key] : $payload;
+                        }
+
+                        $data_bot_element_button = [
+                            'bot_payload_element_id' => $bot_payload_element->_id,
+                            'type' => $button_type,
+                            'url' => $url,
+                            'title' => $title,
+                            'payload' => $payload
+                        ];
+
+                        if ($key == 1) {
+                            dd($data_bot_element_button);
+                        }
+
+
+                    }
+                }
+
+                dd($request->all());
+
         }
+
         dd($request->all());
+
+        $data_bot_payload_element = [
+
+        ];
+
+        dd($data_bot_payload_element);
         return $request->all();
     }
 
