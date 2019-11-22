@@ -23,7 +23,7 @@
         <div id="message-templates" class="col s12">
             <form class="container" method="POST">
                 @csrf
-                <input name="type_message" value="message-templates" hidden>
+                <input name="type_message" value="message_templates" hidden>
                 <input id="bot_message_head_id_template" name="bot_message_head_id" hidden>
                 <div class="card-panel">
                     <div class="row">
@@ -57,6 +57,17 @@
                                     <input type="number" class="validate" placeholder="Nhập group message template"
                                            name="group">
                                 </div>
+                            </div>
+                            <div class="input-field col s12">
+                                <select name="attachment_type" class="attachment_type">
+                                    <option value="generic" disabled selected>Chọn kiểu tin nhắn...</option>
+                                    <option value="generic">Generic</option>
+                                    <option value="audio">Audio</option>
+                                    <option value="video">Video</option>
+                                    <option value="file">File</option>
+                                </select>
+                                <label>Kiểu tin nhắn <span
+                                        class="amber-text">Chọn sai xác kiểu chắc chắn không gửi</span></label>
                             </div>
                             <div class="button">
                                 <div class="row">
@@ -148,18 +159,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="input-field col s12">
-                                <select name="attachment_type" class="attachment_type">
-                                    <option value="generic" disabled selected>Chọn kiểu tin nhắn...</option>
-                                    <option value="generic">Generic</option>
-                                    <option value="audio">Audio</option>
-                                    <option value="video">Video</option>
-                                    <option value="file">File</option>
-                                </select>
-                                <label>Kiểu tin nhắn <span
-                                        class="amber-text">Chọn sai xác kiểu chắc chắn không gửi</span></label>
                             </div>
                             <div class="input-field col s12">
                                 <select name="type_notify" class="type_notify">

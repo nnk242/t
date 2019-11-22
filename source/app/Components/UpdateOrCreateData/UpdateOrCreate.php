@@ -3,6 +3,7 @@
 namespace App\Components\UpdateOrCreateData;
 
 use App\Components\Page\PageComponent;
+use App\Model\BotElementButton;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\BotPayloadElement;
@@ -108,9 +109,13 @@ class UpdateOrCreate
     {
         try {
             if (isset($data['_id'])) {
-                return BotPayloadElement::updateorcreate(['_id' => $data['_id']], $data);
+                if($data['_id'] !== null) {
+                    return BotElementButton::updateorcreate(['_id' => $data['_id']], $data);
+                } else {
+                    unset($data['_id']);
+                }
             }
-            return BotPayloadElement::create($data);
+            return BotElementButton::create($data);
         } catch (\Exception $exception) {
         }
         return false;

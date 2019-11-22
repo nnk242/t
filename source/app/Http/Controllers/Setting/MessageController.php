@@ -23,9 +23,37 @@ class MessageController extends Controller
         $this->middleware('auth');
     }
 
+    private function elementButton($button_title, $button_url, $button_type, $request_payload, $bot_payload_element_id, $bot_element_button_id = null)
+    {
+        $title = isset($button_title) ? $button_title : null;
+        $url = isset($button_url) ? $button_url : null;
+        $type = isset($button_type) ? $button_type : null;
+        $payload = $title !== null ? TextComponent::payload($title) : null;
+        if ($button_type === 'web_url') {
+            $payload = null;
+        } elseif ($button_type === 'postback') {
+            $url = null;
+        } elseif ($button_type === 'phone_number') {
+            $url = null;
+            $payload = isset($payload) ? $request_payload : $payload;
+        }
+
+        $data_bot_element_button = [
+            'bot_payload_element_id' => $bot_payload_element_id,
+            'type' => $type,
+            'url' => $url,
+            'title' => $title,
+            'payload' => $payload
+        ];
+        if ($bot_element_button_id !== null) {
+            $data_bot_element_button = array_merge($data_bot_element_button, ['_id' => $bot_element_button_id]);
+        }
+//        return $data_bot_element_button;
+        return UpdateOrCreate::botElementButton($data_bot_element_button);
+    }
+
     public function index(Request $request)
     {
-//        dd(1574228872, time());
         $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
         $header_bot_heads = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         return view('pages.setting.message.index', compact('bot_message_heads', 'header_bot_heads'));
@@ -87,12 +115,24 @@ class MessageController extends Controller
                 ]);
                 UpdateOrCreate::botMessageReply($data);
                 return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
-            case 'message-templates':
+            case 'message_templates':
+                $validate = Validator::make(
+                    $request->all(),
+                    [
+                        'attachment_type' => 'required'
+                    ], [
+                    'required' => ':attribute phải có dữ liệu'
+                ]);
+
+                if ($validate->fails()) {
+                    return redirect()->back()->with('error', $validate->errors()->first());
+                }
                 $data = array_merge($data, [
                     'type_message' => 'message_templates',
                     'attachment_type' => $request->attachment_type,
                     'bot_message_head_id' => $request->bot_message_head_id
                 ]);
+                dd($request->all());
                 $bot_message_reply = UpdateOrCreate::botMessageReply($data);
 
                 $data_bot_payload_element = [
@@ -110,85 +150,49 @@ class MessageController extends Controller
                 $bot_payload_element = UpdateOrCreate::botPayloadElement($data_bot_payload_element);
 
                 $bot_element_buttons = BotElementButton::wherebot_payload_element_id($bot_payload_element->_id)->get();
-                dd($bot_element_buttons->count());
+
                 $button_type = isset($request->button_type) ? $request->button_type : null;
                 $button_url = isset($request->button_url) ? $request->button_url : null;
                 $button_title = isset($request->button_title) ? $request->button_title : null;
                 if ($bot_element_buttons->count()) {
                     foreach ($bot_element_buttons as $k => $bot_element_button) {
                         if ($k >= 3) {
-                            break;
+                            $button = BotElementButton::find($bot_element_button->_id);
+                            if (isset($button)) {
+                                $button->delete();
+                            }
+                            continue;
                         }
-                        $title = isset($button_title[$k]) ? $button_title[$k] : null;
-                        $url = isset($button_url[$k]) ? $button_url[$k] : null;
-                        $type = isset($button_type[$k]) ? $button_type[$k] : null;
-                        $payload = $title !== null ? TextComponent::payload($title) : null;
-                        if ($button_type === 'web_url') {
-                            $payload = null;
-                        } elseif ($button_type === 'postback') {
-                            $url = null;
-                        } elseif ($button_type === 'phone_number') {
-                            $url = null;
-                            $payload = isset($payload) ? $request->payload[$k] : $payload;
-                        }
-                        $data_bot_element_button = [
-                            'bot_payload_element_id' => $bot_payload_element->_id,
-                            '_id' => $bot_element_button->_id,
-                            'type' => $type,
-                            'url' => $url,
-                            'title' => $title,
-                            'payload' => $payload
-                        ];
 
-                        UpdateOrCreate::botElementButton($data_bot_element_button);
+                        $this->elementButton(isset($button_title[$k]) ? $button_title[$k] : null,
+                            isset($button_url[$k]) ? $button_url[$k] : null,
+                            isset($button_type[$k]) ? $button_type[$k] : null,
+                            isset($request->payload[$k]) ? $request->payload[$k] : null,
+                            $bot_payload_element->_id, $bot_element_button->_id);
                     }
                     if ($k <= 2) {
-                        for ($i = 0; $i <= (2 - $k); $i++) {
-
+                        for ($i = $k; $i <= 2; $i++) {
+                            $this->elementButton(isset($button_title[$i]) ? $button_title[$i] : null,
+                                isset($button_url[$i]) ? $button_url[$i] : null,
+                                isset($button_type[$i]) ? $button_type[$i] : null,
+                                isset($request->payload[$i]) ? $request->payload[$i] : null,
+                                $bot_payload_element->_id, $bot_element_button->_id);
                         }
                     }
-                }
-                if (gettype($request->button_type) === 'array') {
-                    foreach ($request->button_type as $key => $button_type) {
-                        $title = isset($request->button_title[$key]) ? $request->button_title[$key] : null;
-                        $url = isset($request->button_url[$key]) ? $request->button_url[$key] : null;
-                        $payload = $title === null ? TextComponent::payload($title) : null;
-                        if ($button_type === 'web_url') {
-                            $payload = null;
-                        } elseif ($button_type === 'postback') {
-                            $url = null;
-                        } elseif ($button_type === 'phone_number') {
-                            $url = null;
-                            $payload = isset($request->payload[$key]) ? $request->payload[$key] : $payload;
-                        }
-
-                        $data_bot_element_button = [
-                            'bot_payload_element_id' => $bot_payload_element->_id,
-                            'type' => $button_type,
-                            'url' => $url,
-                            'title' => $title,
-                            'payload' => $payload
-                        ];
-
-                        if ($key == 1) {
-                            dd($data_bot_element_button);
-                        }
-
-
+                } elseif (gettype($request->button_type) === 'array') {
+                    foreach ($request->button_type as $k => $button_type) {
+                        $this->elementButton(isset($button_title[$k]) ? $button_title[$k] : null,
+                            isset($button_url[$k]) ? $button_url[$k] : null,
+                            isset($button_type) ? $button_type : null,
+                            isset($request->payload[$k]) ? $request->payload[$k] : null,
+                            $bot_payload_element->_id);
                     }
                 }
-
-                dd($request->all());
+                return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
 
         }
 
         dd($request->all());
-
-        $data_bot_payload_element = [
-
-        ];
-
-        dd($data_bot_payload_element);
         return $request->all();
     }
 
