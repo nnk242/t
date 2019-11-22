@@ -51,17 +51,40 @@ class ProcessMessageComponent
         }
 
         if ($is_send) {
-            if (isset($bot_message_reply->text)) {
-                Facebook::post($access_token, 'me/messages', Message::textMessage($data));
-            }
+            Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
+            Facebook::post($access_token, 'me/messages', Message::textMessage($data));
+        }
+    }
+
+    public static function assetAttachment($bot_message_reply, $person_id, $access_token)
+    {
+        $data = [
+            'id' => $person_id,
+            'attachment_type' => $bot_message_reply->attachment_type,
+            'attachment_payload_url' => $bot_message_reply->attachment_payload_url
+        ];
+        $is_send = true;
+        if ($bot_message_reply->type_notify === "timer") {
+            $is_send = self::timer($bot_message_reply->begin_time_active, $bot_message_reply->end_time_active,
+                $bot_message_reply->begin_time_open, $bot_message_reply->end_time_open);
+        }
+
+        if ($is_send) {
+            Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
+            Facebook::post($access_token, 'me/messages', Message::assetAttachment($data));
         }
     }
 
     public static function message($bot_message_replies, $person_id, $access_token)
     {
         foreach ($bot_message_replies as $bot_message_reply) {
-            if ($bot_message_reply->type_message === 'text_messages') {
-                self::textMessage($bot_message_reply, $person_id, $access_token);
+            $type_message = $bot_message_reply->type_message;
+            if ($type_message === 'text_messages') {
+                if ($bot_message_reply->text) {
+                    self::textMessage($bot_message_reply, $person_id, $access_token);
+                }
+            } elseif ($type_message === 'assets_attachments') {
+                self::assetAttachment($bot_message_reply, $person_id, $access_token);
             }
         }
     }

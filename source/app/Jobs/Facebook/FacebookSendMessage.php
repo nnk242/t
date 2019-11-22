@@ -35,7 +35,6 @@ class FacebookSendMessage implements ShouldQueue
 
     public function handle()
     {
-        $text = $this->data['text'];
         $person_id = $this->data['person_id'];
         $entry = $this->data['entry'];
         $user_fb_page = $this->data['user_fb_page'];
@@ -43,6 +42,7 @@ class FacebookSendMessage implements ShouldQueue
         if (isset($user_fb_page)) {
             ###
             $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
+            $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
 
             $array_postback = [
                 'payload' => isset($entry[0]['messaging'][0]['postback']['payload']) ? $entry[0]['messaging'][0]['postback']['payload'] : null,

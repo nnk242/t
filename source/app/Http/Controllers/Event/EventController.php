@@ -17,6 +17,7 @@ class EventController extends Controller
 
     public function index()
     {
+        dd(BotMessageReply::all());
         return view('pages.event.index');
     }
 }

@@ -24,6 +24,20 @@ class Message
         ]);
     }
 
+    public static function assetAttachment($data)
+    {
+        return array_merge(self::recipient($data['id']), [
+            'message' => [
+                'attachment' => [
+                    'type' => $data['attachment_type'],
+                    'payload' => [
+                        'url' => $data['attachment_payload_url']
+                    ]
+                ]
+            ]
+        ]);
+    }
+
     public static function senderActionTypingOn($data)
     {
         return array_merge(self::recipient($data['id']), [

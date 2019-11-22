@@ -75,33 +75,47 @@ class WebHookController extends Controller
                         $access_token = null;
 //
                         if ($text === 'Attachment') {
+                            $bot_message_reply = BotMessageReply::orderby('_id', 'DESC')->first();
+                            if (isset($user_fb_page)) {
+                                $access_token = $user_fb_page->page->access_token;
+                            }
                             $data = [
                                 'recipient' => [
                                     'id' => $person_id
                                 ],
                                 'sender_action' => 'typing_on'
                             ];
-                            $send = Facebook::post($access_token, 'me/messages', $data);
-                            $data = [
-                                'recipient' => [
-                                    'id' => $person_id
-                                ],
-                                'message' => [
-                                    'attachment' => [
-                                        "type" => "image",
-                                        "payload" => [
-                                            "url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232583_14372314_1798299803774894_1698740605240530432_o.jpg"
-                                        ]
-                                    ]
-                                ]
-                            ];
+//                            Message::senderActionTypingOn(['id' => $person_id]);
+                            $send = Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
+                            $data = Message::assetAttachment([
+                                'id' => $person_id,
+                                'attachment_type' => $bot_message_reply->attachment_type,
+                                'attachment_payload_url' => $bot_message_reply->attachment_payload_url
+                            ]);
+//                                [
+//                                'recipient' => [
+//                                    'id' => $person_id
+//                                ],
+//                                'message' => [
+//                                    'attachment' => [
+//                                        "type" => "image",
+//                                        "payload" => [
+//                                            [
+//                                                "url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232583_14372314_1798299803774894_1698740605240530432_o.jpg"
+//                                            ]
+//                                        ]
+//                                    ]
+//                                ]
+//                            ];
                             if (isset($data)) {
                                 Facebook::post($access_token, 'me/messages', $data);
                             }
                         }
 //
                         $client->initialize();
-                        $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page, '$send' => isset($send) ? $send : 'No response'));
+                        $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page
+                        , '$send' => isset($send) ? $send : 'No response',
+                            '$bot_message_reply' => isset($bot_message_reply) ? $bot_message_reply : 'No $bot_message_reply'));
                         $client->close();
                     } else {
                         if (isset($entry[0]['changes'][0]['field'])) {

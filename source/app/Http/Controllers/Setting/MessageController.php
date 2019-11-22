@@ -23,7 +23,6 @@ class MessageController extends Controller
     public function index(Request $request)
     {
 //        dd(1574228872, time());
-        dd(BotMessageReply::wherebot_message_head_id('5dd63bb171b56747db3edac3')->get());
         $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
         $header_bot_heads = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         return view('pages.setting.message.index', compact('bot_message_heads', 'header_bot_heads'));
@@ -64,7 +63,29 @@ class MessageController extends Controller
                 ]);
                 UpdateOrCreate::botMessageReply($data);
                 return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
+            case 'assets_attachments':
+                $validate = Validator::make(
+                    $request->all(),
+                    [
+                        'attachment_payload_url' => 'required',
+                        'attachment_type' => 'required'
+                    ], [
+                    'required' => ':attribute phải có dữ liệu'
+                ]);
+
+                if ($validate->fails()) {
+                    return redirect()->back()->with('error', $validate->errors()->first());
+                }
+                $data = array_merge($data, [
+                    'attachment_payload_url' => $request->attachment_payload_url,
+                    'attachment_type' => $request->attachment_type,
+                    'type_message' => 'assets_attachments',
+                    'bot_message_head_id' => $request->bot_message_head_id
+                ]);
+                UpdateOrCreate::botMessageReply($data);
+                return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
         }
+        dd($request->all());
         return $request->all();
     }
 

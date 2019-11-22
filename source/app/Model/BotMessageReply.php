@@ -20,7 +20,10 @@ class BotMessageReply extends Model
     protected $attributes = ['type_message' => 'text_messages', 'type_notify' => 'normal'];
 
     protected $fillable = ['type_message', 'type_notify', 'bot_message_head_id', 'fb_page_id', 'text',
-        'begin_time_open', 'end_time_open', 'begin_time_active', 'end_time_active'];
+        'begin_time_open', 'end_time_open', 'begin_time_active', 'end_time_active',
+        ###
+        'attachment_type', 'attachment_payload_url'
+    ];
 
     public function page()
     {

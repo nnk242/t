@@ -193,7 +193,6 @@ class DataMessaging
                     if (isset($entry[0]['messaging'])) {
                         $sender_id = isset($entry[0]['messaging'][0]['sender']['id']) ? $entry[0]['messaging'][0]['sender']['id'] : null;
                         $recipient_id = isset($entry[0]['messaging'][0]['recipient']['id']) ? $entry[0]['messaging'][0]['recipient']['id'] : null;
-                        $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
 
                         #### Get user fb page
                         $is_user = false;
@@ -209,7 +208,7 @@ class DataMessaging
                         self::handle($entry, $person_id, $sender_id, $recipient_id);
 
                         if ($is_user) {
-                            dispatch(new FacebookSendMessage(['text' => $text, 'user_fb_page' => $user_fb_page, 'person_id' => $person_id, 'entry' => $entry]));
+                            dispatch(new FacebookSendMessage(['user_fb_page' => $user_fb_page, 'person_id' => $person_id, 'entry' => $entry]));
 //                            dispatch(new FacebookSendMessageEvent(['text' => $text, 'user_fb_page' => $user_fb_page, 'person_id' => $person_id, 'entry' => $entry]));
                         }
                     }

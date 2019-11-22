@@ -6,7 +6,7 @@
             <ul class="tabs z-depth-1">
                 <li class="tab col"><a href="#call-bot-message" data-toggle="tab">Call bot message</a></li>
                 <li class="tab col"><a href="#text-message" data-toggle="tab">Text messages</a></li>
-                <li class="tab col"><a href="#test2" data-toggle="tab">Assets & Attachments</a></li>
+                <li class="tab col"><a href="#assets-attachments" data-toggle="tab">Assets & Attachments</a></li>
                 <li class="tab col"><a href="#test3" data-toggle="tab">Message Templates</a></li>
                 <li class="tab col"><a href="#test4" data-toggle="tab">Quick Replies</a></li>
             </ul>
@@ -17,7 +17,58 @@
         <div id="text-message" class="col s12">
             @include('pages.setting.message.tab.text-message')
         </div>
-        <div id="test2" class="col s12">Test 2</div>
+        <div id="assets-attachments" class="col s12">
+            <form class="container" method="POST">
+                @csrf
+                <input name="type_message" value="assets_attachments" hidden>
+                <input id="bot_message_head_id_attachment" name="bot_message_head_id" hidden>
+                <div class="card-panel">
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="input-field">
+                                <h4>Assets & Attachments</h4>
+                            </div>
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">search</i>
+                                <input type="text" class="autocomplete search-data-message-head"
+                                       data-type="bot_message_head_id_attachment">
+                                <label>Tìm kiếm tin nhắn <span class="amber-text">BOT</span></label>
+                            </div>
+                            <div class="input-field col s12">
+                                <label>Nhập link</label>
+                                <input type="url" class="validate" placeholder="Nhập link" required
+                                       name="attachment_payload_url">
+                            </div>
+                            <div class="input-field col s12">
+                                <select name="attachment_type" class="type_notify">
+                                    <option value="image" disabled selected>Chọn loại tin nhắn chạy</option>
+                                    <option value="image">Image</option>
+                                    <option value="audio">Audio</option>
+                                    <option value="video">Video</option>
+                                    <option value="file">File</option>
+                                </select>
+                                <label>Kiểu tin nhắn</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <select name="type_notify" class="type_notify">
+                                    <option value="normal" disabled selected>Chọn loại tin nhắn chạy</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="timer">Timer</option>
+                                </select>
+                                <label>Kiểu tin nhắn</label>
+                            </div>
+                            <div class="run_ display-none">
+                                @include('components.common.form-date')
+                            </div>
+                            <div class="center-align">
+                                <button class="btn">Gửi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
         <div id="test3" class="col s12">Test 3</div>
         <div id="test4" class="col s12">Test 4</div>
     </div>
@@ -76,7 +127,7 @@
                     data
                 })
 
-                if (this.getAttribute('data-type') === 'search-data-message-head') {
+                if (this.getAttribute('data-type') === 'search-data-message-head' || this.getAttribute('data-type') === 'bot_message_head_id_attachment') {
                     url = "{{ route('setting.message-head') }}" + "?text=" + text
                 } else {
                     url = "{{ route('setting.message-reply') }}" + "?text=" + text
@@ -120,6 +171,9 @@
                             }
                             if ((this.$el[0]).getAttribute('data-type') === 'search-data-message-head') {
                                 $('#bot_message_head_id_text_messages').attr('value', data_id[val])
+                            }
+                            if ((this.$el[0]).getAttribute('data-type') === 'bot_message_head_id_attachment') {
+                                $('#bot_message_head_id_attachment').attr('value', data_id[val])
                             }
                         }
                     }

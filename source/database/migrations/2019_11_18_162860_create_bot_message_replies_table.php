@@ -18,7 +18,9 @@ class CreateBotMessageRepliesTable extends Migration
             $table->foreign('fb_page_id')->references('fb_page_id')->on('pages')->onDelete('cascade');
             ##normal
             $table->text('text')->nullable();
-
+            ##attachment
+            $table->text('attachment_type')->nullable();
+            $table->text('attachment_payload_url')->nullable();
             ##Timer
             $table->integer('begin_time_open')->nullable();
             $table->integer('end_time_open')->nullable();
