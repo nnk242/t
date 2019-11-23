@@ -38,6 +38,15 @@ class Message
         ]);
     }
 
+    public static function templateGeneric($data)
+    {
+        try {
+            return array_merge(self::recipient($data['id']), $data['message']);
+        } catch (\Exception $exception) {
+            return false;
+        }
+    }
+
     public static function senderActionTypingOn($data)
     {
         return array_merge(self::recipient($data['id']), [

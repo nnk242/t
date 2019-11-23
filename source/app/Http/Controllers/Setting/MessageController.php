@@ -119,7 +119,7 @@ class MessageController extends Controller
                 $validate = Validator::make(
                     $request->all(),
                     [
-                        'attachment_type' => 'required'
+                        'template_type' => 'required'
                     ], [
                     'required' => ':attribute phải có dữ liệu'
                 ]);
@@ -129,23 +129,25 @@ class MessageController extends Controller
                 }
                 $data = array_merge($data, [
                     'type_message' => 'message_templates',
-                    'attachment_type' => $request->attachment_type,
+                    'attachment_type' => 'template',
                     'bot_message_head_id' => $request->bot_message_head_id
                 ]);
-                dd($request->all());
                 $bot_message_reply = UpdateOrCreate::botMessageReply($data);
 
                 $data_bot_payload_element = [
+                    'template_type' => $request->template_type,
                     'bot_message_reply_id' => $bot_message_reply->_id,
                     'title' => $request->title,
                     'image_url' => $request->image_url,
                     'subtitle' => $request->subtitle,
-                    'default_action_type' => $request->default_action_type,
-                    'default_action_url' => $request->default_action_url,
-                    'default_action_messenger_extensions' => $request->default_action_messenger_extensions,
-                    'default_action_messenger_webview_height_ratio' => $request->default_action_messenger_webview_height_ratio,
                     'group' => $request->group
                 ];
+                if ($request->default_action_url && $request->template_type) {
+                    $data_bot_payload_element = array_merge($data_bot_payload_element, [
+                        'default_action_url' => $request->default_action_url,
+                        'default_action_messenger_webview_height_ratio' => $request->messenger_webview_height_ratio
+                    ]);
+                }
 
                 $bot_payload_element = UpdateOrCreate::botPayloadElement($data_bot_payload_element);
 

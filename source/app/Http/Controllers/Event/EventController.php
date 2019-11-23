@@ -19,10 +19,23 @@ class EventController extends Controller
 
     public function index()
     {
+
         $bot_message_reply = BotMessageReply::first();
-        if ($bot_message_reply->attachment_type === "generic") {
-            $bot_payload_elements = BotPayloadElement::wherebot_message_reply_id($bot_message_reply->_id)->get();
+//        dd($bot_message_reply);
+        if ($bot_message_reply->attachment_type === "template") {
+            $bot_payload_elements = BotPayloadElement::wherebot_message_reply_id($bot_message_reply->_id)->orderby('group', 'DESC')->get();
+            $elements = [];
+            $i = 0;
             foreach ($bot_payload_elements as $value) {
+                $default_action = null;
+                if (isset($value->default_action_url)) {
+                    $default_action = [
+                        "type" => "web_url",
+                        "url" => $value->default_action_url,
+                        "messenger_extensions" => false,
+                        "webview_height_ratio" => $value->default_action_messenger_webview_height_ratio,
+                    ];
+                }
                 $bot_element_buttons = BotElementButton::wherebot_payload_element_id($value->_id)->get();
                 $buttons = [];
                 foreach ($bot_element_buttons as $button) {
@@ -40,57 +53,52 @@ class EventController extends Controller
                         ]]);
                     } elseif ('postback') {
                         $buttons = array_merge($buttons, [[
-                            'title' => 'postback',
+                            'title' => $button->title,
+                            'type' => 'postback',
                             'payload' => $button->payload
                         ]]);
                     }
                 }
-                $element = [
-                    "title" => $value->title,
-                    "image_url" => $value->image_url,
-                    "subtitle" => $value->subtitle,
-                ];
-                dd($element = array_merge($element, ['button' => $buttons]));
-                dd([
-                    "message" => [
-                        "attachment" => [
-                            "type" => "template",
-                            "payload" => [
-                                "template_type" => "generic",
-                                "elements" => [
-                                    [
-                                        "title" => $value->title,
-                                        "image_url" => $value->image_url,
-                                        "subtitle" => $value->subtitle,
-//                                                    "default_action" => [
-//                                                        "type" => "web_url",
-//                                                        "url" => "https://gamota.com/games",
-//                                                        "messenger_extensions" => false,
-//                                                        "webview_height_ratio" => "tall"
-//                                                    ],
-                                        "buttons" => [
-                                            [
-                                                "type" => "web_url",
-                                                "url" => "https://gamota.com/",
-                                                "title" => "View Website"
-                                            ],
-                                            [
-                                                "type" => "postback",
-                                                "title" => "Start Chatting",
-                                                "payload" => "DEVELOPER_DEFINED_PAYLOAD"
-                                            ]
-                                        ]
-                                    ]
+
+                if (count($buttons)) {
+                    $element = [
+                        "title" => $value->title,
+                        "image_url" => $value->image_url,
+                        "subtitle" => $value->subtitle,
+                    ];
+                    $elements = array_merge($elements, [array_merge($element, ['buttons' => $buttons],
+                        ['default_action' => $default_action])]);
+                    $message = [
+                        "message" => [
+                            "attachment" => [
+                                "type" => "template",
+                                "payload" => [
+                                    "template_type" => "generic",
+                                    "elements" => $elements
                                 ]
                             ]
                         ]
-                    ]
-                ]);
+                    ];
+                    if (isset($default_action)) {
+                    }
+                }
+
             }
+        }
+        if (isset($message)) {
+            dd($message);
+            $data = array_merge([
+                'recipient' => [
+                    'id' => '123'
+                ]
+            ], $message);
+        }
+        if (isset($data)) {
+            dd($data);
         }
 
 
-        dd($bot_message_reply);
+//        dd($bot_message_reply);
 
         return view('pages.event.index');
     }

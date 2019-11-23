@@ -10,8 +10,10 @@ use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Http\Controllers\Controller;
 use App\Jobs\Facebook\FacebookMessaging;
 use App\Jobs\Facebook\FacebookSaveData;
+use App\Model\BotElementButton;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
+use App\Model\BotPayloadElement;
 use App\Model\FbPostAction;
 use App\Model\Page;
 use ElephantIO\Client;
@@ -75,64 +77,90 @@ class WebHookController extends Controller
                         $access_token = null;
 //
                         if ($text === 'Attachment') {
-//                            $bot_message_reply = BotMessageReply::orderby('_id', 'DESC')->first();
-                            //                                Message::assetAttachment([
-//                                'id' => $person_id,
-//                                'attachment_type' => $bot_message_reply->attachment_type,
-//                                'attachment_payload_url' => $bot_message_reply->attachment_payload_url
-//                            ]);
                             if (isset($user_fb_page)) {
                                 $access_token = $user_fb_page->page->access_token;
                             }
 
-//                            Message::senderActionTypingOn(['id' => $person_id]);
-                            $send = Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
+
+//        dd($bot_message_reply);
                             $data = [
-                                'recipient' => [
-                                    'id' => $person_id
-                                ],
                                 "message" => [
                                     "attachment" => [
                                         "type" => "template",
                                         "payload" => [
-                                            "template_type" => "generic",
+                                            "template_type" => "list",
+                                            "top_element_style" => "compact",
                                             "elements" => [
                                                 [
-                                                    "title" => "Welcome!",
-                                                    "image_url" => "https://photo2.tinhte.vn/data/attachment-files/2018/01/4232581_13458709_1754337424837799_8896947914071725008_o.jpg",
-                                                    "subtitle" => "We have the right hat for everyone.",
-//                                                    "default_action" => [
-//                                                        "type" => "web_url",
-//                                                        "url" => "https://gamota.com/games",
-//                                                        "messenger_extensions" => false,
-//                                                        "webview_height_ratio" => "tall"
-//                                                    ],
+                                                    "title" => "Classic T-Shirt Collection",
+                                                    "subtitle" => "See all our colors",
+                                                    "image_url" => "https://peterssendreceiveapp.ngrok.io/img/collection.png",
                                                     "buttons" => [
                                                         [
+                                                            "title" => "View",
                                                             "type" => "web_url",
-                                                            "url" => "https://gamota.com/",
-                                                            "title" => "View Website"
-                                                        ],
-                                                        [
-                                                            "type" => "postback",
-                                                            "title" => "Start Chatting",
-                                                            "payload" => "DEVELOPER_DEFINED_PAYLOAD"
+                                                            "url" => "https://peterssendreceiveapp.ngrok.io/collection",
+                                                            "messenger_extensions" => false,
+                                                            "webview_height_ratio" => "tall",
                                                         ]
                                                     ]
+                                                ],
+                                                [
+                                                    "title" => "Classic White T-Shirt",
+                                                    "subtitle" => "See all our colors",
+                                                    "default_action" => [
+                                                        "type" => "web_url",
+                                                        "url" => "https://peterssendreceiveapp.ngrok.io/view?item=100",
+                                                        "messenger_extensions" => false,
+                                                        "webview_height_ratio" => "tall"
+                                                    ]
+                                                ],
+                                                [
+                                                    "title" => "Classic Blue T-Shirt",
+                                                    "image_url" => "https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png",
+                                                    "subtitle" => "100% Cotton, 200% Comfortable",
+                                                    "default_action" => [
+                                                        "type" => "web_url",
+                                                        "url" => "https://peterssendreceiveapp.ngrok.io/view?item=101",
+                                                        "messenger_extensions" => false,
+                                                        "webview_height_ratio" => "tall",
+                                                    ],
+                                                    "buttons" => [
+                                                        [
+                                                            "title" => "Shop Now",
+                                                            "type" => "web_url",
+                                                            "url" => "https://peterssendreceiveapp.ngrok.io/shop?item=101",
+                                                            "messenger_extensions" => false,
+                                                            "webview_height_ratio" => "tall",
+                                                        ]
+                                                    ]
+                                                ]
+                                            ],
+                                            "buttons" => [
+                                                [
+                                                    "title" => "View More",
+                                                    "type" => "postback",
+                                                    "payload" => "payload"
                                                 ]
                                             ]
                                         ]
                                     ]
+                                ]];
+                            $data = array_merge([
+                                'recipient' => [
+                                    'id' => $person_id
                                 ]
-                            ];
+                            ], $data);
                             if (isset($data)) {
+                                Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
                                 $send = Facebook::post($access_token, 'me/messages', $data);
                             }
                         }
 //
                         $client->initialize();
                         $client->emit('data', array($request->all(), '$user_fb_page' => $user_fb_page,
-                            '$send' => isset($send) ? $send : 'No response'));
+                            '$send' => isset($send) ? $send : 'No response',
+                            '$data' => isset($data) ? $data : 'No $data'));
                         $client->close();
                     } else {
                         if (isset($entry[0]['changes'][0]['field'])) {

@@ -59,15 +59,29 @@
                                 </div>
                             </div>
                             <div class="input-field col s12">
-                                <select name="attachment_type" class="attachment_type">
+                                <select name="template_type" class="template_type">
                                     <option value="generic" disabled selected>Chọn kiểu tin nhắn...</option>
                                     <option value="generic">Generic</option>
-                                    <option value="audio">Audio</option>
-                                    <option value="video">Video</option>
-                                    <option value="file">File</option>
                                 </select>
                                 <label>Kiểu tin nhắn <span
                                         class="amber-text">Chọn sai xác kiểu chắc chắn không gửi</span></label>
+                            </div>
+                            <div class="default-action">
+                                <div class="input-field col s12">
+                                    <h5>Nội dung mặc định khi ấn vào ảnh</h5>
+                                </div>
+                                <div class="input-field col s12">
+                                    <label>Redirect khi chạm vào action</label>
+                                    <input type="url" class="validate" placeholder="Redirect khi chạm vào action"
+                                           name="default_action_url">
+                                </div>
+                                <div class="input-field col s12">
+                                    <select name="messenger_webview_height_ratio">
+                                        <option value="tall">Màn hình nhỏ</option>
+                                        <option value="full" selected>Full màn hình</option>
+                                    </select>
+                                    <label>Kiểu màn hình trên messager</label>
+                                </div>
                             </div>
                             <div class="button">
                                 <div class="row">

@@ -13,6 +13,7 @@ class CreateBotPayloadElementsTable extends Migration
             $table->string('bot_message_reply_id');
             $table->foreign('bot_message_reply_id')->references('_id')->on('bot_message_replies')->onDelete('cascade');
             $table->string('title');
+            $table->string('template_type');
             $table->string('image_url');
             $table->string('subtitle');
             $table->string('default_action_type')->nullable();
