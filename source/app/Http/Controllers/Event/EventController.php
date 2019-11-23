@@ -21,7 +21,7 @@ class EventController extends Controller
     {
 
         $bot_message_reply = BotMessageReply::first();
-//        dd($bot_message_reply);
+        dd($bot_message_reply);
         if ($bot_message_reply->attachment_type === "template") {
             $bot_payload_elements = BotPayloadElement::wherebot_message_reply_id($bot_message_reply->_id)->orderby('group', 'DESC')->get();
             $elements = [];

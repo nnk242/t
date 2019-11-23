@@ -52,6 +52,66 @@ class MessageController extends Controller
         return UpdateOrCreate::botElementButton($data_bot_element_button);
     }
 
+    private function botMessageReply($data, $bot_message_head_id)
+    {
+        return array_merge($data, [
+            'type_message' => 'message_templates',
+            'attachment_type' => 'template',
+            'bot_message_head_id' => $bot_message_head_id
+        ]);
+    }
+
+    private function botElementButtons($data_bot_payload_element, $button_type, $button_url, $button_title, $payload)
+    {
+        try {
+            $bot_payload_element = UpdateOrCreate::botPayloadElement($data_bot_payload_element);
+
+            $bot_element_buttons = BotElementButton::wherebot_payload_element_id($bot_payload_element->_id)->get();
+
+            $button_type = isset($button_type) ? $button_type : null;
+            $button_url = isset($button_url) ? $button_url : null;
+            $button_title = isset($button_title) ? $button_title : null;
+            if ($bot_element_buttons->count()) {
+                foreach ($bot_element_buttons as $k => $bot_element_button) {
+                    if ($k >= 3) {
+                        $button = BotElementButton::find($bot_element_button->_id);
+                        if (isset($button)) {
+                            $button->delete();
+                        }
+                        continue;
+                    }
+
+                    $this->elementButton(isset($button_title[$k]) ? $button_title[$k] : null,
+                        isset($button_url[$k]) ? $button_url[$k] : null,
+                        isset($button_type[$k]) ? $button_type[$k] : null,
+                        isset($payload[$k]) ? $payload[$k] : null,
+                        $bot_payload_element->_id, $bot_element_button->_id);
+                }
+                if ($k <= 2) {
+                    for ($i = $k; $i <= 2; $i++) {
+                        $this->elementButton(isset($button_title[$i]) ? $button_title[$i] : null,
+                            isset($button_url[$i]) ? $button_url[$i] : null,
+                            isset($button_type[$i]) ? $button_type[$i] : null,
+                            isset($payload[$i]) ? $payload[$i] : null,
+                            $bot_payload_element->_id, $bot_element_button->_id);
+                    }
+                }
+            } elseif (gettype($button_type) === 'array') {
+                foreach ($button_type as $k => $button_type) {
+                    $this->elementButton(isset($button_title[$k]) ? $button_title[$k] : null,
+                        isset($button_url[$k]) ? $button_url[$k] : null,
+                        isset($button_type) ? $button_type : null,
+                        isset($payload[$k]) ? $payload[$k] : null,
+                        $bot_payload_element->_id);
+                }
+            }
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
+
+    }
+
     public function index(Request $request)
     {
         $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
@@ -119,7 +179,8 @@ class MessageController extends Controller
                 $validate = Validator::make(
                     $request->all(),
                     [
-                        'template_type' => 'required'
+                        'template_type' => 'required',
+                        'bot_message_head_id' => 'required'
                     ], [
                     'required' => ':attribute phải có dữ liệu'
                 ]);
@@ -127,72 +188,70 @@ class MessageController extends Controller
                 if ($validate->fails()) {
                     return redirect()->back()->with('error', $validate->errors()->first());
                 }
-                $data = array_merge($data, [
-                    'type_message' => 'message_templates',
-                    'attachment_type' => 'template',
-                    'bot_message_head_id' => $request->bot_message_head_id
-                ]);
-                $bot_message_reply = UpdateOrCreate::botMessageReply($data);
-
-                $data_bot_payload_element = [
-                    'template_type' => $request->template_type,
-                    'bot_message_reply_id' => $bot_message_reply->_id,
-                    'title' => $request->title,
-                    'image_url' => $request->image_url,
-                    'subtitle' => $request->subtitle,
-                    'group' => $request->group
-                ];
-                if ($request->default_action_url && $request->template_type) {
-                    $data_bot_payload_element = array_merge($data_bot_payload_element, [
-                        'default_action_url' => $request->default_action_url,
-                        'default_action_messenger_webview_height_ratio' => $request->messenger_webview_height_ratio
+                if ($request->template_type === 'generic') {
+                    $validate = Validator::make(
+                        $request->all(),
+                        [
+                            'title' => 'required',
+                            'subtitle' => 'required',
+                            'image_url' => 'required',
+                        ], [
+                        'required' => ':attribute phải có dữ liệu'
                     ]);
+
+                    if ($validate->fails()) {
+                        return redirect()->back()->with('error', $validate->errors()->first());
+                    }
+                    $data = $this->botMessageReply($data, $request->bot_message_head_id);
+                    $bot_message_reply = UpdateOrCreate::botMessageReply($data);
+
+                    $data_bot_payload_element = [
+                        'template_type' => $request->template_type,
+                        'bot_message_reply_id' => $bot_message_reply->_id,
+                        'title' => $request->title,
+                        'image_url' => $request->image_url,
+                        'subtitle' => $request->subtitle,
+                        'group' => $request->group
+                    ];
+                    if ($request->default_action_url && $request->template_type) {
+                        $data_bot_payload_element = array_merge($data_bot_payload_element, [
+                            'default_action_url' => $request->default_action_url,
+                            'default_action_messenger_webview_height_ratio' => $request->messenger_webview_height_ratio
+                        ]);
+                    }
+                } elseif ($request->template_type === 'button') {
+                    $validate = Validator::make(
+                        $request->all(),
+                        [
+                            'text' => 'required'
+                        ], [
+                        'required' => ':attribute phải có dữ liệu'
+                    ]);
+
+                    if ($validate->fails()) {
+                        return redirect()->back()->with('error', $validate->errors()->first());
+                    }
+
+                    $data = $this->botMessageReply($data, $request->bot_message_head_id);
+                    $bot_message_reply = UpdateOrCreate::botMessageReply($data);
+
+                    $data_bot_payload_element = [
+                        'text' => $request->text,
+                        'bot_message_reply_id' => $bot_message_reply->_id,
+                        'template_type' => 'button'
+                    ];
+                }
+                if (isset($data_bot_payload_element)) {
+                    if ($this->botElementButtons($data_bot_payload_element, $request->button_type, $request->button_url, $request->button_title, $request->payload)) {
+                        return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
+                    }
                 }
 
-                $bot_payload_element = UpdateOrCreate::botPayloadElement($data_bot_payload_element);
+                return redirect()->back()->with('error', 'Thêm tin nhắn trả lời không thành công!');
 
-                $bot_element_buttons = BotElementButton::wherebot_payload_element_id($bot_payload_element->_id)->get();
-
-                $button_type = isset($request->button_type) ? $request->button_type : null;
-                $button_url = isset($request->button_url) ? $request->button_url : null;
-                $button_title = isset($request->button_title) ? $request->button_title : null;
-                if ($bot_element_buttons->count()) {
-                    foreach ($bot_element_buttons as $k => $bot_element_button) {
-                        if ($k >= 3) {
-                            $button = BotElementButton::find($bot_element_button->_id);
-                            if (isset($button)) {
-                                $button->delete();
-                            }
-                            continue;
-                        }
-
-                        $this->elementButton(isset($button_title[$k]) ? $button_title[$k] : null,
-                            isset($button_url[$k]) ? $button_url[$k] : null,
-                            isset($button_type[$k]) ? $button_type[$k] : null,
-                            isset($request->payload[$k]) ? $request->payload[$k] : null,
-                            $bot_payload_element->_id, $bot_element_button->_id);
-                    }
-                    if ($k <= 2) {
-                        for ($i = $k; $i <= 2; $i++) {
-                            $this->elementButton(isset($button_title[$i]) ? $button_title[$i] : null,
-                                isset($button_url[$i]) ? $button_url[$i] : null,
-                                isset($button_type[$i]) ? $button_type[$i] : null,
-                                isset($request->payload[$i]) ? $request->payload[$i] : null,
-                                $bot_payload_element->_id, $bot_element_button->_id);
-                        }
-                    }
-                } elseif (gettype($request->button_type) === 'array') {
-                    foreach ($request->button_type as $k => $button_type) {
-                        $this->elementButton(isset($button_title[$k]) ? $button_title[$k] : null,
-                            isset($button_url[$k]) ? $button_url[$k] : null,
-                            isset($button_type) ? $button_type : null,
-                            isset($request->payload[$k]) ? $request->payload[$k] : null,
-                            $bot_payload_element->_id);
-                    }
-                }
-                return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
 
         }
+        dd(2);
 
         dd($request->all());
         return $request->all();

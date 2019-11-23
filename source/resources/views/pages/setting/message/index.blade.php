@@ -37,36 +37,32 @@
                                        data-type="bot_message_head_id_template">
                                 <label>Tìm kiếm tin nhắn <span class="amber-text">BOT</span></label>
                             </div>
-                            <div class="element">
+                            <div class="input-field col s12">
+                                <select name="template_type" class="template_type">
+                                    <option value="generic" disabled selected>Chọn kiểu tin nhắn...</option>
+                                    <option value="generic">Generic</option>
+                                    <option value="button">Button</option>
+                                </select>
+                                <label>Kiểu tin nhắn</label>
+                            </div>
+                            <div class="element-generic display-none">
                                 <div class="input-field col s12">
                                     <label>Nhập title</label>
-                                    <input type="text" class="validate" placeholder="Nhập title" required name="title">
+                                    <input type="text" class="validate" placeholder="Nhập title" name="title">
                                 </div>
                                 <div class="input-field col s12">
                                     <label>Nhập link ảnh</label>
-                                    <input type="url" class="validate" placeholder="Nhập link ảnh" required
-                                           name="image_url">
+                                    <input type="url" class="validate" placeholder="Nhập link ảnh" name="image_url">
                                 </div>
                                 <div class="input-field col s12">
                                     <label>Nhập subtitle</label>
-                                    <input type="text" class="validate" placeholder="Nhập subtitle" required
-                                           name="subtitle">
+                                    <input type="text" class="validate" placeholder="Nhập subtitle" name="subtitle">
                                 </div>
                                 <div class="input-field col s12">
                                     <label>Nhập group message template</label>
                                     <input type="number" class="validate" placeholder="Nhập group message template"
                                            name="group">
                                 </div>
-                            </div>
-                            <div class="input-field col s12">
-                                <select name="template_type" class="template_type">
-                                    <option value="generic" disabled selected>Chọn kiểu tin nhắn...</option>
-                                    <option value="generic">Generic</option>
-                                </select>
-                                <label>Kiểu tin nhắn <span
-                                        class="amber-text">Chọn sai xác kiểu chắc chắn không gửi</span></label>
-                            </div>
-                            <div class="default-action">
                                 <div class="input-field col s12">
                                     <h5>Nội dung mặc định khi ấn vào ảnh</h5>
                                 </div>
@@ -81,6 +77,13 @@
                                         <option value="full" selected>Full màn hình</option>
                                     </select>
                                     <label>Kiểu màn hình trên messager</label>
+                                </div>
+                            </div>
+                            <div class="element-button display-none">
+                                <div class="input-field col s12">
+                                    <label>Redirect khi chạm vào action</label>
+                                    <textarea class="validate materialize-textarea" data-length="630"
+                                              placeholder="Nội dung gửi người dùng" name="text"></textarea>
                                 </div>
                             </div>
                             <div class="button">
@@ -244,6 +247,20 @@
                         button_.find('.web_url').addClass('display-none')
                         button_.find('.button_phone').removeClass('display-none')
                         break
+                }
+            })
+
+            $('.template_type').on('change', function () {
+                switch ($(this).val()) {
+                    case'generic':
+                        $('.element-generic').removeClass('display-none')
+                        $('.element-button').addClass('display-none')
+                        break
+                    case 'button':
+                        $('.element-generic').addClass('display-none')
+                        $('.element-button').removeClass('display-none')
+                        break
+
                 }
             })
 

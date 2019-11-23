@@ -22,6 +22,8 @@ class CreateBotPayloadElementsTable extends Migration
             $table->string('default_action_messenger_webview_height_ratio')->nullable();
             $table->integer('group');
             $table->integer('position');
+            ###button
+            $table->string('text', 630)->nullable();
             $table->timestamps();
         });
     }

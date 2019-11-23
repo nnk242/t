@@ -40,6 +40,38 @@ class ProcessMessageComponent
         return $is_send;
     }
 
+    private static function elementButton($bot_payload_element_id, $buttons)
+    {
+        $bot_element_buttons = BotElementButton::wherebot_payload_element_id($bot_payload_element_id)->get();
+        foreach ($bot_element_buttons as $button) {
+            if ($button->type === 'web_url') {
+                $buttons = array_merge($buttons, [[
+                    'title' => $button->title,
+                    'type' => 'web_url',
+                    'url' => $button->url
+                ]]);
+            } elseif ($button->type === 'phone_number') {
+                $buttons = array_merge($buttons, [[
+                    'title' => $button->title,
+                    'type' => 'phone_number',
+                    'payload' => $button->payload
+                ]]);
+            } elseif ('postback') {
+                $buttons = array_merge($buttons, [[
+                    'title' => $button->title,
+                    'type' => 'postback',
+                    'payload' => $button->payload
+                ]]);
+            }
+        }
+        return $buttons;
+    }
+
+    private static function generic()
+    {
+
+    }
+
     public static function textMessage($bot_message_reply, $person_id, $access_token)
     {
         $data = [
@@ -91,74 +123,78 @@ class ProcessMessageComponent
             $elements = [];
             $i = 0;
             foreach ($bot_payload_elements as $value) {
-                $bot_element_buttons = BotElementButton::wherebot_payload_element_id($value->_id)->get();
-                $default_action = null;
-                $buttons = [];
-                $is_send = false;
-                if ($i >= 10) {
+                if ($value->template_type === 'generic') {
                     $default_action = null;
                     $buttons = [];
-                    $i = 0;
-                    $is_send = true;
-                }
-                if (isset($value->default_action_url)) {
-                    $default_action = [
-                        "type" => "web_url",
-                        "url" => $value->default_action_url,
-                        "messenger_extensions" => false,
-                        "webview_height_ratio" => $value->default_action_messenger_webview_height_ratio,
-                    ];
-                }
-                foreach ($bot_element_buttons as $button) {
-                    if ($button->type === 'web_url') {
-                        $buttons = array_merge($buttons, [[
-                            'title' => $button->title,
-                            'type' => 'web_url',
-                            'url' => $button->url
-                        ]]);
-                    } elseif ($button->type === 'phone_number') {
-                        $buttons = array_merge($buttons, [[
-                            'title' => $button->title,
-                            'type' => 'phone_number',
-                            'payload' => $button->payload
-                        ]]);
-                    } elseif ('postback') {
-                        $buttons = array_merge($buttons, [[
-                            'title' => $button->title,
-                            'type' => 'postback',
-                            'payload' => $button->payload
-                        ]]);
-                    }
-                }
-                $element = [
-                    "title" => $value->title,
-                    "image_url" => $value->image_url,
-                    "subtitle" => $value->subtitle,
-                ];
-
-                $elements = array_merge($elements, [array_merge($element, ['buttons' => count($buttons) ? $buttons : null], ['default_action' => $default_action])]);
-                $message = [
-                    "message" => [
-                        "attachment" => [
-                            "type" => "template",
-                            "payload" => [
-                                "template_type" => "generic",
-                                "elements" => $elements
-                            ]
-                        ]
-                    ]
-                ];
-                $i++;
-                if ($is_send) {
-                    if (isset($message)) {
-                        $data = dd(Message::templateGeneric(['id' => $person_id, 'message' => $message]));
-                    }
-
-                    if (isset($data)) {
+                    $is_send = false;
+                    if ($i >= 10) {
                         $default_action = null;
-                        Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
-                        Facebook::post($access_token, 'me/messages', $data);
-                        $message = [];
+                        $buttons = [];
+                        $i = 0;
+                        $is_send = true;
+                    }
+                    if (isset($value->default_action_url)) {
+                        $default_action = [
+                            "type" => "web_url",
+                            "url" => $value->default_action_url,
+                            "messenger_extensions" => false,
+                            "webview_height_ratio" => $value->default_action_messenger_webview_height_ratio,
+                        ];
+                    }
+                    $bot_element_buttons = BotElementButton::wherebot_payload_element_id($value->_id)->get();
+                    foreach ($bot_element_buttons as $button) {
+                        if ($button->type === 'web_url') {
+                            $buttons = array_merge($buttons, [[
+                                'title' => $button->title,
+                                'type' => 'web_url',
+                                'url' => $button->url
+                            ]]);
+                        } elseif ($button->type === 'phone_number') {
+                            $buttons = array_merge($buttons, [[
+                                'title' => $button->title,
+                                'type' => 'phone_number',
+                                'payload' => $button->payload
+                            ]]);
+                        } elseif ('postback') {
+                            $buttons = array_merge($buttons, [[
+                                'title' => $button->title,
+                                'type' => 'postback',
+                                'payload' => $button->payload
+                            ]]);
+                        }
+                    }
+                    if($value->title && $value->image_url && $value->subtitle) {
+                        $element = [
+                            "title" => $value->title,
+                            "image_url" => $value->image_url,
+                            "subtitle" => $value->subtitle,
+                        ];
+
+                        $elements = array_merge($elements, [array_merge($element, ['buttons' => count($buttons) ? $buttons : null], ['default_action' => $default_action])]);
+                        $message = [
+                            "message" => [
+                                "attachment" => [
+                                    "type" => "template",
+                                    "payload" => [
+                                        "template_type" => "generic",
+                                        "elements" => $elements
+                                    ]
+                                ]
+                            ]
+                        ];
+                        $i++;
+                        if ($is_send) {
+                            if (isset($message)) {
+                                $data = dd(Message::templateGeneric(['id' => $person_id, 'message' => $message]));
+                            }
+
+                            if (isset($data)) {
+                                $default_action = null;
+                                Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
+                                Facebook::post($access_token, 'me/messages', $data);
+                                $message = [];
+                            }
+                        }
                     }
                 }
             }
@@ -167,10 +203,8 @@ class ProcessMessageComponent
             if (isset($message)) {
                 $data = Message::templateGeneric(['id' => $person_id, 'message' => $message]);
             }
-
             if (isset($data)) {
                 if ($data) {
-                    $default_action = null;
                     Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
                     Facebook::post($access_token, 'me/messages', $data);
                 }

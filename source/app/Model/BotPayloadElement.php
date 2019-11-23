@@ -25,7 +25,9 @@ class BotPayloadElement extends Model
 
     protected $fillable = ['bot_message_reply_id', 'title', 'image_url', 'subtitle', 'default_action_type',
         'default_action_url', 'default_action_messenger_extensions', 'default_action_messenger_webview_height_ratio',
-        'group', 'position', 'template_type'
+        'group', 'position', 'template_type',
+        ### text
+        'text'
     ];
 
     public function botMessageReply()

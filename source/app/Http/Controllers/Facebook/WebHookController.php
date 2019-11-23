@@ -88,8 +88,8 @@ class WebHookController extends Controller
                                     "attachment" => [
                                         "type" => "template",
                                         "payload" => [
-                                            "template_type" => "list",
-                                            "top_element_style" => "compact",
+                                            "template_type" => "button",
+                                            "text" => "compact",
                                             "elements" => [
                                                 [
                                                     "title" => "Classic T-Shirt Collection",
