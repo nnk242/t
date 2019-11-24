@@ -26,16 +26,21 @@ class Message
 
     public static function assetAttachment($data)
     {
-        return array_merge(self::recipient($data['id']), [
-            'message' => [
-                'attachment' => [
-                    'type' => $data['attachment_type'],
-                    'payload' => [
-                        'url' => $data['attachment_payload_url']
+        try {
+            return array_merge(self::recipient($data['id']), [
+                'message' => [
+                    'attachment' => [
+                        'type' => $data['attachment_type'],
+                        'payload' => [
+                            'url' => $data['attachment_payload_url']
+                        ]
                     ]
                 ]
-            ]
-        ]);
+            ]);
+        } catch (\Exception $exception) {
+            return false;
+        }
+
     }
 
     public static function template($data)

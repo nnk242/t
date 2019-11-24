@@ -14,6 +14,7 @@ use App\Model\BotElementButton;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\BotPayloadElement;
+use App\Model\BotQuickReply;
 use App\Model\FbPostAction;
 use App\Model\Page;
 use ElephantIO\Client;
@@ -83,37 +84,53 @@ class WebHookController extends Controller
 
 
 //        dd($bot_message_reply);
-                            $data = [
-                                "message" => [
-                                    "attachment" => [
-                                        "type" => "template",
-                                        "payload" => [
-                                            "template_type" => "media",
-                                            "elements" => [
-                                                [
-                                                    "media_type" => "image",
-                                                    "url" => "https://www.facebook.com/1086408651532297/photos/1261269804046180",
-                                                    "buttons" => [
-                                                        [
-                                                            "title" => "View More",
-                                                            "type" => "postback",
-                                                            "payload" => "payload"
-                                                        ]
-                                                    ]
-                                                ]
-                                            ]
+                            $bot_message_reply = BotMessageReply::orderby('created_at', 'DESC')->first();
+                            if ($bot_message_reply->type_message === "quick_replies") {
+                                $bot_quick_replies = BotQuickReply::wherebot_message_reply_id($bot_message_reply->_id)->get();
+                                $quick_replies = [];
+                                foreach ($bot_quick_replies as $key => $value) {
+                                    if ($key >= 8) {
+                                        break;
+                                    }
+                                    if ($value->content_type === 'text') {
+                                        if ($value->title) {
+                                            $quick_replies[] = [
+                                                'content_type' => 'text',
+                                                'title' => $value->title,
+                                                'payload' => $value->payload,
+                                                'image_url' => $value->image_url
+                                            ];
+
+                                        }
+                                    } else {
+                                        $quick_replies[] = [
+                                            'content_type' => $value->content_type,
+                                            'image_url' => $value->image_url
+                                        ];
+                                    }
+                                }
+                                if ($bot_message_reply->text) {
+                                    $message = [
+                                        'messaging_type' => 'RESPONSE',
+                                        "message" => [
+                                            "text" => $bot_message_reply->text,
+                                            'quick_replies' => $quick_replies
+                                        ]];
+                                }
+                                if (isset($message)) {
+                                    $data = array_merge([
+                                        'recipient' => [
+                                            'id' => $person_id
                                         ]
-                                    ]
-                                ]];
-                            $data = array_merge([
-                                'recipient' => [
-                                    'id' => $person_id
-                                ]
-                            ], $data);
-                            if (isset($data)) {
-                                Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
-                                $send = Facebook::post($access_token, 'me/messages', $data);
+                                    ], $message);
+                                }
+
+                                if (isset($data)) {
+                                    Facebook::post($access_token, 'me/messages', Message::senderActionTypingOn(['id' => $person_id]));
+                                    $send = Facebook::post($access_token, 'me/messages', $data);
+                                }
                             }
+
                         }
 //
                         $client->initialize();

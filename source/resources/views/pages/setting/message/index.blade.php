@@ -8,7 +8,7 @@
                 <li class="tab col"><a href="#text-message" data-toggle="tab">Text messages</a></li>
                 <li class="tab col"><a href="#assets-attachments" data-toggle="tab">Assets & Attachments</a></li>
                 <li class="tab col"><a href="#message-templates" data-toggle="tab">Message Templates</a></li>
-                <li class="tab col"><a href="#test4" data-toggle="tab">Quick Replies</a></li>
+                <li class="tab col"><a href="#quick-replies" data-toggle="tab">Quick Replies</a></li>
             </ul>
         </div>
         <div id="call-bot-message" class="col s12">
@@ -23,13 +23,115 @@
         <div id="message-templates" class="col s12">
             @include('pages.setting.message.tab.message-template')
         </div>
-        <div id="test4" class="col s12">Test 4</div>
+        <div id="quick-replies" class="col s12">
+            <form class="container" method="POST">
+                @csrf
+                <input name="type_message" value="quick_replies" hidden>
+                <input id="bot_message_head_id_quick_reply" name="bot_message_head_id" hidden>
+                <div class="card-panel">
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="input-field">
+                                <h4>Quick Replies</h4>
+                            </div>
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">search</i>
+                                <input type="text" class="autocomplete search-data-message-head"
+                                       data-type="bot_message_head_id_quick_reply">
+                                <label>Tìm kiếm tin nhắn <span class="amber-text">BOT</span></label>
+                            </div>
+                            <div class="input-field col s12 content-text">
+                                <label>Nhập tin nhắn trả lời</label>
+                                <input type="text" class="validate " placeholder="Nhập tin nhắn trả lời" name="text">
+                            </div>
+                            <div class="input-field col s12">
+                                <select name="number" class="number">
+                                    <option value="0" disabled selected>0</option>
+                                    @for($i = 1; $i <=8; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
+                                <label>Số lượng trả lời nhanh</label>
+                            </div>
+                            <div class="row col 12 content-quick-replies">
+                                @for($i = 0; $i <8; $i ++)
+                                    <div class="row col s12 l3 m4 parent-content display-none">
+                                        <h5>Quick reply {{ $i+1 }}</h5>
+                                        <div class="input-field col s12">
+                                            <select name="content_type[]" class="content_type">
+                                                <option value="text" disabled selected>Chọn kiểu tin nhắn...</option>
+                                                <option value="text">Văn bản</option>
+                                                <option value="user_phone_number">Lấy số điện thoại</option>
+                                                <option value="user_email">Lấy email</option>
+                                            </select>
+                                            <label>Kiểu tin nhắn</label>
+                                        </div>
+                                        <div class="input-field col s12 content-text">
+                                            <label>Nhập title</label>
+                                            <input type="text" class="validate " placeholder="Nhập title"
+                                                   name="title[]">
+                                        </div>
+                                        <div class="input-field col s12">
+                                            <label>Nhập link</label>
+                                            <input type="url" class="validate" placeholder="Nhập link ảnh"
+                                                   name="image_url[]">
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+
+                            <div class="input-field col s12">
+                                <select name="type_notify" class="type_notify">
+                                    <option value="normal" disabled selected>Chọn loại tin nhắn chạy</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="timer">Timer</option>
+                                </select>
+                                <label>Loại tin nhắn</label>
+                            </div>
+                            <div class="run_ display-none">
+                                @include('components.common.form-date')
+                            </div>
+                            <div class="center-align input-field col s12">
+                                <button class="btn">Gửi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </div>
 @endsection
 
 @section('js')
     <script>
         $(document).ready(function () {
+            $('.content_type').on('change', function () {
+                switch ($(this).val()) {
+                    case 'text':
+                        $(this).closest('.parent-content').find('.content-text').removeClass('display-none')
+                        break
+                    case 'user_phone_number':
+                        $(this).closest('.parent-content').find('.content-text').addClass('display-none')
+                        break
+                    case 'user_email':
+                        $(this).closest('.parent-content').find('.content-text').addClass('display-none')
+                        break
+                }
+            })
+
+            $('.number').on('change', function () {
+                var num = parseInt($(this).val())
+                var div = $('.content-quick-replies > div')
+                for (var i = 0; i < div.length; i++) {
+                    if (i <= num) {
+                        ($('.parent-content:nth-child(' + i + ')')).removeClass('display-none')
+                    } else {
+                        ($('.parent-content:nth-child(' + i + ')')).addClass('display-none')
+                    }
+                }
+            })
+
             $('textarea.materialize-textarea').characterCounter()
             $('.modal').modal()
             $('.tabs').tabs()
@@ -124,7 +226,8 @@
 
                 if (this.getAttribute('data-type') === 'search-data-message-head' ||
                     this.getAttribute('data-type') === 'bot_message_head_id_attachment' ||
-                    this.getAttribute('data-type') === 'bot_message_head_id_template') {
+                    this.getAttribute('data-type') === 'bot_message_head_id_template' ||
+                    this.getAttribute('data-type') === 'bot_message_head_id_quick_reply') {
                     url = "{{ route('setting.message-head') }}" + "?text=" + text
                 } else {
                     url = "{{ route('setting.message-reply') }}" + "?text=" + text
@@ -174,6 +277,9 @@
                             }
                             if ((this.$el[0]).getAttribute('data-type') === 'bot_message_head_id_template') {
                                 $('#bot_message_head_id_template').attr('value', data_id[val])
+                            }
+                            if ((this.$el[0]).getAttribute('data-type') === 'bot_message_head_id_quick_reply') {
+                                $('#bot_message_head_id_quick_reply').attr('value', data_id[val])
                             }
                         }
                     }

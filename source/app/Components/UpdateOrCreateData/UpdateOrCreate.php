@@ -7,6 +7,7 @@ use App\Model\BotElementButton;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\BotPayloadElement;
+use App\Model\BotQuickReply;
 use App\Model\FbConversation;
 use App\Model\FbFeed;
 use App\Model\FbMessage;
@@ -100,6 +101,15 @@ class UpdateOrCreate
     {
         try {
             return BotPayloadElement::updateorcreate($data);
+        } catch (\Exception $exception) {
+        }
+        return false;
+    }
+
+    public static function botQuickReply($data)
+    {
+        try {
+            return BotQuickReply::updateorcreate($data);
         } catch (\Exception $exception) {
         }
         return false;

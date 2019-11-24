@@ -11,6 +11,7 @@ use App\Model\BotElementButton;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\BotPayloadElement;
+use App\Model\BotQuickReply;
 use App\Model\UserRolePage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -271,13 +272,53 @@ class MessageController extends Controller
                 }
 
                 return redirect()->back()->with('error', 'Thêm tin nhắn trả lời không thành công!');
+            case 'quick_replies':
+                if (gettype($request->content_type) === 'array') {
+                    foreach ($request->content_type as $key => $content_type) {
+                        if ($key >= 8) {
+                            break;
+                        }
+                        if ($content_type === 'text') {
+                            if (isset($request->text[$key])) {
+                                $bot_message_reply = UpdateOrCreate::botMessageReply(array_merge($data, [
+                                    'type_message' => 'quick_replies',
+                                    'text' => $request->text,
+                                    'bot_message_head_id' => $request->bot_message_head_id
+                                ]));
+
+                                $data_bot_quick_reply = [
+                                    'image_url' => $request->image_url[$key],
+                                    'title' => $request->title[$key],
+                                    'payload' => TextComponent::payload($request->title[$key]),
+                                    'content_type' => $content_type,
+                                    'bot_message_reply_id' => $bot_message_reply->_id
+                                ];
+
+                                UpdateOrCreate::botQuickReply($data_bot_quick_reply);
+                            }
+                        } else {
+                            $bot_message_reply = UpdateOrCreate::botMessageReply(array_merge($data, [
+                                'type_message' => 'quick_replies',
+                                'text' => $request->text,
+                                'bot_message_head_id' => $request->bot_message_head_id
+                            ]));
+
+                            $data_bot_quick_reply = [
+                                'image_url' => $request->image_url[$key],
+                                'content_type' => $content_type,
+                                'bot_message_reply_id' => $bot_message_reply->_id
+                            ];
+                            UpdateOrCreate::botQuickReply($data_bot_quick_reply);
+                        }
+                    }
+
+                    return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
+                }
 
 
         }
-        dd(2);
 
-        dd($request->all());
-        return $request->all();
+        return redirect()->back();
     }
 
     public function show($id)
