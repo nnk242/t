@@ -228,3 +228,61 @@
         </div>
     </div>
 </form>
+<div class="container">
+    <div class=" card-panel">
+        <div class="input-field">
+            <h5>Tin nhắn gửi cho user</h5>
+        </div>
+        @if($message_templates->count())
+            @component('components.table.index', ['headers' => $header_message_templates])
+                @slot('body')
+                    @foreach($message_templates as $key=>$message_template)
+                        <tr>
+                            <td>{{ $key +  1 }}</td>
+                            <td>{{$message_template->fb_page_id}}</td>
+                            <td>{{$message_template->page->name}}</td>
+                            <td class="red-text center">{{$message_template->text}}</td>
+                            <td>{{$message_template->updated_at}}</td>
+                            <td>{{$message_template->created_at}}</td>
+                            <td>
+                                <span title="Update page"><a
+                                        href="{{ route('page.show', ['page' => $message_template->fb_page_id]) }}"><span
+                                            class="material-icons">mode_edit</span></a></span>
+                                <span title="Delete page">
+                                    <a data-id="{{ $message_template->_id }}"
+                                       data-text="{{ $message_template->text }}"
+                                       class="delete-call-bot-message modal-trigger"
+                                       href="#call-bot-message-modal">
+                                        <span class="material-icons red-text">delete</span>
+                                    </a></span>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endslot
+                @slot('more')
+                    <div class="input-field center">
+                        <a href="{{ route('setting.message.show', ['message' => 'call-bot-message']) }}">
+                            <button class="btn">More...</button>
+                        </a>
+                    </div>
+                @endslot
+            @endcomponent
+        @else
+            <p class="text-center text-dark h3">Bạn chưa setup page hoặc chưa có nội dung nào...</p>
+        @endif
+    </div>
+
+
+    @component('components.modal.index', ['modal_id' => 'call-bot-message-modal', 'modal_title' => 'Xoá tin nhắn người dùng gửi', 'modal_form_action' => '', 'is_delete' => true])
+        @slot('modal_content')
+            <div class="modal-body">
+                <div id="modal-body-notify">
+                    Bạn chắc chắn muốn xóa?
+                </div>
+            </div>
+        @endslot
+        @slot('modal_button')
+            <button class="waves-effect waves-green btn">Gửi</button>
+        @endslot
+    @endcomponent
+</div>

@@ -10,9 +10,6 @@ use App\Http\Controllers\Controller;
 use App\Model\BotElementButton;
 use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
-use App\Model\BotPayloadElement;
-use App\Model\BotQuickReply;
-use App\Model\UserRolePage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -115,9 +112,23 @@ class MessageController extends Controller
 
     public function index(Request $request)
     {
-        $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
+        $page_selected = Auth::user()->page_selected;
+
+        $bot_message_heads = BotMessageHead::wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
+        $text_messages = BotMessageReply::wheretype_message('text_messages')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
+        $assets_attachments = BotMessageReply::wheretype_message('assets_attachments')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
+        $message_templates = BotMessageReply::wheretype_message('message_templates')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
+        $quick_replies = BotMessageReply::wheretype_message('quick_replies')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
+
         $header_bot_heads = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
-        return view('pages.setting.message.index', compact('bot_message_heads', 'header_bot_heads'));
+        $header_text_messages = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+        $header_assets_attachments = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+        $header_message_templates = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+        $header_quick_replies = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+
+        return view('pages.setting.message.index', compact('bot_message_heads', 'text_messages',
+            'assets_attachments', 'message_templates', 'quick_replies', 'header_bot_heads', 'header_text_messages',
+            'header_assets_attachments', 'header_message_templates', 'header_quick_replies'));
     }
 
     public function store(Request $request)
