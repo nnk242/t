@@ -240,6 +240,29 @@ class MessageController extends Controller
                         'bot_message_reply_id' => $bot_message_reply->_id,
                         'template_type' => 'button'
                     ];
+                } elseif ($request->template_type === 'media') {
+                    $validate = Validator::make(
+                        $request->all(),
+                        [
+                            'url' => 'required',
+                            'media_type' => 'required'
+                        ], [
+                        'required' => ':attribute phải có dữ liệu'
+                    ]);
+
+                    if ($validate->fails()) {
+                        return redirect()->back()->with('error', $validate->errors()->first());
+                    }
+
+                    $data = $this->botMessageReply($data, $request->bot_message_head_id);
+                    $bot_message_reply = UpdateOrCreate::botMessageReply($data);
+
+                    $data_bot_payload_element = [
+                        'url' => $request->url,
+                        'media_type' => $request->media_type,
+                        'bot_message_reply_id' => $bot_message_reply->_id,
+                        'template_type' => 'media'
+                    ];
                 }
                 if (isset($data_bot_payload_element)) {
                     if ($this->botElementButtons($data_bot_payload_element, $request->button_type, $request->button_url, $request->button_title, $request->payload)) {

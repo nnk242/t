@@ -24,6 +24,9 @@ class CreateBotPayloadElementsTable extends Migration
             $table->integer('position');
             ###button
             $table->string('text', 630)->nullable();
+            ###media
+            $table->string('media_type')->nullable();
+            $table->string('url')->nullable();
             $table->timestamps();
         });
     }

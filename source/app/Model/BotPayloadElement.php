@@ -27,7 +27,9 @@ class BotPayloadElement extends Model
         'default_action_url', 'default_action_messenger_extensions', 'default_action_messenger_webview_height_ratio',
         'group', 'position', 'template_type',
         ### text
-        'text'
+        'text',
+        ### media
+        'media_type', 'url'
     ];
 
     public function botMessageReply()

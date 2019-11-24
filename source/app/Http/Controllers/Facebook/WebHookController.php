@@ -88,59 +88,18 @@ class WebHookController extends Controller
                                     "attachment" => [
                                         "type" => "template",
                                         "payload" => [
-                                            "template_type" => "button",
-                                            "text" => "compact",
+                                            "template_type" => "media",
                                             "elements" => [
                                                 [
-                                                    "title" => "Classic T-Shirt Collection",
-                                                    "subtitle" => "See all our colors",
-                                                    "image_url" => "https://peterssendreceiveapp.ngrok.io/img/collection.png",
+                                                    "media_type" => "image",
+                                                    "url" => "https://www.facebook.com/1086408651532297/photos/1261269804046180",
                                                     "buttons" => [
                                                         [
-                                                            "title" => "View",
-                                                            "type" => "web_url",
-                                                            "url" => "https://peterssendreceiveapp.ngrok.io/collection",
-                                                            "messenger_extensions" => false,
-                                                            "webview_height_ratio" => "tall",
+                                                            "title" => "View More",
+                                                            "type" => "postback",
+                                                            "payload" => "payload"
                                                         ]
                                                     ]
-                                                ],
-                                                [
-                                                    "title" => "Classic White T-Shirt",
-                                                    "subtitle" => "See all our colors",
-                                                    "default_action" => [
-                                                        "type" => "web_url",
-                                                        "url" => "https://peterssendreceiveapp.ngrok.io/view?item=100",
-                                                        "messenger_extensions" => false,
-                                                        "webview_height_ratio" => "tall"
-                                                    ]
-                                                ],
-                                                [
-                                                    "title" => "Classic Blue T-Shirt",
-                                                    "image_url" => "https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png",
-                                                    "subtitle" => "100% Cotton, 200% Comfortable",
-                                                    "default_action" => [
-                                                        "type" => "web_url",
-                                                        "url" => "https://peterssendreceiveapp.ngrok.io/view?item=101",
-                                                        "messenger_extensions" => false,
-                                                        "webview_height_ratio" => "tall",
-                                                    ],
-                                                    "buttons" => [
-                                                        [
-                                                            "title" => "Shop Now",
-                                                            "type" => "web_url",
-                                                            "url" => "https://peterssendreceiveapp.ngrok.io/shop?item=101",
-                                                            "messenger_extensions" => false,
-                                                            "webview_height_ratio" => "tall",
-                                                        ]
-                                                    ]
-                                                ]
-                                            ],
-                                            "buttons" => [
-                                                [
-                                                    "title" => "View More",
-                                                    "type" => "postback",
-                                                    "payload" => "payload"
                                                 ]
                                             ]
                                         ]

@@ -38,7 +38,7 @@ class Message
         ]);
     }
 
-    public static function templateGeneric($data)
+    public static function template($data)
     {
         try {
             return array_merge(self::recipient($data['id']), $data['message']);
