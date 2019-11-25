@@ -140,7 +140,6 @@
             let attr_search = $('input.search-data-message-head, input.search-success, input.search-error-begin-time-active, input.search-error-end-time-active, input.search-error-time-open, input.search-error-giftcode')
 
             attr_search.on('keyup', delay(function (e) {
-                console.log($(this).attr('class'))
                 let text = $(this).val()
                 let url = ''
                 let data = {}
@@ -149,14 +148,14 @@
                 attr_search.autocomplete({
                     data
                 })
-
+                var type_ = $(this).closest('.run-event').find('.type_').val()
                 if (this.getAttribute('data-type') === 'search-data-message-head' ||
                     this.getAttribute('data-type') === 'bot_message_head_id_attachment' ||
                     this.getAttribute('data-type') === 'bot_message_head_id_template' ||
                     this.getAttribute('data-type') === 'bot_message_head_id_quick_reply') {
                     url = "{{ route('setting.message-head') }}" + "?text=" + text
                 } else {
-                    url = "{{ route('setting.message-reply') }}" + "?text=" + text
+                    url = "{{ route('setting.message-reply') }}" + "?text=" + text + '&type=' + type_
                 }
 
                 async function doAiax() {

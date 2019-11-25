@@ -8,17 +8,17 @@
     <div class="card-panel">
         <div class="row">
             <div class="col s12">
-                <div class="input-field">
+                <div class="input-field row col s12">
                     <h4>Ví dụ:</h4>
                     <p>User gửi tin nhắn đến với cú pháp cố định: <span class="green-text">ABC</span></p>
                     <p>User gửi tin nhắn đến với cú pháp linh hoạt hơn: <span
                             class="green-text">!'{value}'</span></p>
                 </div>
-                <div class="input-field">
+                <div class="input-field row col s12">
                     <textarea placeholder="Nhập tin nhắn nhận từ người dùng" type="text"
                               class="validate materialize-textarea" data-length="20" name="text"></textarea>
                 </div>
-                <div class="input-field">
+                <div class="input-field row col s12">
                     <select class="type" id="type-head" name="type">
                         <option value="normal" disabled selected>Chọn loại tin nhắn chạy</option>
                         <option value="normal">Normal</option>
@@ -29,6 +29,16 @@
 
                 <div class="run-event display-none" id="run-event">
                     @include('components.common.form-date')
+                    <div class="input-field row col s12">
+                        <select class="type_">
+                            <option value="text_messages" disabled selected>Chọn loại tin tìm kiếm</option>
+                            <option value="text_messages">Text messages</option>
+                            <option value="assets_attachments">Assets & Attachments</option>
+                            <option value="message_templates">Message templates</option>
+                            <option value="quick_replies">Quick replies</option>
+                        </select>
+                        <label>Tin nhắn</label>
+                    </div>
                     <div class="input-field col s12">
                         <i class="material-icons prefix">search</i>
                         <input type="text" class="autocomplete search-success" data-type="search-success">

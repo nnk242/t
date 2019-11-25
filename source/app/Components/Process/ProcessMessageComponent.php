@@ -2,13 +2,13 @@
 
 namespace App\Components\Process;
 
+use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
 use App\Components\Facebook\Message;
-use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Model\BotElementButton;
 use App\Model\BotPayloadElement;
 use App\Model\BotQuickReply;
-use App\Model\FbMessage;
+use App\Model\FbUserPage;
 
 class ProcessMessageComponent
 {
@@ -96,14 +96,26 @@ class ProcessMessageComponent
         } catch (\Exception $exception) {
             return false;
         }
+    }
 
+    private static function getName($fb_page_id, $person)
+    {
+        $fb_user_page = FbUserPage::wherem_page_user_id($fb_page_id . '_' . $person)->first();
+        if (isset($fb_user_page)) {
+            if ($fb_user_page->name) {
+                return $fb_user_page->name;
+            } else {
+                return $fb_user_page->first_name . ' ' . $fb_user_page->last_name;
+            }
+        }
+        return null;
     }
 
     public static function textMessage($bot_message_reply, $person_id, $access_token)
     {
         $data = [
             'id' => $person_id,
-            'text' => $bot_message_reply->text
+            'text' => TextComponent::replaceText($bot_message_reply->text, self::getName($bot_message_reply->fb_page_id, $person_id))
         ];
         $is_send = true;
         if ($bot_message_reply->type_notify === "timer") {
@@ -138,7 +150,6 @@ class ProcessMessageComponent
 
     public static function messageTemplate($bot_message_reply, $person_id, $access_token)
     {
-
         $is_send = true;
         if ($bot_message_reply->type_notify === "timer") {
             $is_send = self::timer($bot_message_reply->begin_time_active, $bot_message_reply->end_time_active,
@@ -169,9 +180,9 @@ class ProcessMessageComponent
                     $buttons = self::elementButton($value->_id);
                     if ($value->title && $value->image_url && $value->subtitle) {
                         $element = [
-                            "title" => $value->title,
+                            "title" => TextComponent::replaceText($value->title, self::getName($bot_message_reply->fb_page_id, $person_id)),
                             "image_url" => $value->image_url,
-                            "subtitle" => $value->subtitle,
+                            "subtitle" => TextComponent::replaceText($value->subtitle, self::getName($bot_message_reply->fb_page_id, $person_id)),
                         ];
 
                         $elements = array_merge($elements, [array_merge($element, ['buttons' => count($buttons) ? $buttons : null], ['default_action' => $default_action])]);
@@ -208,7 +219,7 @@ class ProcessMessageComponent
                                 "type" => "template",
                                 "payload" => [
                                     "template_type" => "button",
-                                    "text" => $value->text,
+                                    "text" => TextComponent::replaceText($value->text, self::getName($bot_message_reply->fb_page_id, $person_id)),
                                     'buttons' => count($buttons) ? $buttons : null
                                 ]
                             ]
@@ -253,7 +264,7 @@ class ProcessMessageComponent
                     if ($value->title) {
                         $quick_replies[] = [
                             'content_type' => 'text',
-                            'title' => $value->title,
+                            'title' => TextComponent::replaceText($value->title, self::getName($bot_message_reply->fb_page_id, $person_id)),
                             'payload' => $value->payload,
                             'image_url' => $value->image_url
                         ];
@@ -269,7 +280,7 @@ class ProcessMessageComponent
             $message = [
                 'messaging_type' => 'RESPONSE',
                 "message" => [
-                    "text" => $bot_message_reply->text,
+                    "text" => TextComponent::replaceText($bot_message_reply->text, self::getName($bot_message_reply->fb_page_id, $person_id)),
                     'quick_replies' => $quick_replies
                 ]];
             $data = array_merge([

@@ -345,7 +345,29 @@ class MessageController extends Controller
 
     public function messageReply(Request $request)
     {
-        return BotMessageReply::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->limit(10)->get();
+        $bot_message_replies = BotMessageReply::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->limit(10)->get();
+        if (!$bot_message_replies->count()) {
+            $bot_message_replies = BotMessageReply::wherefb_page_id(Auth::user()->page_selected)->where('title', 'LIKE', "%$request->text%")->limit(10)->get();
+        }
+
+        $data = array();
+
+        foreach ($bot_message_replies as $key => $bot_message_reply) {
+            if ($bot_message_reply->text) {
+                $text = $bot_message_reply->text . ' - ' . $bot_message_reply->created_at;
+            } else {
+                if ($bot_message_reply->title) {
+                    $text = $bot_message_reply->title . ' - ' . $bot_message_reply->created_at;
+                } else {
+                    $text = $bot_message_reply->type . ' - ' . $bot_message_reply->created_at;
+                }
+            }
+            $data[$key]['text'] = $text;
+
+            $data[$key]['_id'] = $bot_message_reply->_id;
+        }
+
+        return $data;
     }
 
     public function messageHead(Request $request)

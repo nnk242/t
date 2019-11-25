@@ -129,4 +129,9 @@ class TextComponent
     {
         return str_replace(' ', '_', strtoupper(self::stripUnicode($str))) . '_PAYLOAD';
     }
+
+    public static function replaceText($text, $name = null, $gift = null)
+    {
+        return str_replace(':gift:', $gift !== null ? $gift : ':gift:', str_replace(':name:', $name !== null ? $name : ':name:', $text));
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Jobs\Facebook;
 
 use App\Components\Common\TextComponent;
 use App\Components\Facebook\Facebook;
+use App\Components\Process\ProcessEventComponent;
 use App\Components\Process\ProcessMessageComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Model\BotMessageHead;
@@ -65,7 +66,7 @@ class FacebookSendMessage implements ShouldQueue
             ###
             $access_token = $user_fb_page->page->access_token;
 
-            $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->wheretype('normal')->get();
+            $bot_message_heads = BotMessageHead::wherefb_page_id($user_fb_page->fb_page_id)->get();
             foreach ($bot_message_heads as $bot_message_head) {
                 if (!TextComponent::passMessage($text, $bot_message_head->text)) {
                     continue;
@@ -80,6 +81,10 @@ class FacebookSendMessage implements ShouldQueue
 
                 if (isset($data)) {
                     Facebook::post($access_token, 'me/messages', $data);
+                }
+
+                if ($bot_message_head->type === 'event') {
+                    ProcessEventComponent::event($bot_message_head, $person_id, $access_token);
                 }
             }
 

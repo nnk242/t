@@ -54,7 +54,7 @@
                     @endfor
                 </div>
 
-                <div class="input-field col s12">
+                <div class="input-field row col s12">
                     <select name="type_notify" class="type_notify">
                         <option value="normal" disabled selected>Chọn loại tin nhắn chạy</option>
                         <option value="normal">Normal</option>

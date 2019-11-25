@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Event;
 use App\Http\Controllers\Controller;
 
 use App\Model\BotElementButton;
+use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\BotPayloadElement;
 use App\Model\BotQuickReply;
@@ -22,7 +23,7 @@ class EventController extends Controller
     {
 
         $bot_message_reply = BotMessageReply::orderby('created_at', 'DESC')->get();
-        dd($bot_message_reply);
+        dd(BotMessageHead::all());
         if ($bot_message_reply->type_message === "quick_replies") {
             $bot_quick_replies = BotQuickReply::wherebot_message_reply_id($bot_message_reply->_id)->get();
             $elements = [];
