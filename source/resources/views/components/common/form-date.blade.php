@@ -1,5 +1,5 @@
 <div class="input-field">
-    <div class="col s12 row">
+    <div class="col s12">
         <label>Thời gian chat trong ngày</label>
         <div class="row">
             <div class="col s6">
@@ -12,7 +12,7 @@
     </div>
 </div>
 <div class="input-field">
-    <div class="col s12 row">
+    <div class="col s12">
         <label>Thời gian hoạt động</label>
         <div class="row">
             <div class="col s4 l2">

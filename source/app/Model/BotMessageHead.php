@@ -36,26 +36,26 @@ class BotMessageHead extends Model
 
     public function textSuccess()
     {
-        return $this->belongsTo(BotMessageReply::class, 'text_success_id', 'bot_message_head_id');
+        return $this->belongsTo(BotMessageReply::class, 'text_success_id');
     }
 
     public function textErrorBeginTimeActive()
     {
-        return $this->belongsTo(BotMessageReply::class, 'text_error_begin_time_active_id', 'bot_message_head_id');
+        return $this->belongsTo(BotMessageReply::class, 'text_error_begin_time_active_id');
     }
 
     public function textErrorEndTimeActive()
     {
-        return $this->belongsTo(BotMessageReply::class, 'text_error_end_time_active_id', 'bot_message_head_id');
+        return $this->belongsTo(BotMessageReply::class, 'text_error_end_time_active_id');
     }
 
     public function textErrorTimeOpen()
     {
-        return $this->belongsTo(BotMessageReply::class, 'text_error_time_open_id', 'bot_message_head_id');
+        return $this->belongsTo(BotMessageReply::class, 'text_error_time_open_id');
     }
 
     public function textErrorGift()
     {
-        return $this->belongsTo(BotMessageReply::class, 'text_error_gift_id', 'bot_message_head_id');
+        return $this->belongsTo(BotMessageReply::class, 'text_error_gift_id');
     }
 }

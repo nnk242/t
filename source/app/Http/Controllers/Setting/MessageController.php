@@ -112,7 +112,12 @@ class MessageController extends Controller
 
     public function index(Request $request)
     {
-        $page_selected = Auth::user()->page_selected;
+        $page_selected = PageComponent::pageSelected();
+        if (isset($page_selected)) {
+            $page_selected = $page_selected->fb_page_id;
+        } else {
+            return abort(404);
+        }
 
         $bot_message_heads = BotMessageHead::wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
         $text_messages = BotMessageReply::wheretype_message('text_messages')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
@@ -120,7 +125,7 @@ class MessageController extends Controller
         $message_templates = BotMessageReply::wheretype_message('message_templates')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
         $quick_replies = BotMessageReply::wheretype_message('quick_replies')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
 
-        $header_bot_heads = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+        $header_bot_heads = ['STT', 'Page', ['label' => 'Nội dung', 'class' => 'center'], ['label' => 'Thể loại', 'class' => 'center'], 'Ngày thêm', '###'];
         $header_text_messages = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         $header_assets_attachments = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         $header_message_templates = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
@@ -414,6 +419,30 @@ class MessageController extends Controller
         } else {
             return redirect()->back()->with('error', 'Thêm tin nhắn không thành công!');
         }
+    }
+
+    public function showMessageHead($id)
+    {
+        $page_selected = PageComponent::pageSelected();
+        if (isset($page_selected)) {
+            $page_selected = $page_selected->fb_page_id;
+        } else {
+            return abort(404);
+        }
+        $bot_message_head = BotMessageHead::wherefb_page_id($page_selected)->where_id($id)->firstorfail();
+        return view('pages.setting.message.bot-message-head.show', compact('bot_message_head'));
+    }
+
+    public function editMessageHead($id)
+    {
+        $page_selected = PageComponent::pageSelected();
+        if (isset($page_selected)) {
+            $page_selected = $page_selected->fb_page_id;
+        } else {
+            return abort(404);
+        }
+        $bot_message_head = BotMessageHead::wherefb_page_id($page_selected)->where_id($id)->firstorfail();
+        return view('pages.setting.message.bot-message-head.edit', compact('bot_message_head'));
     }
 
     public function destroyMessageHead($id)

@@ -55,6 +55,8 @@ Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.
     ##message-head
     Route::get('message-head', 'MessageController@messageHead')->name('message-head');
     Route::post('message-head', 'MessageController@storeMessageHead')->name('store-message-head');
+    Route::get('message-head/{id}', 'MessageController@showMessageHead')->name('show-message-head');
+    Route::get('message-head/{id}/edit', 'MessageController@editMessageHead')->name('edit-message-head');
     Route::delete('message-head/{id}', 'MessageController@destroyMessageHead')->name('destroy-message-head');
 
     Route::get('message-reply', 'MessageController@messageReply')->name('message-reply');

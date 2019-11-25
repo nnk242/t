@@ -91,15 +91,17 @@
                     @foreach($bot_message_heads as $key=>$bot_message_head)
                         <tr>
                             <td>{{ $key +  1 }}</td>
-                            <td>{{$bot_message_head->fb_page_id}}</td>
-                            <td>{{$bot_message_head->page->name}}</td>
+                            <td>{{$bot_message_head->fb_page_id . ' - ' . $bot_message_head->page->name}}</td>
                             <td class="red-text center">{{$bot_message_head->text}}</td>
-                            <td>{{$bot_message_head->updated_at}}</td>
+                            <td class="center-align">
+                                <span class="new badge {{ $bot_message_head->type === 'event' ? 'green':'amber' }}"
+                                      data-badge-caption="{{$bot_message_head->type}}"></span>
+                            </td>
                             <td>{{$bot_message_head->created_at}}</td>
                             <td>
                                 <span title="Update page"><a
-                                        href="{{ route('page.show', ['page' => $bot_message_head->fb_page_id]) }}"><span
-                                            class="material-icons">mode_edit</span></a></span>
+                                        href="{{ route('setting.show-message-head', ['id' => $bot_message_head->_id]) }}"><span
+                                            class="material-icons">remove_red_eye</span></a></span>
                                 <span title="Delete page">
                                     <a data-id="{{ $bot_message_head->_id }}"
                                        data-text="{{ $bot_message_head->text }}"
@@ -112,11 +114,14 @@
                     @endforeach
                 @endslot
                 @slot('more')
-                    <div class="input-field center">
-                        <a href="{{ route('setting.message.show', ['message' => 'call-bot-message']) }}">
-                            <button class="btn">More...</button>
-                        </a>
-                    </div>
+{{--                    @if($bot_message_head->count() > 5)--}}
+                    @if($bot_message_head->count())
+                        <div class="input-field center row">
+                            <a href="{{ route('setting.message.show', ['message' => 'call-bot-message']) }}">
+                                <button class="btn">More...</button>
+                            </a>
+                        </div>
+                    @endif
                 @endslot
             @endcomponent
         @else
