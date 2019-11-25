@@ -14,6 +14,7 @@ class CreateBotMessageHeadsTable extends Migration
             $table->string('fb_page_id');
             $table->foreign('fb_page_id')->references('fb_page_id')->on('pages')->onDelete('cascade');
             #message
+            $table->string('type_event')->nullable();
             $table->string('text_success_id')->nullable();
             $table->string('text_error_begin_time_active_id')->nullable();
             $table->string('text_error_end_time_active_id')->nullable();

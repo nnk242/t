@@ -126,7 +126,7 @@ class MessageController extends Controller
         $quick_replies = BotMessageReply::wheretype_message('quick_replies')->wherefb_page_id($page_selected)->orderby('created_at', 'DESC')->limit(5)->get();
 
         $header_bot_heads = ['STT', 'Page', ['label' => 'Nội dung', 'class' => 'center'], ['label' => 'Thể loại', 'class' => 'center'], 'Ngày thêm', '###'];
-        $header_text_messages = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+        $header_text_messages = ['STT', 'ID Page', 'Nội dung nhận', 'Trả lời người dùng', 'Thể loại', 'Ngày thêm', '###'];
         $header_assets_attachments = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         $header_message_templates = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
         $header_quick_replies = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
@@ -411,7 +411,8 @@ class MessageController extends Controller
             'text_error_time_open_id' => $request->text_error_time_open_id,
             'text_error_gift_id' => $request->text_error_gift_id,
             'text_success_id' => $request->text_success_id,
-            'text' => $request->text
+            'text' => $request->text,
+            'type_event' => $request->type_event
         ]);
 
         if (UpdateOrCreate::botMessageHead($data)) {
@@ -429,8 +430,15 @@ class MessageController extends Controller
         } else {
             return abort(404);
         }
-        $bot_message_head = BotMessageHead::wherefb_page_id($page_selected)->where_id($id)->firstorfail();
-        return view('pages.setting.message.bot-message-head.show', compact('bot_message_head'));
+        if($id === 'call-bot-message') {
+            $bot_message_heads = BotMessageHead::wherefb_page_id($page_selected)->orderby('id', 'DESC')->paginate(10);
+            $header_bot_heads = ['STT', 'Page', ['label' => 'Nội dung', 'class' => 'center'], ['label' => 'Thể loại', 'class' => 'center'], 'Ngày thêm', '###'];
+            return view('pages.setting.message.bot-message-head.index', compact('bot_message_heads', 'header_bot_heads'));
+        } else {
+            $bot_message_head = BotMessageHead::wherefb_page_id($page_selected)->where_id($id)->firstorfail();
+            return view('pages.setting.message.bot-message-head.show', compact('bot_message_head'));
+        }
+
     }
 
     public function editMessageHead($id)

@@ -48,20 +48,27 @@
                     @foreach($text_messages as $key=>$text_message)
                         <tr>
                             <td>{{ $key +  1 }}</td>
-                            <td>{{$text_message->fb_page_id}}</td>
-                            <td>{{$text_message->page->name}}</td>
-                            <td class="red-text center">{{$text_message->text}}</td>
-                            <td>{{$text_message->updated_at}}</td>
+                            <td class="amber-text">{{$text_message->page->name . ' - ' . $text_message->fb_page_id}}</td>
+                            <td class="cyan-text">{{$text_message->botMessageHead ? $text_message->botMessageHead->text : ''}}</td>
+                            <td class="red-text">
+                                <pre>{{$text_message->text}}</pre>
+                            </td>
+                            <td><span class="new badge"
+                                      data-badge-caption="{{$text_message->type_notify}}"></span></td>
                             <td>{{$text_message->created_at}}</td>
                             <td>
+                                <span>
+                                    <a href="{{ route('setting.edit-message-head', ['id' => $text_message->_id]) }}"
+                                       class="amber-text"><span class="material-icons">mode_edit</span></a>
+                                </span>
                                 <span title="Update page"><a
                                         href="{{ route('page.show', ['page' => $text_message->fb_page_id]) }}"><span
-                                            class="material-icons">mode_edit</span></a></span>
+                                            class="material-icons">remove_red_eye</span></a></span>
                                 <span title="Delete page">
                                     <a data-id="{{ $text_message->_id }}"
                                        data-text="{{ $text_message->text }}"
-                                       class="delete-call-bot-message modal-trigger"
-                                       href="#call-bot-message-modal">
+                                       class="delete-message modal-trigger"
+                                       href="#text-messages">
                                         <span class="material-icons red-text">delete</span>
                                     </a></span>
                             </td>
@@ -82,7 +89,7 @@
     </div>
 
 
-    @component('components.modal.index', ['modal_id' => 'call-bot-message-modal', 'modal_title' => 'Xoá tin nhắn người dùng gửi', 'modal_form_action' => '', 'is_delete' => true])
+    @component('components.modal.index', ['modal_id' => 'text-messages', 'modal_title' => 'Xoá tin nhắn người dùng gửi', 'modal_form_action' => '', 'is_delete' => true])
         @slot('modal_content')
             <div class="modal-body">
                 <div id="modal-body-notify">

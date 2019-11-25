@@ -44,7 +44,7 @@ class FacebookSendMessage implements ShouldQueue
             ###
             $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
             $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
-
+            $quick_reply_payload = isset($entry[0]['messaging'][0]['message']['quick_reply']['payload']) ? $entry[0]['messaging'][0]['message']['quick_reply']['payload'] : null;
             $array_postback = [
                 'payload' => isset($entry[0]['messaging'][0]['postback']['payload']) ? $entry[0]['messaging'][0]['postback']['payload'] : null,
                 'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
@@ -73,18 +73,30 @@ class FacebookSendMessage implements ShouldQueue
                 }
                 $bot_message_replies = BotMessageReply::wherebot_message_head_id($bot_message_head->id)->get();
                 ProcessMessageComponent::message($bot_message_replies, $person_id, $access_token);
-//                foreach ($bot_message_replies as $bot_message_reply) {
-//                    if ($bot_message_reply->type_message === 'text_messages') {
-//                        ProcessMessageComponent::textMessage($bot_message_reply, $entry, $person_id, $user_fb_page, $access_token);
-//                    }
-//                }
 
                 if (isset($data)) {
                     Facebook::post($access_token, 'me/messages', $data);
                 }
 
-                if ($bot_message_head->type === 'event') {
-                    ProcessEventComponent::event($bot_message_head, $person_id, $access_token);
+                if ($bot_message_head->type === 'event' && $text !== null) {
+                    $is_send = false;
+                    if ($bot_message_head->type_event === 'phone' || $bot_message_head->type_event === 'email') {
+                        if ($text === $quick_reply_payload) {
+                            if (filter_var($text, FILTER_VALIDATE_EMAIL)) {
+                                if ($bot_message_head->type_event === 'email') {
+                                    $is_send = true;
+                                }
+                            } else {
+                                $is_send = true;
+                            }
+                        }
+                    } else {
+                        $is_send = true;
+                    }
+
+                    if ($is_send) {
+                        ProcessEventComponent::event($bot_message_head, $person_id, $access_token);
+                    }
                 }
             }
 

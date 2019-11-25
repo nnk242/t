@@ -9,6 +9,7 @@ use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\BotPayloadElement;
 use App\Model\BotQuickReply;
+use App\Model\FbMessage;
 use App\Model\FbProcess;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ class EventController extends Controller
 
     public function index()
     {
-
+        dd(FbMessage::orderby('created_at', 'DESC')->first());
         $bot_message_reply = BotMessageReply::orderby('created_at', 'DESC')->get();
         dd(BotMessageHead::all());
         if ($bot_message_reply->type_message === "quick_replies") {

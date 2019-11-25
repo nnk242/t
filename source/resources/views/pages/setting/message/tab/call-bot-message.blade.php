@@ -28,6 +28,15 @@
                 </div>
 
                 <div class="run-event display-none" id="run-event">
+                    <div class="col s12 row input-field">
+                        <select name="type_event">
+                            <option value="normal" disabled selected>Chọn loại event</option>
+                            <option value="normal">Normal</option>
+                            <option value="phone">Payload số điện thoại</option>
+                            <option value="email">Payload email</option>
+                        </select>
+                        <label>Kiểu sự kiện</label>
+                    </div>
                     @include('components.common.form-date')
                     <div class="input-field row col s12">
                         <select class="type_">
@@ -83,7 +92,7 @@
 <div class="container">
     <div class=" card-panel">
         <div class="input-field">
-            <h5>Tin nhắn gửi cho user</h5>
+            <h5>Tin nhắn nhận từ user</h5>
         </div>
         @if($bot_message_heads->count())
             @component('components.table.index', ['headers' => $header_bot_heads])
@@ -99,6 +108,10 @@
                             </td>
                             <td>{{$bot_message_head->created_at}}</td>
                             <td>
+                                <span>
+                                    <a href="{{ route('setting.edit-message-head', ['id' => $bot_message_head->_id]) }}"
+                                       class="amber-text"><span class="material-icons">mode_edit</span></a>
+                                </span>
                                 <span title="Update page"><a
                                         href="{{ route('setting.show-message-head', ['id' => $bot_message_head->_id]) }}"><span
                                             class="material-icons">remove_red_eye</span></a></span>
@@ -114,10 +127,10 @@
                     @endforeach
                 @endslot
                 @slot('more')
-{{--                    @if($bot_message_head->count() > 5)--}}
+                    {{--                    @if($bot_message_head->count() > 5)--}}
                     @if($bot_message_head->count())
                         <div class="input-field center row">
-                            <a href="{{ route('setting.message.show', ['message' => 'call-bot-message']) }}">
+                            <a href="{{ route('setting.show-message-head', ['id' => 'call-bot-message']) }}">
                                 <button class="btn">More...</button>
                             </a>
                         </div>

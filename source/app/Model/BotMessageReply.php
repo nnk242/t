@@ -29,4 +29,9 @@ class BotMessageReply extends Model
     {
         return $this->belongsTo(Page::class, 'fb_page_id', 'fb_page_id');
     }
+
+    public function botMessageHead()
+    {
+        return $this->belongsTo(BotMessageHead::class, 'bot_message_head_id');
+    }
 }

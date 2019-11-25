@@ -65,7 +65,17 @@ class TextComponent
     public static function passMessage($text, $def)
     {
         try {
+            if ($def === '$is_mail' || $def === '$is_phone') {
+                if (filter_var($text, FILTER_VALIDATE_EMAIL) && $def === '$is_mail') {
+                    return true;
+                } elseif($def === '$is_phone') {
+                    if($text[0] === '+') {
+                        return true;
+                    }
+                }
+            }
             $is_pass = false;
+
             $text = strtolower(self::stripUnicode($text));
             $def = strtolower(self::stripUnicode($def));
             $strlen_def = strlen($def);

@@ -14,14 +14,15 @@ class BotMessageHead extends Model
     {
         $this->attributes['status'] = 1;
         $this->attributes['type'] = 'normal';
+        $this->attributes['type_event'] = 'normal';
         parent::__construct($attributes);
     }
 
-    protected $attributes = ['status' => 1, 'type' => 'normal'];
+    protected $attributes = ['status' => 1, 'type' => 'normal', 'type_event' => 'normal'];
 
     protected $fillable = ['fb_page_id', 'text', 'text_success_id', 'text_error_begin_time_active_id',
         'text_error_end_time_active_id', 'text_error_time_open_id', 'text_error_gift_id', 'type', 'status',
-        'begin_time_open', 'end_time_open', 'begin_time_active', 'end_time_active'
+        'begin_time_open', 'end_time_open', 'begin_time_active', 'end_time_active', 'type_event'
     ];
 
     public function page()
