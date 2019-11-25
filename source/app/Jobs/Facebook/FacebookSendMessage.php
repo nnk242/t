@@ -82,13 +82,7 @@ class FacebookSendMessage implements ShouldQueue
                     $is_send = false;
                     if ($bot_message_head->type_event === 'phone' || $bot_message_head->type_event === 'email') {
                         if ($text === $quick_reply_payload) {
-                            if (filter_var($text, FILTER_VALIDATE_EMAIL)) {
-                                if ($bot_message_head->type_event === 'email') {
-                                    $is_send = true;
-                                }
-                            } else {
-                                $is_send = true;
-                            }
+                            $is_send = true;
                         }
                     } else {
                         $is_send = true;
