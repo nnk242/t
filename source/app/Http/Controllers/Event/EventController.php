@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Event;
 
+use App\Components\Facebook\Facebook;
 use App\Http\Controllers\Controller;
 
 use App\Model\BotElementButton;
@@ -11,7 +12,9 @@ use App\Model\BotPayloadElement;
 use App\Model\BotQuickReply;
 use App\Model\FbMessage;
 use App\Model\FbProcess;
+use App\Model\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -22,6 +25,50 @@ class EventController extends Controller
 
     public function index()
     {
+        dd(BotMessageReply::where('text', 'LIKE', "%h%")->limit(10)->get());
+        dd('error');
+        $data = ["messages" => [
+            [
+                "attachment" => [
+                    "type" => "template",
+                    "payload" => [
+                        "template_type" => "generic",
+                        "elements" => [
+                            [
+                                "title" => "Welcome to Our Marketplace!",
+                                "image_url" => "https://www.facebook.com/jaspers.png",
+                                "subtitle" => "Fresh fruits and vegetables. Yum.",
+                                "buttons" => [
+                                    [
+                                        "type" => "web_url",
+                                        "url" => "https://www.jaspersmarket.com",
+                                        "title" => "View Website"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+        ];
+        $access_token = (Page::wherefb_page_id(Auth::user()->page_selected)->first()->access_token);
+        $message_creatives = Facebook::post($access_token, 'me/message_creatives', $data);
+        $message_creative_id = null;
+        if ($message_creatives) {
+            $message_creative_id = isset($message_creatives->getDecodedBody()['message_creative_id']) ? $message_creatives->getDecodedBody()['message_creative_id'] : null;
+        }
+        if ($message_creative_id !== null) {
+            $data = [
+                "message_creative_id" => $message_creative_id,
+                "notification_type" => "SILENT_PUSH",
+                "messaging_type" => "MESSAGE_TAG",
+                "tag" => "NON_PROMOTIONAL_SUBSCRIPTION"
+            ];
+            dd(Facebook::post($access_token, 'me/broadcast_messages', $data));
+        }
+
+        dd(1);
         dd(FbMessage::orderby('created_at', 'DESC')->first());
         $bot_message_reply = BotMessageReply::orderby('created_at', 'DESC')->get();
         dd(BotMessageHead::all());

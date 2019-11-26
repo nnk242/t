@@ -20,7 +20,7 @@ return [
     'facebook_config' => [
         'app_id' => env('FACEBOOK_CLIENT_ID'),
         'app_secret' => env('FACEBOOK_CLIENT_SECRET'),
-        'default_graph_version' => 'v5.0',
+        'default_graph_version' => 'v4.0',
         //'enable_beta_mode' => true,
         //'http_client_handler' => 'guzzle',
     ],
