@@ -144,7 +144,7 @@
                         @foreach($data as $key=>$value)
                             <tr>
                                 <td>{{ $key +  1 }}</td>
-                                <td>{{$value->name}}</td>
+                                <td><span class=""></span>{{$value->botMessageReply->text}}</td>
                                 <td>{{$value->email}}</td>
                                 <td><img src="{{$value->avatar}}" width="40"></td>
                                 <td>{{$value->role}}</td>

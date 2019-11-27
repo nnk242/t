@@ -7,6 +7,8 @@ use App\Components\Process\DateComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Jobs\Console\AddUserPage;
 use App\Model\BotMessageReply;
+use App\Model\BroadcastMessenger;
+use App\Model\BroadcastPage;
 use App\Model\FbProcess;
 use App\Model\Page;
 use App\Model\User;
@@ -29,7 +31,7 @@ class MessageController extends Controller
     {
 //        dd(FbProcess::wherestatus(1)->limit(2)->get());
 //        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
-        $data = User::paginate(10);
+        $data = BroadcastMessenger::whereuser_id(Auth::id())->paginate(10);
 //        $data = Page::WhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);
         $pages = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->get();
         $headers = [
@@ -58,12 +60,21 @@ class MessageController extends Controller
         }
         $data = [
             'bot_message_reply_id' => $request->bot_message_reply_id,
-            'time_interactive' => $request->time_interactive
+            'time_interactive' => (int)$request->time_interactive,
+            'status' => (int)$request->status != 0 ? 1 : 0,
+            'user_id' => Auth::id()
         ];
         $date_active = $request->date_active;
         $time_active = $request->time_active;
         $data = array_merge($data, DateComponent::date($date_active, $time_active));
-        dd($request->all());
+        $broadcast_messager = BroadcastMessenger::updateorcreate($data);
+        foreach ($request->arr_user_page_id as $value) {
+            $broadcast_page = BroadcastPage::updateorcreate([
+                'broadcast_messenger_id' => $broadcast_messager->_id,
+                'fb_page_id' => $value
+            ]);
+        }
+        return redirect()->back()->with('success', 'Gửi thành công');
     }
 
     public function show($id)
