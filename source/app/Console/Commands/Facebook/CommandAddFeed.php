@@ -28,7 +28,7 @@ class CommandAddFeed extends Command
         $fb_page_id = $this->option('fb_page_id');
 
         $this->info(Notify::notify('Start run add add feed' . $fb_page_id));
-        $page = Page::where($fb_page_id)->firstorfail();
+        $page = Page::wherefb_page_id($fb_page_id)->firstorfail();
         $fb_page_id = $page->fb_page_id;
         $this->info(Notify::notify('Start with page_fb_id ' . $fb_page_id));
 
@@ -40,7 +40,7 @@ class CommandAddFeed extends Command
                 'post_id' => $feed['id'],
                 'message' => isset($feed['message']) ? $feed['message'] : null,
                 'link' => isset($feed['picture']) ? $feed['picture'] : null,
-                'from_id' => $feed['from']['id'],
+                'from_id' => isset($feed['from']['id']) ? $feed['from']['id'] : null,
                 'created_time' => strtotime($feed['created_time'])
             ];
             UpdateOrCreate::fbFeed($data);
