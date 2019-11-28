@@ -137,80 +137,52 @@
                 }
             })
 
-            let attr_search = $('input.search-data-message-head, input.search-success, input.search-error-begin-time-active, input.search-error-end-time-active, input.search-error-time-open, input.search-error-giftcode')
+            let attr_search = $('input.search-success, input.search-error-begin-time-active, input.search-error-end-time-active, input.search-error-time-open, input.search-error-giftcode')
 
-            attr_search.on('keyup', delay(function (e) {
-                let text = $(this).val()
-                let url = ''
-                let data = {}
-                let data_id = {}
-
-                attr_search.autocomplete({
-                    data
-                })
-                var type_ = $(this).closest('.run-event').find('.type_').val()
-                if (this.getAttribute('data-type') === 'search-data-message-head' ||
-                    this.getAttribute('data-type') === 'bot_message_head_id_attachment' ||
-                    this.getAttribute('data-type') === 'bot_message_head_id_template' ||
-                    this.getAttribute('data-type') === 'bot_message_head_id_quick_reply') {
-                    url = "{{ route('setting.message-head') }}" + "?text=" + text
-                } else {
-                    url = "{{ route('setting.message-reply') }}" + "?text=" + text + '&type=' + type_
-                }
-
-                async function doAiax() {
-                    const result = await $.ajax({
-                        url,
-                        success: function (response) {
-                            response.forEach(element => {
-                                text_ = element.text
-                                _id = element._id
-                                data[text_] = null
-                                data_id[text_] = _id
-                                return data
-                            })
-                        }
-                    })
-                    return result
-                }
-
-                doAiax()
-
-                attr_search.autocomplete({
-                        data,
-                        onAutocomplete: function (val) {
-                            if ((this.$el[0]).getAttribute('data-type') === 'search-success') {
-                                $('#input-success-id').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-giftcode') {
-                                $('#input-error-gift').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-time-open') {
-                                $('#input-error-time-open').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-begin-time-active') {
-                                $('#input-error-begin-time-active').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'search-error-end-time-active') {
-                                $('#input-error-end-time-active').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'search-data-message-head') {
-                                $('#bot_message_head_id_text_messages').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'bot_message_head_id_attachment') {
-                                $('#bot_message_head_id_attachment').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'bot_message_head_id_template') {
-                                $('#bot_message_head_id_template').attr('value', data_id[val])
-                            }
-                            if ((this.$el[0]).getAttribute('data-type') === 'bot_message_head_id_quick_reply') {
-                                $('#bot_message_head_id_quick_reply').attr('value', data_id[val])
-                            }
-                        }
+            $(attr_search).devbridgeAutocomplete({
+                serviceUrl: "{{ route('search-data') }}",
+                type: 'GET',
+                onSelect: function (suggestion) {
+                    if ($(this).attr('data-type') === 'search-success') {
+                        $('#input-success-id').attr('value', suggestion.data)
                     }
-                )
-            }, 500))
+                    if ($(this).attr('data-type') === 'search-error-giftcode') {
+                        $('#input-error-gift').attr('value', suggestion.data)
+                    }
+                    if ($(this).attr('data-type') === 'search-error-time-open') {
+                        $('#input-error-time-open').attr('value', suggestion.data)
+                    }
+                    if ($(this).attr('data-type') === 'search-error-begin-time-active') {
+                        $('#input-error-begin-time-active').attr('value', suggestion.data)
+                    }
+                    if ($(this).attr('data-type') === 'search-error-end-time-active') {
+                        $('#input-error-end-time-active').attr('value', suggestion.data)
+                    }
+                },
+                showNoSuggestionNotice: true,
+                noSuggestionNotice: 'Không tìm thấy dữ liệu nào...',
+            })
 
+            $('input.search-data-message-head').devbridgeAutocomplete({
+                serviceUrl: "{{ route('setting.message-head') }}",
+                type: 'GET',
+                onSelect: function (suggestion) {
+                    if ($(this).attr('data-type') === 'search-data-message-head') {
+                        $('#bot_message_head_id_text_messages').attr('value', suggestion.data)
+                    }
+                    if ($(this).attr('data-type') === 'bot_message_head_id_attachment') {
+                        $('#bot_message_head_id_attachment').attr('value', suggestion.data)
+                    }
+                    if ($(this).attr('data-type') === 'bot_message_head_id_template') {
+                        $('#bot_message_head_id_template').attr('value', suggestion.data)
+                    }
+                    if ($(this).attr('data-type') === 'bot_message_head_id_quick_reply') {
+                        $('#bot_message_head_id_quick_reply').attr('value', suggestion.data)
+                    }
+                },
+                showNoSuggestionNotice: true,
+                noSuggestionNotice: 'Không tìm thấy dữ liệu nào...',
+            })
         })
     </script>
 @endsection

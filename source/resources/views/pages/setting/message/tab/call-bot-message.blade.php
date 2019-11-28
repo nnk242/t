@@ -12,7 +12,10 @@
                     <h4>Ví dụ:</h4>
                     <p>User gửi tin nhắn đến với cú pháp cố định: <span class="green-text">ABC</span></p>
                     <p>User gửi tin nhắn đến với cú pháp linh hoạt hơn: <span
-                            class="green-text">!'{value}'</span></p>
+                            class="green-text">!'{value}</span></p>
+                    <p>User gửi tin nhắn số điện thoại lấy từ "Quick replies": <span class="green-text">$phone</span>
+                    </p>
+                    <p>User gửi tin nhắn email lấy từ "Quick replies": <span class="green-text">$email</span></p>
                 </div>
                 <div class="input-field row col s12">
                     <textarea placeholder="Nhập tin nhắn nhận từ người dùng" type="text"
@@ -38,16 +41,6 @@
                         <label>Kiểu sự kiện</label>
                     </div>
                     @include('components.common.form-date')
-                    <div class="input-field row col s12">
-                        <select class="type_">
-                            <option value="text_messages" disabled selected>Chọn loại tin tìm kiếm</option>
-                            <option value="text_messages">Text messages</option>
-                            <option value="assets_attachments">Assets & Attachments</option>
-                            <option value="message_templates">Message templates</option>
-                            <option value="quick_replies">Quick replies</option>
-                        </select>
-                        <label>Tin nhắn</label>
-                    </div>
                     <div class="input-field col s12">
                         <i class="material-icons prefix">search</i>
                         <input type="text" class="autocomplete search-success" data-type="search-success">

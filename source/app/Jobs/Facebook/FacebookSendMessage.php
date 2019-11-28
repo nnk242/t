@@ -42,12 +42,14 @@ class FacebookSendMessage implements ShouldQueue
 
         if (isset($user_fb_page)) {
             ###
-            $mid = isset($entry[0]['messaging'][0]['message']['mid']) ? $entry[0]['messaging'][0]['message']['mid'] : null;
-            $text = isset($entry[0]['messaging'][0]['message']['text']) ? $entry[0]['messaging'][0]['message']['text'] : null;
-            $quick_reply_payload = isset($entry[0]['messaging'][0]['message']['quick_reply']['payload']) ? $entry[0]['messaging'][0]['message']['quick_reply']['payload'] : null;
+            $messaging = isset($entry[0]['messaging']) ? $entry[0]['messaging'] : null;
+            $mid = isset($messaging[0]['message']['mid']) ? $messaging[0]['message']['mid'] : null;
+            $text = isset($messaging[0]['message']['text']) ? $messaging[0]['message']['text'] :
+                (isset($messaging[0]['postback']['title']) ? $messaging[0]['postback']['title'] : null);
+            $quick_reply_payload = isset($messaging[0]['message']['quick_reply']['payload']) ? $messaging[0]['message']['quick_reply']['payload'] : null;
             $array_postback = [
-                'payload' => isset($entry[0]['messaging'][0]['postback']['payload']) ? $entry[0]['messaging'][0]['postback']['payload'] : null,
-                'timestamp' => isset($entry[0]['messaging'][0]['timestamp']) ? $entry[0]['messaging'][0]['timestamp'] : null,
+                'payload' => isset($messaging[0]['postback']['payload']) ? $messaging[0]['postback']['payload'] : null,
+                'timestamp' => isset($messaging[0]['timestamp']) ? $messaging[0]['timestamp'] : null,
                 'conversation_id' => $user_fb_page->fbConversation->conversation_id,
                 'status' => 0
             ];
@@ -77,7 +79,6 @@ class FacebookSendMessage implements ShouldQueue
                 if (isset($data)) {
                     Facebook::post($access_token, 'me/messages', $data);
                 }
-
                 if ($bot_message_head->type === 'event' && $text !== null) {
                     $is_send = false;
                     if ($bot_message_head->type_event === 'phone' || $bot_message_head->type_event === 'email') {

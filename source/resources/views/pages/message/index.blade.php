@@ -1,38 +1,4 @@
 @extends('layouts.app')
-@section('css')
-    <style type="text/css">
-        .autocomplete-suggestions {
-            border: 1px solid #999;
-            background: #FFF;
-            overflow: auto;
-        }
-
-        .autocomplete-suggestion {
-            padding: 2px 5px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .autocomplete-selected {
-            background: #F0F0F0;
-        }
-
-        .autocomplete-suggestions strong {
-            font-weight: normal;
-            color: #3399FF;
-        }
-
-        .autocomplete-group {
-            padding: 2px 5px;
-        }
-
-        .autocomplete-group strong {
-            display: block;
-            border-bottom: 1px solid #000;
-        }
-
-    </style>
-@endsection
 @section('content')
     <div id="text-message" class="col s12">
         <div class="col s12">
@@ -144,7 +110,10 @@
                         @foreach($data as $key=>$value)
                             <tr>
                                 <td>{{ $key +  1 }}</td>
-                                <td><span class=""></span>{{$value->botMessageReply->text}}</td>
+                                <td><span
+                                        class=""></span>{{$value->botMessageReply->text ? $value->botMessageReply->text :
+                                        '"' . $value->botMessageReply->type_message . '"'}}
+                                </td>
                                 <td style="width: 280px">
                                     @foreach($value->broadcastPages as $broadcast_page)
                                         <span
@@ -212,7 +181,6 @@
 @endsection
 
 @section('js')
-    <script src="{{ asset('js/jquery.autocomplete.min.js') }}"></script>
     <script>
         $(document).ready(function () {
             $(".bot_message_reply_id").devbridgeAutocomplete({

@@ -95,10 +95,10 @@ class MessageController extends Controller
                     }
                 }
             } elseif (gettype($button_type) === 'array') {
-                foreach ($button_type as $k => $button_type) {
+                foreach ($button_type as $k => $val) {
                     $this->elementButton(isset($button_title[$k]) ? $button_title[$k] : null,
                         isset($button_url[$k]) ? $button_url[$k] : null,
-                        isset($button_type) ? $button_type : null,
+                        isset($val) ? $val : null,
                         isset($payload[$k]) ? $payload[$k] : null,
                         $bot_payload_element->_id);
                 }
@@ -293,12 +293,6 @@ class MessageController extends Controller
                 ];
             }
             if (isset($data_bot_payload_element)) {
-                if (strlen($request->button_title) > 20) {
-                    return [
-                        'status' => 'error',
-                        'message' => 'Title của button giới hạn 20 ký tự!'
-                    ];
-                }
                 if ($this->botElementButtons($data_bot_payload_element, $request->button_type, $request->button_url, $request->button_title, $request->payload)) {
                     return [
                         'status' => 'success',
@@ -451,36 +445,27 @@ class MessageController extends Controller
         }
     }
 
-    public function messageReply(Request $request)
-    {
-        $bot_message_replies = BotMessageReply::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->limit(10)->get();
-        if (!$bot_message_replies->count()) {
-            $bot_message_replies = BotMessageReply::wherefb_page_id(Auth::user()->page_selected)->where('title', 'LIKE', "%$request->text%")->limit(10)->get();
-        }
-
-        $data = array();
-
-        foreach ($bot_message_replies as $key => $bot_message_reply) {
-            if ($bot_message_reply->text) {
-                $text = $bot_message_reply->text . ' - ' . $bot_message_reply->created_at;
-            } else {
-                if ($bot_message_reply->title) {
-                    $text = $bot_message_reply->title . ' - ' . $bot_message_reply->created_at;
-                } else {
-                    $text = $bot_message_reply->type . ' - ' . $bot_message_reply->created_at;
-                }
-            }
-            $data[$key]['text'] = $text;
-
-            $data[$key]['_id'] = $bot_message_reply->_id;
-        }
-
-        return $data;
-    }
-
     public function messageHead(Request $request)
     {
-        return BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$request->text%")->wheretype('normal')->limit(10)->get();
+        $query = $request->input('query');
+        $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->where('text', 'LIKE', "%$query%")->wheretype('normal')->limit(10)->get();
+        $data = [];
+        foreach ($bot_message_heads as $key => $value) {
+            $text = '';
+            if ($value->text) {
+                $text = $value->text;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->created_at;
+            } else {
+                $text = $value->created_at;
+            }
+
+            $data[$key]['value'] = $text;
+            $data[$key]['data'] = $value->_id;
+        }
+        return '{"suggestions":' . json_encode($data) . '}';
     }
 
     public function storeMessageHead(Request $request)

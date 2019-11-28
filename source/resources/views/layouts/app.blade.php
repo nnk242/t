@@ -143,6 +143,7 @@
 <!-- Scripts -->
 <script src="{{ asset('js/jquery.min.js') }}"></script>
 <script src="{{ asset('js/materialize.min.js') }}" defer></script>
+<script src="{{ asset('js/jquery.autocomplete.min.js') }}"></script>
 <script src="{{ asset('js/common.js') }}"></script>
 <script src="{{ asset('js/common_.js') }}" defer></script>
 @yield('js')

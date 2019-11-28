@@ -65,10 +65,10 @@ class TextComponent
     public static function passMessage($text, $def)
     {
         try {
-            if ($def === '$is_mail' || $def === '$is_phone') {
-                if (filter_var($text, FILTER_VALIDATE_EMAIL) && $def === '$is_mail') {
+            if ($def === '$mail' || $def === '$phone') {
+                if (filter_var($text, FILTER_VALIDATE_EMAIL) && $def === '$mail') {
                     return true;
-                } elseif($def === '$is_phone') {
+                } elseif($def === '$phone') {
                     if($text[0] === '+') {
                         return true;
                     }

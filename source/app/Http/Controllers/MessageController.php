@@ -7,6 +7,8 @@ use App\Components\Process\DateComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Jobs\Console\AddUserPage;
 use App\Model\BotMessageReply;
+use App\Model\BotPayloadElement;
+use App\Model\BotQuickReply;
 use App\Model\BroadcastMessenger;
 use App\Model\BroadcastPage;
 use App\Model\FbProcess;
@@ -31,7 +33,7 @@ class MessageController extends Controller
     {
 //        dd(FbProcess::wherestatus(1)->limit(2)->get());
 //        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
-        $data = BroadcastMessenger::whereuser_id(Auth::id())->paginate(10);
+        $data = BroadcastMessenger::whereuser_id(Auth::id())->orderby('created_at', 'DESC')->paginate(10);
 //        $data = Page::WhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);
         $pages = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->get();
         $headers = [
@@ -115,8 +117,11 @@ class MessageController extends Controller
     public function searchData(Request $request)
     {
         $query = $request->input('query');
-        $bot_message_replies = BotMessageReply::where('text', 'LIKE', "%$query%")->orwhere('title', 'LIKE', "%$query%")->limit(10)->get();
+        $bot_message_replies = BotMessageReply::where('text', 'LIKE', "%$query%")->limit(10)->get();
+        $payload_elements = BotPayloadElement::where('title', 'LIKE', "%$query%")->orwhere('subtitle', 'LIKE', "%$query%")->limit(10)->get();
+        $quick_replies = BotQuickReply::where('title', 'LIKE', "%$query%")->limit(10)->get();
         $data = [];
+        $key = 0;
         foreach ($bot_message_replies as $key => $value) {
             $text = '';
             if ($value->text) {
@@ -143,6 +148,53 @@ class MessageController extends Controller
 
             $data[$key]['value'] = $text;
             $data[$key]['data'] = $value->_id;
+        }
+
+        foreach ($payload_elements as $k => $value) {
+            $text = '';
+            if ($value->text) {
+                $text = $value->text;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->title;
+            } else {
+                $text = $value->title;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->botMessageReply->type_message;
+            } else {
+                $text = $value->type_message;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->created_at;
+            } else {
+                $text = $value->created_at;
+            }
+
+            $data[$k + $key + 1]['value'] = $text;
+            $data[$k + $key + 1]['data'] = $value->botMessageReply->_id;
+        }
+
+        foreach ($quick_replies as $kh => $value) {
+            $text = $value->title;
+
+            if ($text) {
+                $text = $text . ' - ' . $value->botMessageReply->type_message;
+            } else {
+                $text = $value->type_message;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->created_at;
+            } else {
+                $text = $value->created_at;
+            }
+
+            $data[$k + $key + 1 + $kh]['value'] = $text;
+            $data[$k + $key + 1 + $kh]['data'] = $value->botMessageReply->_id;
         }
         return '{"suggestions":' . json_encode($data) . '}';
     }
