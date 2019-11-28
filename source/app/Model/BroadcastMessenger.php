@@ -29,4 +29,9 @@ class BroadcastMessenger extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function broadcastPages()
+    {
+        return $this->belongsToMany(BroadcastPage::class, '_id', 'broadcast_messenger_id');
+    }
 }

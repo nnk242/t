@@ -38,6 +38,7 @@ Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 Route::resource('role', 'RoleController')->only('index', 'store');
 Route::resource('message', 'MessageController')->only('index', 'store');
 Route::get('message/search/data', 'MessageController@searchData')->name('search-data');
+Route::put('message/update/status/{id}', 'MessageController@updateStatus')->name('update-status');
 
 Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function () {
     Route::resource('/', 'MeController')->only('index', 'store');

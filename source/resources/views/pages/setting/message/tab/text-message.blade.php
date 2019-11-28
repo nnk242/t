@@ -17,7 +17,7 @@
                 <div class="input-field col s12">
                     <label>Nhập tin nhắn trả lời người dùng</label>
                     <textarea class="validate materialize-textarea"
-                              placeholder="Nhập tin nhắn gửi đến người dùng" name="text" data-length="630"></textarea>
+                              placeholder="Nhập tin nhắn gửi đến người dùng" name="text" data-length="2000" maxlength="2000"></textarea>
                 </div>
                 <div class="input-field col s12">
                     <select name="type_notify" class="type_notify">

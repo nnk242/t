@@ -36,7 +36,15 @@ class MessageController extends Controller
         $pages = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->get();
         $headers = [
 //            ['id' => 'check-i', 'label' => '###'],
-            'STT', 'Tên', 'Email', 'Hình ảnh', 'Thể loại', 'Ngày cập nhật', '###'];
+            'STT', 'Tên', 'Page', ['class' => 'center', 'label' => 'T/g tương tác'],
+            ['class' => 'center', 'label' => 'Thời gian gửi'], ['class' => 'center', 'label' => 'Status'], 'T/g tạo', '###'];
+//        dd(BroadcastPage::all());
+//        foreach ($data as $val) {
+//            if($val->broadcastPages->count()) {
+//                dd($val->broadcastPages);
+//            }
+//
+//        }
 
         return view('pages.message.index', compact('data', 'headers', 'pages'));
     }
@@ -137,5 +145,11 @@ class MessageController extends Controller
             $data[$key]['data'] = $value->_id;
         }
         return '{"suggestions":' . json_encode($data) . '}';
+    }
+
+    public function updateStatus($id, Request $request)
+    {
+        BroadcastMessenger::where_id($id)->firstorfail()->update(['status' => (int)$request->is_checked ? 1 : 0]);
+        return (int)$request->is_checked ? 0 : 1;
     }
 }

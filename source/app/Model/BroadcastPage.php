@@ -18,7 +18,7 @@ class BroadcastPage extends Model
 
     protected $attributes = ['status' => 1];
 
-    protected $fillable = ['messenger_broadcast_id', 'fb_page_id', 'status'];
+    protected $fillable = ['broadcast_messenger_id', 'fb_page_id', 'status'];
 
     public function page()
     {
@@ -27,6 +27,6 @@ class BroadcastPage extends Model
 
     public function messengerBroadcast()
     {
-        return $this->belongsTo(BroadcastMessenger::class, 'messenger_broadcast_id');
+        return $this->belongsTo(BroadcastMessenger::class, 'broadcast_messenger_id');
     }
 }

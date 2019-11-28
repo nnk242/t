@@ -58,7 +58,7 @@
                 }
             })
 
-            $('textarea.materialize-textarea').characterCounter()
+            $('textarea.materialize-textarea, input.validate').characterCounter()
             $('.modal').modal()
             $('.tabs').tabs()
             $('.datepicker').datepicker({

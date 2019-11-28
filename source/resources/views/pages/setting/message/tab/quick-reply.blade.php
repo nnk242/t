@@ -21,14 +21,14 @@
                 <div class="input-field col s12">
                     <select name="number" class="number">
                         <option value="0" disabled selected>0</option>
-                        @for($i = 1; $i <=8; $i++)
+                        @for($i = 1; $i <=9; $i++)
                             <option value="{{ $i }}">{{ $i }}</option>
                         @endfor
                     </select>
                     <label>Số lượng trả lời nhanh</label>
                 </div>
                 <div class="row col 12 content-quick-replies">
-                    @for($i = 0; $i <8; $i ++)
+                    @for($i = 0; $i <9; $i ++)
                         <div class="row col s12 l3 m4 parent-content display-none">
                             <h5>Quick reply {{ $i+1 }}</h5>
                             <div class="input-field col s12">
@@ -43,7 +43,7 @@
                             <div class="input-field col s12 content-text">
                                 <label>Nhập title</label>
                                 <input type="text" class="validate " placeholder="Nhập title"
-                                       name="title[]">
+                                       name="title[]" data-length="20" maxlength="20">
                             </div>
                             <div class="input-field col s12">
                                 <label>Nhập link</label>

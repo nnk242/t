@@ -26,7 +26,8 @@
                 <div class="element-generic display-none">
                     <div class="input-field col s12">
                         <label>Nhập title</label>
-                        <input type="text" class="validate" placeholder="Nhập title" name="title">
+                        <input type="text" class="validate" placeholder="Nhập title" name="title" maxlength="80"
+                               data-length="80" autocomplete="off">
                     </div>
                     <div class="input-field col s12">
                         <label>Nhập link ảnh</label>
@@ -34,7 +35,8 @@
                     </div>
                     <div class="input-field col s12">
                         <label>Nhập subtitle</label>
-                        <input type="text" class="validate" placeholder="Nhập subtitle" name="subtitle">
+                        <input type="text" class="validate" placeholder="Nhập subtitle" name="subtitle" maxlength="80"
+                               autocomplete="off">
                     </div>
                     <div class="input-field col s12">
                         <label>Nhập group message template</label>
@@ -137,7 +139,7 @@
                             <div class="input-field col s12 button_title display-none">
                                 <label>Nhập title của button</label>
                                 <input type="text" class="validate" placeholder="Nhập title của button"
-                                       name="button_title[]">
+                                       name="button_title[]" data-length="20" maxlength="20">
                             </div>
                             <div class="input-field col s12 web_url display-none">
                                 <label>Nhập url</label>
@@ -166,7 +168,7 @@
                             <div class="input-field col s12 button_title display-none">
                                 <label>Nhập title của button</label>
                                 <input type="text" class="validate" placeholder="Nhập title của button"
-                                       name="button_title[]">
+                                       name="button_title[]" data-length="20" maxlength="20">
                             </div>
                             <div class="input-field col s12 web_url display-none">
                                 <label>Nhập url</label>
@@ -195,7 +197,7 @@
                             <div class="input-field col s12 button_title display-none">
                                 <label>Nhập title của button</label>
                                 <input type="text" class="validate" placeholder="Nhập title của button"
-                                       name="button_title[]">
+                                       name="button_title[]" data-length="20" maxlength="20">
                             </div>
                             <div class="input-field col s12 web_url display-none">
                                 <label>Nhập url</label>

@@ -107,8 +107,278 @@ class MessageController extends Controller
         } catch (\Exception $exception) {
             return false;
         }
-
     }
+
+    private function textMessages($request, $data)
+    {
+        try {
+            $validate = Validator::make(
+                $request->all(),
+                [
+                    'text' => 'required|max:200'
+                ], [
+                'required' => ':attribute phải có dữ liệu',
+                'max' => ':attribute Bạn đã nhập vượt quá giới hạn cho phép'
+            ]);
+
+            if ($validate->fails()) {
+                return [
+                    'status' => 'error',
+                    'message' => $validate->errors()->first()
+                ];
+            }
+            $data = array_merge($data, [
+                'text' => $request->text,
+                'bot_message_head_id' => $request->bot_message_head_id
+            ]);
+            UpdateOrCreate::botMessageReply($data);
+            return [
+                'status' => 'success',
+                'message' => 'Thêm tin nhắn trả lời thành công!'
+            ];
+        } catch (\Exception $exception) {
+            return [
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ];
+        }
+    }
+
+    private function assetsAttachments($request, $data)
+    {
+        try {
+            $validate = Validator::make(
+                $request->all(),
+                [
+                    'attachment_payload_url' => 'required',
+                    'attachment_type' => 'required'
+                ], [
+                'required' => ':attribute phải có dữ liệu'
+            ]);
+
+            if ($validate->fails()) {
+                return [
+                    'status' => 'error',
+                    'message' => $validate->errors()->first()
+                ];
+            }
+
+            $arr_attachment_type = ['image', 'video', 'audio', 'file'];
+
+            if (in_array($request->attachment_type, $arr_attachment_type)) {
+                $data = array_merge($data, [
+                    'attachment_payload_url' => $request->attachment_payload_url,
+                    'attachment_type' => $request->attachment_type,
+                    'type_message' => 'assets_attachments',
+                    'bot_message_head_id' => $request->bot_message_head_id
+                ]);
+                UpdateOrCreate::botMessageReply($data);
+                return [
+                    'status' => 'success',
+                    'message' => 'Thêm tin nhắn trả lời thành công!'
+                ];
+            } else {
+                return [
+                    'status' => 'error',
+                    'message' => 'Phải thuốc trong các kiểu "image" "video" "audio" "file".'
+                ];
+            }
+        } catch (\Exception $exception) {
+            return [
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ];
+        }
+    }
+
+    private function messageTemplates($request, $data)
+    {
+        try {
+
+            $validate = Validator::make(
+                $request->all(),
+                [
+                    'template_type' => 'required',
+                    'bot_message_head_id' => 'required'
+                ], [
+                'required' => ':attribute phải có dữ liệu'
+            ]);
+
+            if ($validate->fails()) {
+                return [
+                    'status' => 'error',
+                    'message' => $validate->errors()->first()
+                ];
+            }
+            if ($request->template_type === 'generic') {
+                $validate = Validator::make(
+                    $request->all(),
+                    [
+                        'title' => 'required|max:80',
+                        'subtitle' => 'required|max:80',
+                        'image_url' => 'required',
+                    ], [
+                    'required' => ':attribute phải có dữ liệu'
+                ]);
+
+                if ($validate->fails()) {
+                    return [
+                        'status' => 'error',
+                        'message' => $validate->errors()->first()
+                    ];
+                }
+                $data = $this->botMessageReply($data, $request->bot_message_head_id);
+                $bot_message_reply = UpdateOrCreate::botMessageReply($data);
+
+                $data_bot_payload_element = [
+                    'template_type' => $request->template_type,
+                    'bot_message_reply_id' => $bot_message_reply->_id,
+                    'title' => $request->title,
+                    'image_url' => $request->image_url,
+                    'subtitle' => $request->subtitle,
+                    'group' => $request->group
+                ];
+                if ($request->default_action_url && $request->template_type) {
+                    $data_bot_payload_element = array_merge($data_bot_payload_element, [
+                        'default_action_url' => $request->default_action_url,
+                        'default_action_messenger_webview_height_ratio' => $request->messenger_webview_height_ratio
+                    ]);
+                }
+            } elseif ($request->template_type === 'button') {
+                $validate = Validator::make(
+                    $request->all(),
+                    [
+                        'text' => 'required|max:2000'
+                    ], [
+                    'required' => ':attribute phải có dữ liệu'
+                ]);
+
+                if ($validate->fails()) {
+                    return redirect()->back()->with('error', $validate->errors()->first());
+                }
+
+                $data = $this->botMessageReply($data, $request->bot_message_head_id);
+                $bot_message_reply = UpdateOrCreate::botMessageReply($data);
+
+                $data_bot_payload_element = [
+                    'text' => $request->text,
+                    'bot_message_reply_id' => $bot_message_reply->_id,
+                    'template_type' => 'button'
+                ];
+            } elseif ($request->template_type === 'media') {
+                $validate = Validator::make(
+                    $request->all(),
+                    [
+                        'url' => 'required',
+                        'media_type' => 'required'
+                    ], [
+                    'required' => ':attribute phải có dữ liệu'
+                ]);
+
+                if ($validate->fails()) {
+                    return [
+                        'status' => 'error',
+                        'message' => $validate->errors()->first()
+                    ];
+                }
+
+                $data = $this->botMessageReply($data, $request->bot_message_head_id);
+                $bot_message_reply = UpdateOrCreate::botMessageReply($data);
+
+                $data_bot_payload_element = [
+                    'url' => $request->url,
+                    'media_type' => $request->media_type,
+                    'bot_message_reply_id' => $bot_message_reply->_id,
+                    'template_type' => 'media'
+                ];
+            }
+            if (isset($data_bot_payload_element)) {
+                if (strlen($request->button_title) > 20) {
+                    return [
+                        'status' => 'error',
+                        'message' => 'Title của button giới hạn 20 ký tự!'
+                    ];
+                }
+                if ($this->botElementButtons($data_bot_payload_element, $request->button_type, $request->button_url, $request->button_title, $request->payload)) {
+                    return [
+                        'status' => 'success',
+                        'message' => 'Thêm tin nhắn trả lời thành công!'
+                    ];
+                }
+            }
+            return [
+                'status' => 'error',
+                'message' => 'Thêm tin nhắn trả lời không thành công!'
+            ];
+        } catch (\Exception $exception) {
+            return [
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ];
+        }
+    }
+
+    private function quickReplies($request, $data)
+    {
+        try {
+            if (gettype($request->content_type) === 'array') {
+                foreach ($request->content_type as $key => $content_type) {
+                    $arr_content_type = ['text', 'user_phone_number', 'user_email'];
+                    if (in_array($content_type, $arr_content_type) && $key <= 12) {
+                        if ($content_type === 'text') {
+                            if (isset($request->text[$key])) {
+                                if (strlen($request->title[$key]) <= 20) {
+                                    $bot_message_reply = UpdateOrCreate::botMessageReply(array_merge($data, [
+                                        'type_message' => 'quick_replies',
+                                        'text' => $request->text,
+                                        'bot_message_head_id' => $request->bot_message_head_id
+                                    ]));
+
+                                    $data_bot_quick_reply = [
+                                        'image_url' => $request->image_url[$key],
+                                        'title' => $request->title[$key],
+                                        'payload' => TextComponent::payload($request->title[$key]),
+                                        'content_type' => $content_type,
+                                        'bot_message_reply_id' => $bot_message_reply->_id
+                                    ];
+
+                                    UpdateOrCreate::botQuickReply($data_bot_quick_reply);
+                                }
+                            }
+                        } else {
+                            $bot_message_reply = UpdateOrCreate::botMessageReply(array_merge($data, [
+                                'type_message' => 'quick_replies',
+                                'text' => $request->text,
+                                'bot_message_head_id' => $request->bot_message_head_id
+                            ]));
+
+                            $data_bot_quick_reply = [
+                                'image_url' => $request->image_url[$key],
+                                'content_type' => $content_type,
+                                'bot_message_reply_id' => $bot_message_reply->_id
+                            ];
+                            UpdateOrCreate::botQuickReply($data_bot_quick_reply);
+                        }
+                    }
+                }
+
+                return [
+                    'status' => 'success',
+                    'message' => 'Thêm tin nhắn trả lời thành công!'
+                ];
+            }
+            return [
+                'status' => 'error',
+                'message' => 'content_type phải là array.'
+            ];
+        } catch (\Exception $exception) {
+            return [
+                'status' => 'error',
+                'message' => $exception->getMessage()
+            ];
+        }
+    }
+
 
     public function index(Request $request)
     {
@@ -154,187 +424,20 @@ class MessageController extends Controller
 
         switch ($type_message) {
             case 'text_messages':
-                $validate = Validator::make(
-                    $request->all(),
-                    [
-                        'text' => 'required'
-                    ], [
-                    'required' => ':attribute phải có dữ liệu'
-                ]);
-
-                if ($validate->fails()) {
-                    return redirect()->back()->with('error', $validate->errors()->first());
-                }
-                $data = array_merge($data, [
-                    'text' => $request->text,
-                    'bot_message_head_id' => $request->bot_message_head_id
-                ]);
-                UpdateOrCreate::botMessageReply($data);
-                return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
+                $message = $this->textMessages($request, $data);
+                return redirect()->back()->with($message['status'], $message['message']);
             case 'assets_attachments':
-                $validate = Validator::make(
-                    $request->all(),
-                    [
-                        'attachment_payload_url' => 'required',
-                        'attachment_type' => 'required'
-                    ], [
-                    'required' => ':attribute phải có dữ liệu'
-                ]);
-
-                if ($validate->fails()) {
-                    return redirect()->back()->with('error', $validate->errors()->first());
-                }
-                $data = array_merge($data, [
-                    'attachment_payload_url' => $request->attachment_payload_url,
-                    'attachment_type' => $request->attachment_type,
-                    'type_message' => 'assets_attachments',
-                    'bot_message_head_id' => $request->bot_message_head_id
-                ]);
-                UpdateOrCreate::botMessageReply($data);
-                return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
+                $message = $this->assetsAttachments($request, $data);
+                return redirect()->back()->with($message['status'], $message['message']);
             case 'message_templates':
-                $validate = Validator::make(
-                    $request->all(),
-                    [
-                        'template_type' => 'required',
-                        'bot_message_head_id' => 'required'
-                    ], [
-                    'required' => ':attribute phải có dữ liệu'
-                ]);
-
-                if ($validate->fails()) {
-                    return redirect()->back()->with('error', $validate->errors()->first());
-                }
-                if ($request->template_type === 'generic') {
-                    $validate = Validator::make(
-                        $request->all(),
-                        [
-                            'title' => 'required',
-                            'subtitle' => 'required',
-                            'image_url' => 'required',
-                        ], [
-                        'required' => ':attribute phải có dữ liệu'
-                    ]);
-
-                    if ($validate->fails()) {
-                        return redirect()->back()->with('error', $validate->errors()->first());
-                    }
-                    $data = $this->botMessageReply($data, $request->bot_message_head_id);
-                    $bot_message_reply = UpdateOrCreate::botMessageReply($data);
-
-                    $data_bot_payload_element = [
-                        'template_type' => $request->template_type,
-                        'bot_message_reply_id' => $bot_message_reply->_id,
-                        'title' => $request->title,
-                        'image_url' => $request->image_url,
-                        'subtitle' => $request->subtitle,
-                        'group' => $request->group
-                    ];
-                    if ($request->default_action_url && $request->template_type) {
-                        $data_bot_payload_element = array_merge($data_bot_payload_element, [
-                            'default_action_url' => $request->default_action_url,
-                            'default_action_messenger_webview_height_ratio' => $request->messenger_webview_height_ratio
-                        ]);
-                    }
-                } elseif ($request->template_type === 'button') {
-                    $validate = Validator::make(
-                        $request->all(),
-                        [
-                            'text' => 'required'
-                        ], [
-                        'required' => ':attribute phải có dữ liệu'
-                    ]);
-
-                    if ($validate->fails()) {
-                        return redirect()->back()->with('error', $validate->errors()->first());
-                    }
-
-                    $data = $this->botMessageReply($data, $request->bot_message_head_id);
-                    $bot_message_reply = UpdateOrCreate::botMessageReply($data);
-
-                    $data_bot_payload_element = [
-                        'text' => $request->text,
-                        'bot_message_reply_id' => $bot_message_reply->_id,
-                        'template_type' => 'button'
-                    ];
-                } elseif ($request->template_type === 'media') {
-                    $validate = Validator::make(
-                        $request->all(),
-                        [
-                            'url' => 'required',
-                            'media_type' => 'required'
-                        ], [
-                        'required' => ':attribute phải có dữ liệu'
-                    ]);
-
-                    if ($validate->fails()) {
-                        return redirect()->back()->with('error', $validate->errors()->first());
-                    }
-
-                    $data = $this->botMessageReply($data, $request->bot_message_head_id);
-                    $bot_message_reply = UpdateOrCreate::botMessageReply($data);
-
-                    $data_bot_payload_element = [
-                        'url' => $request->url,
-                        'media_type' => $request->media_type,
-                        'bot_message_reply_id' => $bot_message_reply->_id,
-                        'template_type' => 'media'
-                    ];
-                }
-                if (isset($data_bot_payload_element)) {
-                    if ($this->botElementButtons($data_bot_payload_element, $request->button_type, $request->button_url, $request->button_title, $request->payload)) {
-                        return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
-                    }
-                }
-
-                return redirect()->back()->with('error', 'Thêm tin nhắn trả lời không thành công!');
+                $message = $this->messageTemplates($request, $data);
+                return redirect()->back()->with($message['status'], $message['message']);
             case 'quick_replies':
-                if (gettype($request->content_type) === 'array') {
-                    foreach ($request->content_type as $key => $content_type) {
-                        if ($key >= 8) {
-                            break;
-                        }
-                        if ($content_type === 'text') {
-                            if (isset($request->text[$key])) {
-                                $bot_message_reply = UpdateOrCreate::botMessageReply(array_merge($data, [
-                                    'type_message' => 'quick_replies',
-                                    'text' => $request->text,
-                                    'bot_message_head_id' => $request->bot_message_head_id
-                                ]));
-
-                                $data_bot_quick_reply = [
-                                    'image_url' => $request->image_url[$key],
-                                    'title' => $request->title[$key],
-                                    'payload' => TextComponent::payload($request->title[$key]),
-                                    'content_type' => $content_type,
-                                    'bot_message_reply_id' => $bot_message_reply->_id
-                                ];
-
-                                UpdateOrCreate::botQuickReply($data_bot_quick_reply);
-                            }
-                        } else {
-                            $bot_message_reply = UpdateOrCreate::botMessageReply(array_merge($data, [
-                                'type_message' => 'quick_replies',
-                                'text' => $request->text,
-                                'bot_message_head_id' => $request->bot_message_head_id
-                            ]));
-
-                            $data_bot_quick_reply = [
-                                'image_url' => $request->image_url[$key],
-                                'content_type' => $content_type,
-                                'bot_message_reply_id' => $bot_message_reply->_id
-                            ];
-                            UpdateOrCreate::botQuickReply($data_bot_quick_reply);
-                        }
-                    }
-
-                    return redirect()->back()->with('success', 'Thêm tin nhắn trả lời thành công!');
-                }
-
-
+                $message = $this->quickReplies($request, $data);
+                return redirect()->back()->with($message['status'], $message['message']);
         }
 
-        return redirect()->back();
+        return redirect()->back()->with('error', 'Không thuộc trong list type message');
     }
 
     public function show($id)
@@ -430,7 +533,7 @@ class MessageController extends Controller
         } else {
             return abort(404);
         }
-        if($id === 'call-bot-message') {
+        if ($id === 'call-bot-message') {
             $bot_message_heads = BotMessageHead::wherefb_page_id($page_selected)->orderby('id', 'DESC')->paginate(10);
             $header_bot_heads = ['STT', 'Page', ['label' => 'Nội dung', 'class' => 'center'], ['label' => 'Thể loại', 'class' => 'center'], 'Ngày thêm', '###'];
             return view('pages.setting.message.bot-message-head.index', compact('bot_message_heads', 'header_bot_heads'));

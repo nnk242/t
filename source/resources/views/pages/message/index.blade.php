@@ -145,9 +145,36 @@
                             <tr>
                                 <td>{{ $key +  1 }}</td>
                                 <td><span class=""></span>{{$value->botMessageReply->text}}</td>
-                                <td>{{$value->email}}</td>
-                                <td><img src="{{$value->avatar}}" width="40"></td>
-                                <td>{{$value->role}}</td>
+                                <td style="width: 280px">
+                                    @foreach($value->broadcastPages as $broadcast_page)
+                                        <span
+                                            title="{{ $broadcast_page->page->fb_page_id }} - {{ $broadcast_page->page->name }}"
+                                            class="new badge amber"
+                                            data-badge-caption="{{ $broadcast_page->page->fb_page_id }} - {{ $broadcast_page->page->name }}"></span>
+                                    @endforeach
+                                </td>
+                                <td class="brown-text center">{{$value->time_interactive}}</td>
+                                <td style="width: 280px">
+                                    @if($value->begin_time_active)
+                                        <span
+                                            title="{{date('Y-m-d H:i:s', $value->begin_time_active)}}"
+                                            class="new badge teal"
+                                            data-badge-caption="{{date('Y-m-d H:i:s', $value->begin_time_active)}}"></span>
+                                        - <span
+                                            title="{{date('Y-m-d H:i:s', $value->end_time_active)}}"
+                                            class="new badge teal"
+                                            data-badge-caption="{{date('Y-m-d H:i:s', $value->end_time_active)}}"></span>
+                                    @endif
+                                </td>
+                                <td class="center">
+                                    <div class="switch" data-id="{{ $value->_id }}">
+                                        <label>
+                                            <input class="status"
+                                                   type="checkbox" {{$value->status === 1 ? 'checked' : ''}}>
+                                            <span class="lever"></span>
+                                        </label>
+                                    </div>
+                                </td>
                                 <td>{{$value->updated_at}}</td>
                                 <td>
                                     @if(\Illuminate\Support\Facades\Auth::user()->email !== $value->email)
@@ -155,8 +182,9 @@
                                             <a data-id="{{ $value->_id }}"
                                                data-email="{{ $value->email }}"
                                                class="delete-item modal-trigger"
-                                               href="#delete-modal"><img width="15"
-                                                                         src="{{ asset('icons/actions/trash-alt.svg') }}"></a></span>
+                                               href="#delete-modal">
+                                                <img width="15"
+                                                     src="{{ asset('icons/actions/trash-alt.svg') }}"></a></span>
                                     @endif
                                 </td>
                             </tr>
@@ -192,7 +220,6 @@
                 type: 'GET',
                 onSelect: function (suggestion) {
                     $('#bot_message_reply_id').attr('value', suggestion.data)
-                    // $('#selection').html('You selected: ' + suggestion.value + ', ' + suggestion.data);
                 },
                 showNoSuggestionNotice: true,
                 noSuggestionNotice: 'Không tìm thấy dữ liệu nào...',
@@ -249,6 +276,30 @@
                     $('.pick').prop('checked', false)
                     $('#pick-all').attr('check', 0)
                 }
+            })
+            $('.status').on('change', function () {
+                let this_ = $(this)
+                let id = $(this).closest('.switch').attr('data-id')
+                let is_checked = $(this).prop('checked')
+                let url = 'message/update/status/' + id
+                let method = 'POST'
+                let data = {
+                    is_checked: is_checked ? 1 : 0,
+                    _token: '{{ @csrf_token() }}',
+                    _method: 'PUT'
+                }
+                $(this).attr('disabled', true)
+                $.ajax({
+                    url,
+                    method,
+                    data,
+                    success: function (res) {
+                        this_.removeAttr('disabled')
+                    }, catch: function () {
+                        this_.prop('checked', is_checked ? false : true)
+                        this_.removeAttr('disabled')
+                    }
+                })
             })
         })
     </script>
