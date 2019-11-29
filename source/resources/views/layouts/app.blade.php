@@ -150,7 +150,7 @@
 @if (\Session::has('error') || \Session::has('success') || \Session::has('warning'))
     <script>
         $(document).ready(function () {
-            var toastHTML = '<span>{!!\Session::get('success') . \Session::get('warning') . \Session::get('error') !!}</span><button class="btn-flat toast-action {{ \Session::has('success') ? 'green-text' : (\Session::has('warning') ? 'yellow-text' : 'red-text')}}"><i class="large material-icons">adjust</i></button>';
+            var toastHTML = '<span>' + "{!!\Session::get('success') . \Session::get('warning') . \Session::get('error') !!}" + '</span><button class="btn-flat toast-action {{ \Session::has('success') ? 'green-text' : (\Session::has('warning') ? 'yellow-text' : 'red-text')}}"><i class="large material-icons">adjust</i></button>';
             M.toast({html: toastHTML})
         })
     </script>

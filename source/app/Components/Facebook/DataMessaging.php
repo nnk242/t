@@ -209,7 +209,6 @@ class DataMessaging
 
                         if ($is_user) {
                             dispatch(new FacebookSendMessage(['user_fb_page' => $user_fb_page, 'person_id' => $person_id, 'entry' => $entry]));
-//                            dispatch(new FacebookSendMessageEvent(['text' => $text, 'user_fb_page' => $user_fb_page, 'person_id' => $person_id, 'entry' => $entry]));
                         }
                     }
                 }

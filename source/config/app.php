@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'App'),
+    'name' => env('APP_NAME', 'Gamota'),
 
     /*
     |--------------------------------------------------------------------------
@@ -178,6 +178,7 @@ return [
         Laravel\Socialite\SocialiteServiceProvider::class,
         Scottybo\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -230,7 +231,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Facebook' => Scottybo\LaravelFacebookSdk\FacebookFacade::class,
-        'JenssegersMongoDB' => Jenssegers\Mongodb\MongodbQueueServiceProvider::class
+        'JenssegersMongoDB' => Jenssegers\Mongodb\MongodbQueueServiceProvider::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

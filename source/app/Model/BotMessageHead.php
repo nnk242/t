@@ -59,4 +59,9 @@ class BotMessageHead extends Model
     {
         return $this->belongsTo(BotMessageReply::class, 'text_error_gift_id');
     }
+
+    public function gifts()
+    {
+        return $this->belongsToMany(Gift::class, '_id', 'bot_message_head_id');
+    }
 }

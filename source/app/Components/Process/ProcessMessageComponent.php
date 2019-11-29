@@ -8,6 +8,7 @@ use App\Components\Facebook\Message;
 use App\Model\BotElementButton;
 use App\Model\BotPayloadElement;
 use App\Model\BotQuickReply;
+use App\Model\FbUserEvent;
 use App\Model\FbUserPage;
 
 class ProcessMessageComponent
@@ -108,7 +109,7 @@ class ProcessMessageComponent
                 return $fb_user_page->first_name . ' ' . $fb_user_page->last_name;
             }
         }
-        return null;
+        return ':name:';
     }
 
     public static function textMessage($bot_message_reply, $person_id, $access_token)

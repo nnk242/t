@@ -68,8 +68,8 @@ class TextComponent
             if ($def === '$mail' || $def === '$phone') {
                 if (filter_var($text, FILTER_VALIDATE_EMAIL) && $def === '$mail') {
                     return true;
-                } elseif($def === '$phone') {
-                    if($text[0] === '+') {
+                } elseif ($def === '$phone') {
+                    if ($text[0] === '+') {
                         return true;
                     }
                 }
@@ -140,8 +140,22 @@ class TextComponent
         return str_replace(' ', '_', strtoupper(self::stripUnicode($str))) . '_PAYLOAD';
     }
 
-    public static function replaceText($text, $name = null, $gift = null)
+    public static function replaceText($text, $name = ':name:', $gift = ':gift:')
     {
-        return str_replace(':gift:', $gift !== null ? $gift : ':gift:', str_replace(':name:', $name !== null ? $name : ':name:', $text));
+        gettype($name) === 'string' ? '' : $name = ':name:';
+        gettype($gift) === 'string' ? '' : $name = ':gift:';
+        if ($gift === ':gift:' && $name = ':name:') {
+            return $text;
+        } else {
+            if($name !== ':name:') {
+                $text = str_replace(':name:', $name ? $name : ':name:', $text);
+            }
+
+            if($gift !== ':gift:') {
+                $text = str_replace(':gift:', $gift ? $gift : ':gift:', $text);
+            }
+        }
+        return $text;
+//        return str_replace(':gift:', $gift !== null ? $gift : ':gift:', str_replace(':name:', $name !== null ? $name : ':name:', $text));
     }
 }

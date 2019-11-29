@@ -38,6 +38,7 @@ Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 Route::resource('role', 'RoleController')->only('index', 'store');
 Route::resource('message', 'MessageController')->except('update', 'show');
 Route::get('message/search/data', 'MessageController@searchData')->name('search-data');
+Route::get('message/search/data/head-event', 'MessageController@searchDataHeadEvent')->name('search-data-head-event');
 Route::put('message/update/status/{id}', 'MessageController@updateStatus')->name('update-status');
 
 Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function () {
@@ -53,6 +54,8 @@ Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function ()
 });
 
 Route::resource('event', 'Event\EventController');
+
+Route::resource('gift', 'Gift\GiftController');
 
 Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.'], function () {
     Route::get('index', 'SettingController@index')->name('index');

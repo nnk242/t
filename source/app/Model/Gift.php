@@ -19,4 +19,9 @@ class Gift extends Model
     protected $attributes = ['amount' => 1];
 
     protected $fillable = ['bot_message_head_id', 'code', 'amount'];
+
+    public function botMessageHead()
+    {
+        return $this->belongsTo(BotMessageHead::class, 'bot_message_head_id');
+    }
 }

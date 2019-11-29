@@ -16,6 +16,10 @@
         <a href="{{ route('role.index') }}">{{ __('Quyền') }}</a>
     </li>
     <li
+        class="{{ \App\Components\ActiveComponent::isActiveSide(['/gift', '/event/gift'])? 'active' : '' }}">
+        <a href="{{ route('gift.index') }}">{{ __('Gift') }}</a>
+    </li>
+    <li
         class="{{ \App\Components\ActiveComponent::isActiveSide(['/event', '/event/index'])? 'active' : '' }}">
         <a href="{{ route('event.index') }}">{{ __('Sự kiện') }}</a>
     </li>

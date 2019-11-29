@@ -7,6 +7,7 @@ use App\Components\Page\PageComponent;
 use App\Components\Process\DateComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Jobs\Console\AddUserPage;
+use App\Model\BotMessageHead;
 use App\Model\BotMessageReply;
 use App\Model\BotPayloadElement;
 use App\Model\BotQuickReply;
@@ -110,7 +111,7 @@ class MessageController extends Controller
 
     public function show($id)
     {
-
+        return $id;
         return $is_message ? redirect()->back()->with('success', 'Cập nhật page thành công!') : redirect()->back()->with('warning', $message);
     }
 
@@ -206,6 +207,41 @@ class MessageController extends Controller
 
             $data[$k + $key + 1 + $kh]['value'] = $text;
             $data[$k + $key + 1 + $kh]['data'] = $value->botMessageReply->_id;
+        }
+        return '{"suggestions":' . json_encode($data) . '}';
+    }
+
+    public function searchDataHeadEvent(Request $request)
+    {
+        $query = $request->input('query');
+        $bot_message_heads = BotMessageHead::where('text', 'LIKE', "%$query%")->wheretype('event')->limit(10)->get();
+        $data = [];
+        foreach ($bot_message_heads as $key => $value) {
+            $text = '';
+            if ($value->text) {
+                $text = $value->text;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->title;
+            } else {
+                $text = $value->title;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->type_message;
+            } else {
+                $text = $value->type_message;
+            }
+
+            if ($text) {
+                $text = $text . ' - ' . $value->created_at;
+            } else {
+                $text = $value->created_at;
+            }
+
+            $data[$key]['value'] = $text;
+            $data[$key]['data'] = $value->_id;
         }
         return '{"suggestions":' . json_encode($data) . '}';
     }
