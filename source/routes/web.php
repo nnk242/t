@@ -36,7 +36,7 @@ Route::group(['namespace' => 'Process', 'prefix' => 'process'], function () {
 Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 
 Route::resource('role', 'RoleController')->only('index', 'store');
-Route::resource('message', 'MessageController')->only('index', 'store');
+Route::resource('message', 'MessageController')->except('update', 'show');
 Route::get('message/search/data', 'MessageController@searchData')->name('search-data');
 Route::put('message/update/status/{id}', 'MessageController@updateStatus')->name('update-status');
 

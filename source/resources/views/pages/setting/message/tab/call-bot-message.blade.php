@@ -16,6 +16,8 @@
                     <p>User gửi tin nhắn số điện thoại lấy từ "Quick replies": <span class="green-text">$phone</span>
                     </p>
                     <p>User gửi tin nhắn email lấy từ "Quick replies": <span class="green-text">$email</span></p>
+                    <p>Lấy tên người dùng, giftcode: '<span class="green-text">:name:</span>' '<span class="green-text">:code:</span>'
+                    </p>
                 </div>
                 <div class="input-field row col s12">
                     <textarea placeholder="Nhập tin nhắn nhận từ người dùng" type="text"

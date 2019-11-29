@@ -1,19 +1,15 @@
 @extends('layouts.app')
 @section('content')
     <div id="text-message" class="col s12">
-        <div class="col s12">
-            <ul class="tabs z-depth-1">
-                <li class="tab col"><a href="{{ route('message.index') }}" data-toggle="tab">Gửi hàng loạt</a></li>
-                {{--                <li class="tab col"><a href="#text-message" data-toggle="tab">Text messages</a></li>--}}
-                {{--                <li class="tab col"><a href="#assets-attachments" data-toggle="tab">Assets & Attachments</a></li>--}}
-                {{--                <li class="tab col"><a href="#message-templates" data-toggle="tab">Message Templates</a></li>--}}
-                {{--                <li class="tab col"><a href="#quick-replies" data-toggle="tab">Quick Replies</a></li>--}}
-            </ul>
-        </div>
-        <form class="container" method="POST">
+        <form class="container" method="POST" action="{{ route('message.store') }}">
+            <input hidden value="{{ $broadcast_messenger->_id }}" name="_id">
             @csrf
             <div class="card-panel">
                 <div class="row">
+                    <div class="col s12 input-field">
+                        <a href="{{ route('message.index') }}" class="btn"><i
+                                class="material-icons">keyboard_arrow_left</i></a>
+                    </div>
                     <div class="col s12">
                         <div class="input-field">
                             <h4>Gửi tin nhắn hàng loạt</h4>
@@ -21,12 +17,27 @@
                         <div class="input-field col s12">
                             <i class="material-icons prefix">search</i>
                             <input type="text" class="autocomplete bot_message_reply_id">
-                            <input type="text" hidden name="bot_message_reply_id" id="bot_message_reply_id">
-                            <label>Tìm kiếm tin nhắn <span class="amber-text">BOT</span></label>
+                            <input type="text" hidden name="bot_message_reply_id" id="bot_message_reply_id" value="{{ $broadcast_messenger->bot_message_reply_id }}">
+                            <label>Tìm kiếm tin nhắn <span class="amber-text">BOT</span>
+                                @isset($broadcast_messenger->botMessageReply)
+                                    <span class="red-text">{{ $broadcast_messenger->botMessageReply->text . ', ' .
+                                                            $broadcast_messenger->botMessageReply->type_message . ', ' .
+                                                            $broadcast_messenger->botMessageReply->created_at }}</span>
+                                @endisset
+                            </label>
                         </div>
                         <div class="input-field">
                             <div class="col s12">
-                                <label>Thời gian hoạt động</label>
+                                <label>Thời gian hoạt động
+                                    @if($broadcast_messenger->begin_time_active)
+                                        <span
+                                            class="red-text">{{ date('Y-m-d H:i:s', $broadcast_messenger->begin_time_active) }}</span>
+                                        @if($broadcast_messenger->end_time_active)
+                                            <span
+                                                class="red-text">{{ date('Y-m-d H:i:s', $broadcast_messenger->end_time_active) }}</span>
+                                        @endif
+                                    @endif
+                                </label>
                                 <div class="row">
                                     <div class="col s4 l2">
                                         <input type="time" name="time_active[]">
@@ -46,7 +57,12 @@
                             </div>
                         </div>
                         <div class="input-field col s12">
-                            <label>Thời gian tương tác gần nhất VD: Trong vòng 8H thì điền là 8</label>
+                            <label>Thời gian tương tác gần nhất VD: Trong vòng 8H thì điền là 8
+                                @if($broadcast_messenger->time_interactive)
+                                    <span
+                                        class="red-text">{{ $broadcast_messenger->time_interactive }}</span>
+                                @endif
+                            </label>
                             <input placeholder="Nhập số thời gian. Tính bằng giờ..." class="validate" type="number"
                                    name="time_interactive">
                         </div>
@@ -74,6 +90,11 @@
                                                 <label>
                                                     <input type="checkbox" class="pick" name="arr_user_page_id[]"
                                                            value="{{ $value->fb_page_id }}"
+                                                           @foreach($broadcast_messenger->broadcastPages as $broadcast_page)
+                                                           @if($broadcast_page->fb_page_id === $value->fb_page_id)
+                                                           checked
+                                                        @endif
+                                                        @endforeach
                                                     >
                                                     <span><img src="{{ $value->page->picture }}"
                                                                class="btn-floating"/></span>
@@ -88,9 +109,9 @@
 
                         <div class="input-field col s12">
                             <select name="status">
-                                <option value="0" disabled selected>Chạy tin nhắn</option>
-                                <option value="0">Đóng</option>
-                                <option value="1">Mở</option>
+                                <option value="0" disabled>Chạy tin nhắn</option>
+                                <option value="0" {{ $broadcast_messenger->status ? '' : 'selected' }}>Đóng</option>
+                                <option value="1" {{ $broadcast_messenger->status ? 'selected' : '' }}>Mở</option>
                             </select>
                             <label>Status</label>
                         </div>
@@ -102,82 +123,6 @@
             </div>
         </form>
     </div>
-    <div class="container">
-        <div class="row col s12 card-panel">
-            @if($data->count())
-                @component('components.table.index', ['headers' => $headers])
-                    @slot('body')
-                        @foreach($data as $key=>$value)
-                            <tr>
-                                <td>{{ $key +  1 }}</td>
-                                <td><span
-                                        class=""></span>{{$value->botMessageReply->text ? $value->botMessageReply->text :
-                                        '"' . $value->botMessageReply->type_message . '"'}}
-                                </td>
-                                <td style="width: 280px">
-                                    @foreach($value->broadcastPages as $broadcast_page)
-                                        <span
-                                            title="{{ $broadcast_page->page->fb_page_id }} - {{ $broadcast_page->page->name }}"
-                                            class="new badge amber"
-                                            data-badge-caption="{{ $broadcast_page->page->fb_page_id }} - {{ $broadcast_page->page->name }}"></span>
-                                    @endforeach
-                                </td>
-                                <td class="brown-text center">{{$value->time_interactive}}</td>
-                                <td style="width: 280px">
-                                    @if($value->begin_time_active)
-                                        <span
-                                            title="{{date('Y-m-d H:i:s', $value->begin_time_active)}}"
-                                            class="new badge teal"
-                                            data-badge-caption="{{date('Y-m-d H:i:s', $value->begin_time_active)}}"></span>
-                                        - <span
-                                            title="{{date('Y-m-d H:i:s', $value->end_time_active)}}"
-                                            class="new badge teal"
-                                            data-badge-caption="{{date('Y-m-d H:i:s', $value->end_time_active)}}"></span>
-                                    @endif
-                                </td>
-                                <td class="center">
-                                    <div class="switch" data-id="{{ $value->_id }}">
-                                        <label>
-                                            <input class="status"
-                                                   type="checkbox" {{$value->status === 1 ? 'checked' : ''}}>
-                                            <span class="lever"></span>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td>{{$value->updated_at}}</td>
-                                <td>
-                                    <a href="{{ route('message.edit', ['message' => $value->_id]) }}"
-                                       class="amber-text"><span class="material-icons">mode_edit</span></a>
-                                    <span title="Xóa gửi hàng loạt">
-                                            <a data-id="{{ $value->_id }}"
-                                               data-email="{{ $value->email }}"
-                                               class="delete-item modal-trigger"
-                                               href="#delete-modal">
-                                                <img width="15"
-                                                     src="{{ asset('icons/actions/trash-alt.svg') }}"></a></span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endslot
-                    @slot('paginate')
-                        {{ $data->appends(request()->input())->links() }}
-                    @endslot
-                @endcomponent
-            @endif
-        </div>
-    </div>
-    @component('components.modal.index', ['modal_id' => 'delete-modal', 'modal_title' => 'Xoá tin nhắn người dùng gửi', 'modal_form_action' => '', 'is_delete' => true])
-        @slot('modal_content')
-            <div class="modal-body">
-                <div id="modal-body-notify">
-                    Bạn chắc chắn muốn xóa?
-                </div>
-            </div>
-        @endslot
-        @slot('modal_button')
-            <button class="waves-effect waves-green btn">Gửi</button>
-        @endslot
-    @endcomponent
 @endsection
 
 @section('js')
@@ -201,9 +146,10 @@
 
             $('.delete-item').on('click', function () {
                 let id = $(this).attr('data-id')
+                let email = $(this).attr('data-email')
                 $('#modal-body-notify').empty()
-                $('#modal-body-notify').append('Bạn chắc chắn muốn xóa <span class="red-text"></span>?')
-                $('#delete-modal').find('form').attr('action', '/message/' + id)
+                $('#modal-body-notify').append('Bạn chắc chắn muốn xóa <span class="red-text">' + email + '</span>?')
+                $('#delete-modal').find('form').attr('action', '/role' + '/' + id)
             })
 
             $('#search-input').on('keyup', function () {

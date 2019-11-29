@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Components\Facebook\Facebook;
+use App\Components\Page\PageComponent;
 use App\Components\Process\DateComponent;
 use App\Components\UpdateOrCreateData\UpdateOrCreate;
 use App\Jobs\Console\AddUserPage;
@@ -34,21 +35,18 @@ class MessageController extends Controller
 //        dd(FbProcess::wherestatus(1)->limit(2)->get());
 //        Artisan::call('command:AddUserPage --page_user_id=' . "2016433678466136" . ' --fb_page_id=' . "1086408651532297");
         $data = BroadcastMessenger::whereuser_id(Auth::id())->orderby('created_at', 'DESC')->paginate(10);
-//        $data = Page::WhereIn('fb_page_id', $arr_user_page_id)->orderby('create', 'DESC')->paginate(10);
-        $pages = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->get();
-        $headers = [
-//            ['id' => 'check-i', 'label' => '###'],
-            'STT', 'Tên', 'Page', ['class' => 'center', 'label' => 'T/g tương tác'],
+        $pages = PageComponent::getPages();
+        $headers = ['STT', 'Tên', 'Page', ['class' => 'center', 'label' => 'T/g tương tác'],
             ['class' => 'center', 'label' => 'Thời gian gửi'], ['class' => 'center', 'label' => 'Status'], 'T/g tạo', '###'];
-//        dd(BroadcastPage::all());
-//        foreach ($data as $val) {
-//            if($val->broadcastPages->count()) {
-//                dd($val->broadcastPages);
-//            }
-//
-//        }
 
         return view('pages.message.index', compact('data', 'headers', 'pages'));
+    }
+
+    public function edit($id)
+    {
+        $pages = PageComponent::getPages();
+        $broadcast_messenger = BroadcastMessenger::findorfail($id);
+        return view('pages.message.edit', compact('broadcast_messenger', 'pages'));;
     }
 
     public function store(Request $request)
@@ -77,28 +75,41 @@ class MessageController extends Controller
         $date_active = $request->date_active;
         $time_active = $request->time_active;
         $data = array_merge($data, DateComponent::date($date_active, $time_active));
-        $broadcast_messager = BroadcastMessenger::updateorcreate($data);
-        foreach ($request->arr_user_page_id as $value) {
-            $broadcast_page = BroadcastPage::updateorcreate([
-                'broadcast_messenger_id' => $broadcast_messager->_id,
-                'fb_page_id' => $value
-            ]);
+        $id = $request->_id;
+        if ($id) {
+            BroadcastMessenger::findorfail($id)->update($data);
+            $arr_broadcast_fb_page_id = BroadcastPage::wherebroadcast_messenger_id($id)->pluck('fb_page_id')->toArray();
+            foreach ($request->arr_user_page_id as $value) {
+                if (in_array($value, $arr_broadcast_fb_page_id)) {
+                    BroadcastPage::updateorcreate([
+                        'broadcast_messenger_id' => $id,
+                        'fb_page_id' => $value
+                    ]);
+                } else {
+                    $broadcast_page = BroadcastPage::where([
+                        'broadcast_messenger_id' => $id,
+                        'fb_page_id' => $value
+                    ])->first();
+                    if ($broadcast_page) {
+                        $broadcast_page->delete();
+                    }
+                }
+            }
+        } else {
+            $broadcast_messager = BroadcastMessenger::updateorcreate($data);
+            foreach ($request->arr_user_page_id as $value) {
+                BroadcastPage::updateorcreate([
+                    'broadcast_messenger_id' => $broadcast_messager->_id,
+                    'fb_page_id' => $value
+                ]);
+            }
         }
+
         return redirect()->back()->with('success', 'Gửi thành công');
     }
 
     public function show($id)
     {
-        $user_page = $this->model()::wherefb_page_id($id)->firstorfail();
-        try {
-            $user = Auth::user();
-            $data = Facebook::get($user->access_token, 'me/accounts?fields=picture,access_token,name,id,category&limit=150&page_id=' . $user_page->page->fb_page_id);
-            $subscribed_fields = $this->subscribedFields($data, 3, [$user_page->page->fb_page_id]);
-            $message = $subscribed_fields['message'];
-            $is_message = $subscribed_fields['is_message'];
-        } catch (\Exception $exception) {
-            return redirect()->back()->with('error', $exception->getMessage());
-        }
 
         return $is_message ? redirect()->back()->with('success', 'Cập nhật page thành công!') : redirect()->back()->with('warning', $message);
     }
@@ -106,12 +117,12 @@ class MessageController extends Controller
     public function destroy($id)
     {
         if (Auth::user()->role === 'admin') {
-            if (Auth::id() !== $id) {
-                User::findorfail($id)->delete();
-            }
+            BroadcastMessenger::where_id($id)->firstorfail()->delete();
+        } else {
+            BroadcastMessenger::whereuser_id(Auth::id())->where_id($id)->firstorfail()->delete();
         }
 
-        return abort(404);
+        return redirect()->back()->with('success', 'Xóa thành công!');
     }
 
     public function searchData(Request $request)
