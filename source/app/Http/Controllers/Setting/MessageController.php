@@ -131,6 +131,13 @@ class MessageController extends Controller
                 'text' => $request->text,
                 'bot_message_head_id' => $request->bot_message_head_id
             ]);
+            if ($request->_id) {
+                BotMessageReply::findorfail($request->_id)->update($data);
+                return [
+                    'status' => 'success',
+                    'message' => 'Sửa tin nhắn trả lời thành công!'
+                ];
+            }
             UpdateOrCreate::botMessageReply($data);
             return [
                 'status' => 'success',
@@ -172,6 +179,14 @@ class MessageController extends Controller
                     'type_message' => 'assets_attachments',
                     'bot_message_head_id' => $request->bot_message_head_id
                 ]);
+
+                if ($request->_id) {
+                    BotMessageReply::findorfail($request->_id)->update($data);
+                    return [
+                        'status' => 'success',
+                        'message' => 'Sửa tin nhắn trả lời thành công!'
+                    ];
+                }
                 UpdateOrCreate::botMessageReply($data);
                 return [
                     'status' => 'success',
@@ -442,7 +457,26 @@ class MessageController extends Controller
                 $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->paginate(10);
                 return view('pages.setting.message.show.call-bot-message', compact('bot_message_heads', 'headers'));
                 break;
+            case 'text-message':
+                $headers = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+                $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->paginate(10);
+                return view('pages.setting.message.show.call-bot-message', compact('bot_message_heads', 'headers'));
+                break;
         }
+    }
+
+    public function edit($id)
+    {
+        $bot_message_reply = BotMessageReply::where_id($id)->firstorfail();
+        switch ($bot_message_reply->type_message) {
+            case 'text_messages':
+                return view('pages.setting.message.text-message.edit', compact('bot_message_reply'));
+        }
+        return $bot_message_reply;
+    }
+
+    public function destroy($id) {
+        dd(1);
     }
 
     public function messageHead(Request $request)

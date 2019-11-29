@@ -58,11 +58,11 @@
                             <td>{{$text_message->created_at}}</td>
                             <td>
                                 <span>
-                                    <a href="{{ route('setting.edit-message-head', ['id' => $text_message->_id]) }}"
+                                    <a href="{{ route('setting.message.edit', ['message' => $text_message->_id]) }}"
                                        class="amber-text"><span class="material-icons">mode_edit</span></a>
                                 </span>
                                 <span title="Update page"><a
-                                        href="{{ route('page.show', ['page' => $text_message->fb_page_id]) }}"><span
+                                        href="{{ route('setting.message.destroy', ['page' => $text_message->_id]) }}"><span
                                             class="material-icons">remove_red_eye</span></a></span>
                                 <span title="Delete page">
                                     <a data-id="{{ $text_message->_id }}"
@@ -77,7 +77,7 @@
                 @endslot
                 @slot('more')
                     <div class="input-field center">
-                        <a href="{{ route('setting.message.show', ['message' => 'call-bot-message']) }}">
+                        <a href="{{ route('setting.message.show', ['message' => 'text-message']) }}">
                             <button class="btn">More...</button>
                         </a>
                     </div>
@@ -92,7 +92,7 @@
     @component('components.modal.index', ['modal_id' => 'text-messages', 'modal_title' => 'Xoá tin nhắn người dùng gửi', 'modal_form_action' => '', 'is_delete' => true])
         @slot('modal_content')
             <div class="modal-body">
-                <div id="modal-body-notify">
+                <div id="modal-body-notify-text-message">
                     Bạn chắc chắn muốn xóa?
                 </div>
             </div>
