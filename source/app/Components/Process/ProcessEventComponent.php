@@ -109,7 +109,6 @@ class ProcessEventComponent
 
         if ($bot_message_head->text_success_id) {
             $fb_user_event = FbUserEvent::whereuser_fb_id($person_id)->wherebot_message_head_id($bot_message_head->_id)->first();
-
             if (!isset($fb_user_event)) {
                 $gift = self::gift($bot_message_head);
 
@@ -127,7 +126,7 @@ class ProcessEventComponent
                     ]);
                 }
 
-                ProcessMessageComponent::message(BotMessageReply::where_id($bot_message_head->text_success_id)->get(), $person_id, $access_token);
+                ProcessMessageComponent::message(BotMessageReply::where_id($bot_message_head->text_success_id)->get(), $person_id, $access_token, $gift);
                 return;
             }
         }

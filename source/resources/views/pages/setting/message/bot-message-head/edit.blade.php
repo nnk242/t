@@ -3,6 +3,7 @@
 @section('content')
     <form class="container" action="{{ route('setting.store-message-head') }}" method="POST">
         @csrf
+        <input name="_id" value="{{ $bot_message_head->_id }}" hidden>
         <input id="input-error-begin-time-active" name="text_error_begin_time_active_id" hidden>
         <input id="input-error-end-time-active" name="text_error_end_time_active_id" hidden>
         <input id="input-error-time-open" name="text_error_time_open_id" hidden>
@@ -38,28 +39,34 @@
                     <div class="run-event" id="run-event">
                         <div class="input-field">
                             <div class="col s12 row">
-                                <label>Thời gian chat trong ngày <b
-                                        class="orange-text">{{ date('h-i A', strtotime(date('Y-m-d')) + (int)$bot_message_head->begin_time_open) }}</b>
-                                    - <b
-                                        class="orange-text">{{ date('h-i A', strtotime(date('Y-m-d')) + (int)$bot_message_head->end_time_open) }}</b></label>
+                                <label>Thời gian chat trong ngày
+                                    @if($bot_message_head->begin_time_open)
+                                        <b
+                                            class="orange-text">{{ date('h-i A', strtotime(date('Y-m-d')) + (int)$bot_message_head->begin_time_open) }}</b>
+                                        - <b
+                                            class="orange-text">{{ date('h-i A', strtotime(date('Y-m-d')) + (int)$bot_message_head->end_time_open) }}</b>
+                                    @endif
+                                </label>
                                 <div class="row">
                                     <div class="col s6">
-                                        <input type="time" name="time_open[]"
-                                               value="{{ date('H-i', strtotime(date('Y-m-d')) + (int)$bot_message_head->begin_time_open) }}">
+                                        <input type="time" name="time_open[]">
                                     </div>
                                     <div class="col s6">
-                                        <input type="time" name="time_open[]"
-                                               value="{{ date('H-i', strtotime(date('Y-m-d')) + (int)$bot_message_head->end_time_open) }}">
+                                        <input type="time" name="time_open[]">
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="input-field">
                             <div class="col s12 row">
-                                <label>Thời gian hoạt động <b
-                                        class="orange-text">{{ date('Y-m-d h-i A', (int)$bot_message_head->begin_time_active) }}</b>
-                                    - <b
-                                        class="orange-text">{{ date('Y-m-d h-i A', (int)$bot_message_head->end_time_active) }}</b></label>
+                                <label>Thời gian hoạt động
+                                    @if($bot_message_head->begin_time_active)
+                                        <b
+                                            class="orange-text">{{ date('Y-m-d h-i A', (int)$bot_message_head->begin_time_active) }}</b>
+                                        - <b
+                                            class="orange-text">{{ date('Y-m-d h-i A', (int)$bot_message_head->end_time_active) }}</b>
+                                    @endif
+                                </label>
                                 <div class="row">
                                     <div class="col s4 l2">
                                         <input type="time" name="time_active[]">

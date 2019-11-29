@@ -79,6 +79,7 @@ class FacebookSendMessage implements ShouldQueue
                 if (isset($data)) {
                     Facebook::post($access_token, 'me/messages', $data);
                 }
+
                 if ($bot_message_head->type === 'event' && $text !== null) {
                     $is_send = false;
                     if ($bot_message_head->type_event === 'phone' || $bot_message_head->type_event === 'email') {
@@ -88,7 +89,6 @@ class FacebookSendMessage implements ShouldQueue
                     } else {
                         $is_send = true;
                     }
-
                     if ($is_send) {
                         ProcessEventComponent::event($bot_message_head, $person_id, $access_token);
                     }

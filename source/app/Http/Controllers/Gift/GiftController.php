@@ -30,9 +30,9 @@ class GiftController extends Controller
         $bot_message_heads = BotMessageHead::wherefb_page_id($page_selected)->wheretype('event')
             ->orderby('created_at', 'DESC')->paginate(5);
 
-        foreach ($bot_message_heads as $value) {
-            dd($value->gifts->where('amount', '<>', 0)->first());
-        }
+//        foreach ($bot_message_heads as $value) {
+//            dd($value->gifts->where('amount', '<>', 0)->first());
+//        }
 
         $header_bot_heads = ['STT', 'Page', ['label' => 'Nội dung', 'class' => 'center'], ['label' => 'Số lượng gift', 'class' => 'center'], 'Ngày thêm', '###'];
         return view('pages.gift.index', compact('gifts', 'bot_message_heads', 'header_bot_heads'));

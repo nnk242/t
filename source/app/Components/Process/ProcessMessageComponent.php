@@ -112,11 +112,11 @@ class ProcessMessageComponent
         return ':name:';
     }
 
-    public static function textMessage($bot_message_reply, $person_id, $access_token)
+    public static function textMessage($bot_message_reply, $person_id, $access_token, $gift = false)
     {
         $data = [
             'id' => $person_id,
-            'text' => TextComponent::replaceText($bot_message_reply->text, self::getName($bot_message_reply->fb_page_id, $person_id))
+            'text' => TextComponent::replaceText($bot_message_reply->text, self::getName($bot_message_reply->fb_page_id, $person_id), $gift ? $gift : ':gift:')
         ];
         $is_send = true;
         if ($bot_message_reply->type_notify === "timer") {
@@ -149,7 +149,7 @@ class ProcessMessageComponent
         }
     }
 
-    public static function messageTemplate($bot_message_reply, $person_id, $access_token)
+    public static function messageTemplate($bot_message_reply, $person_id, $access_token, $gift = false)
     {
         $is_send = true;
         if ($bot_message_reply->type_notify === "timer") {
@@ -181,9 +181,9 @@ class ProcessMessageComponent
                     $buttons = self::elementButton($value->_id);
                     if ($value->title && $value->image_url && $value->subtitle) {
                         $element = [
-                            "title" => TextComponent::replaceText($value->title, self::getName($bot_message_reply->fb_page_id, $person_id)),
+                            "title" => TextComponent::replaceText($value->title, self::getName($bot_message_reply->fb_page_id, $person_id), $gift ? $gift : ':gift:'),
                             "image_url" => $value->image_url,
-                            "subtitle" => TextComponent::replaceText($value->subtitle, self::getName($bot_message_reply->fb_page_id, $person_id)),
+                            "subtitle" => TextComponent::replaceText($value->subtitle, self::getName($bot_message_reply->fb_page_id, $person_id), $gift ? $gift : ':gift:'),
                         ];
 
                         $elements = array_merge($elements, [array_merge($element, ['buttons' => count($buttons) ? $buttons : null], ['default_action' => $default_action])]);
@@ -220,7 +220,7 @@ class ProcessMessageComponent
                                 "type" => "template",
                                 "payload" => [
                                     "template_type" => "button",
-                                    "text" => TextComponent::replaceText($value->text, self::getName($bot_message_reply->fb_page_id, $person_id)),
+                                    "text" => TextComponent::replaceText($value->text, self::getName($bot_message_reply->fb_page_id, $person_id), $gift ? $gift : ':gift:'),
                                     'buttons' => count($buttons) ? $buttons : null
                                 ]
                             ]
@@ -247,7 +247,7 @@ class ProcessMessageComponent
         }
     }
 
-    public static function quickReply($bot_message_reply, $person_id, $access_token)
+    public static function quickReply($bot_message_reply, $person_id, $access_token, $gift = false)
     {
         $is_send = true;
         if ($bot_message_reply->type_notify === "timer") {
@@ -265,7 +265,7 @@ class ProcessMessageComponent
                     if ($value->title) {
                         $quick_replies[] = [
                             'content_type' => 'text',
-                            'title' => TextComponent::replaceText($value->title, self::getName($bot_message_reply->fb_page_id, $person_id)),
+                            'title' => TextComponent::replaceText($value->title, self::getName($bot_message_reply->fb_page_id, $person_id), $gift ? $gift : ':gift:'),
                             'payload' => $value->payload,
                             'image_url' => $value->image_url
                         ];
@@ -281,7 +281,7 @@ class ProcessMessageComponent
             $message = [
                 'messaging_type' => 'RESPONSE',
                 "message" => [
-                    "text" => TextComponent::replaceText($bot_message_reply->text, self::getName($bot_message_reply->fb_page_id, $person_id)),
+                    "text" => TextComponent::replaceText($bot_message_reply->text, self::getName($bot_message_reply->fb_page_id, $person_id), $gift ? $gift : ':gift:'),
                     'quick_replies' => $quick_replies
                 ]];
             $data = array_merge([
@@ -297,21 +297,21 @@ class ProcessMessageComponent
         }
     }
 
-    public static function message($bot_message_replies, $person_id, $access_token)
+    public static function message($bot_message_replies, $person_id, $access_token, $gift = false)
     {
         foreach ($bot_message_replies as $bot_message_reply) {
             $type_message = $bot_message_reply->type_message;
             if ($type_message === 'text_messages') {
                 if ($bot_message_reply->text) {
-                    self::textMessage($bot_message_reply, $person_id, $access_token);
+                    self::textMessage($bot_message_reply, $person_id, $access_token, $gift);
                 }
             } elseif ($type_message === 'assets_attachments') {
                 self::assetAttachment($bot_message_reply, $person_id, $access_token);
             } elseif ($type_message === 'message_templates') {
-                self::messageTemplate($bot_message_reply, $person_id, $access_token);
+                self::messageTemplate($bot_message_reply, $person_id, $access_token, $gift);
             } elseif ($type_message === "quick_replies") {
                 if ($bot_message_reply->text) {
-                    self::quickReply($bot_message_reply, $person_id, $access_token);
+                    self::quickReply($bot_message_reply, $person_id, $access_token, $gift);
                 }
             }
         }

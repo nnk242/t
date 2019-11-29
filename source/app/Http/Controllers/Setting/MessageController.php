@@ -503,6 +503,11 @@ class MessageController extends Controller
             'type_event' => $request->type_event
         ]);
 
+        if ($request->_id) {
+            BotMessageHead::find($request->_id)->update($data);
+            return redirect()->back()->with('success', 'Sửa tin nhắn thành công!');
+        }
+
         if (UpdateOrCreate::botMessageHead($data)) {
             return redirect()->back()->with('success', 'Thêm tin nhắn thành công!');
         } else {
