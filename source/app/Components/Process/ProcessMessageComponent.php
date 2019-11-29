@@ -301,18 +301,14 @@ class ProcessMessageComponent
     {
         foreach ($bot_message_replies as $bot_message_reply) {
             $type_message = $bot_message_reply->type_message;
-            if ($type_message === 'text_messages') {
-                if ($bot_message_reply->text) {
-                    self::textMessage($bot_message_reply, $person_id, $access_token, $gift);
-                }
+            if ($type_message === 'text_messages' && $bot_message_reply->text) {
+                self::textMessage($bot_message_reply, $person_id, $access_token, $gift);
             } elseif ($type_message === 'assets_attachments') {
                 self::assetAttachment($bot_message_reply, $person_id, $access_token);
             } elseif ($type_message === 'message_templates') {
                 self::messageTemplate($bot_message_reply, $person_id, $access_token, $gift);
-            } elseif ($type_message === "quick_replies") {
-                if ($bot_message_reply->text) {
-                    self::quickReply($bot_message_reply, $person_id, $access_token, $gift);
-                }
+            } elseif ($type_message === "quick_replies" && $bot_message_reply->text) {
+                self::quickReply($bot_message_reply, $person_id, $access_token, $gift);
             }
         }
     }
