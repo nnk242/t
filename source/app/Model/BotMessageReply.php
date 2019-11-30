@@ -34,4 +34,9 @@ class BotMessageReply extends Model
     {
         return $this->belongsTo(BotMessageHead::class, 'bot_message_head_id');
     }
+
+    public function botPayloadElements()
+    {
+        return $this->belongsToMany(BotPayloadElement::class, '_id', 'bot_message_reply_id');
+    }
 }

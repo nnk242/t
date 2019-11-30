@@ -59,29 +59,40 @@
                     @foreach($assets_attachments as $key=>$assets_attachment)
                         <tr>
                             <td>{{ $key +  1 }}</td>
-                            <td>{{$assets_attachment->fb_page_id}}</td>
-                            <td>{{$assets_attachment->page->name}}</td>
-                            <td class="red-text center">{{$assets_attachment->text}}</td>
-                            <td>{{$assets_attachment->updated_at}}</td>
+                            <td class="amber-text">{{$assets_attachment->page->name . ' - ' . $assets_attachment->fb_page_id}}</td>
+                            <td class="cyan-text">{{$assets_attachment->botMessageHead ? $assets_attachment->botMessageHead->text : ''}}</td>
+                            <td class="red-text center">{{$assets_attachment->attachment_type}}</td>
+                            <td class="text_" style="max-width: 100px">
+                                <a title="{{$assets_attachment->attachment_payload_url}}"
+                                   href="{{$assets_attachment->attachment_payload_url}}"
+                                   target="_blank">{{$assets_attachment->attachment_payload_url}}</a>
+                            </td>
+                            <td><span class="new badge"
+                                      data-badge-caption="{{$assets_attachment->type_notify}}"></span></td>
                             <td>{{$assets_attachment->created_at}}</td>
                             <td>
-                                <span title="Update page"><a
-                                        href="{{ route('page.show', ['page' => $assets_attachment->fb_page_id]) }}"><span
-                                            class="material-icons">mode_edit</span></a></span>
+                                <span>
+                                    <a href="{{ route('setting.message.edit', ['message' => $assets_attachment->_id]) }}"
+                                       class="amber-text"><span class="material-icons">mode_edit</span></a>
+                                </span>
+                                <span title="Show"><a
+                                        href="{{ route('setting.message.show', ['message' => $assets_attachment->_id]) }}"><span
+                                            class="material-icons">remove_red_eye</span></a></span>
                                 <span title="Delete page">
                                     <a data-id="{{ $assets_attachment->_id }}"
-                                       data-text="{{ $assets_attachment->text }}"
-                                       class="delete-call-bot-message modal-trigger"
-                                       href="#call-bot-message-modal">
+                                       data-text="{{ $assets_attachment->type_notify }}"
+                                       class="delete-text-message modal-trigger"
+                                       href="#text-messages">
                                         <span class="material-icons red-text">delete</span>
-                                    </a></span>
+                                    </a>
+                                </span>
                             </td>
                         </tr>
                     @endforeach
                 @endslot
                 @slot('more')
                     <div class="input-field center">
-                        <a href="{{ route('setting.message.show', ['message' => 'call-bot-message']) }}">
+                        <a href="{{ route('setting.message.show', ['message' => 'assets-attachments']) }}">
                             <button class="btn">More...</button>
                         </a>
                     </div>

@@ -61,16 +61,17 @@
                                     <a href="{{ route('setting.message.edit', ['message' => $text_message->_id]) }}"
                                        class="amber-text"><span class="material-icons">mode_edit</span></a>
                                 </span>
-                                <span title="Update page"><a
-                                        href="{{ route('setting.message.destroy', ['page' => $text_message->_id]) }}"><span
+                                <span title="Show"><a
+                                        href="{{ route('setting.message.show', ['message' => $text_message->_id]) }}"><span
                                             class="material-icons">remove_red_eye</span></a></span>
                                 <span title="Delete page">
                                     <a data-id="{{ $text_message->_id }}"
                                        data-text="{{ $text_message->text }}"
-                                       class="delete-message modal-trigger"
+                                       class="delete-text-message modal-trigger"
                                        href="#text-messages">
                                         <span class="material-icons red-text">delete</span>
-                                    </a></span>
+                                    </a>
+                                </span>
                             </td>
                         </tr>
                     @endforeach
@@ -87,7 +88,6 @@
             <p class="text-center text-dark h3">Bạn chưa setup page hoặc chưa có nội dung nào...</p>
         @endif
     </div>
-
 
     @component('components.modal.index', ['modal_id' => 'text-messages', 'modal_title' => 'Xoá tin nhắn người dùng gửi', 'modal_form_action' => '', 'is_delete' => true])
         @slot('modal_content')

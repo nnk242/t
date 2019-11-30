@@ -244,19 +244,24 @@
                             <td>{{$message_template->fb_page_id}}</td>
                             <td>{{$message_template->page->name}}</td>
                             <td class="red-text center">{{$message_template->text}}</td>
-                            <td>{{$message_template->updated_at}}</td>
+                            <td class="center amber-text">{{$message_template->botPayloadElements->count()}}</td>
                             <td>{{$message_template->created_at}}</td>
                             <td>
-                                <span title="Update page"><a
-                                        href="{{ route('page.show', ['page' => $message_template->fb_page_id]) }}"><span
-                                            class="material-icons">mode_edit</span></a></span>
+                                <span>
+                                    <a href="{{ route('setting.message.edit', ['message' => $message_template->_id]) }}"
+                                       class="amber-text"><span class="material-icons">mode_edit</span></a>
+                                </span>
+                                <span title="Show"><a
+                                        href="{{ route('setting.message.show', ['message' => $message_template->_id]) }}"><span
+                                            class="material-icons">remove_red_eye</span></a></span>
                                 <span title="Delete page">
                                     <a data-id="{{ $message_template->_id }}"
-                                       data-text="{{ $message_template->text }}"
-                                       class="delete-call-bot-message modal-trigger"
-                                       href="#call-bot-message-modal">
+                                       data-text="{{ $message_template->type }}"
+                                       class="delete-text-message modal-trigger"
+                                       href="#text-messages">
                                         <span class="material-icons red-text">delete</span>
-                                    </a></span>
+                                    </a>
+                                </span>
                             </td>
                         </tr>
                     @endforeach

@@ -40,6 +40,14 @@ $(document).ready(function () {
         $('#call-bot-message-modal').find('form').attr('action', '/setting/message-head' + '/' + id)
     })
 
+    $('.delete-text-message').on('click', function () {
+        let id = $(this).attr('data-id')
+        let text = $(this).attr('data-text')
+        $('#modal-body-notify-text-message').empty()
+        $('#modal-body-notify-text-message').append('Bạn chắc chắn muốn xóa <span class="red-text">' + text + '</span>?')
+        $('#text-messages').find('form').attr('action', '/setting/message/' + id)
+    })
+
     $('.type_notify').on('change', function () {
         switch ($(this).val()) {
             case 'timer':

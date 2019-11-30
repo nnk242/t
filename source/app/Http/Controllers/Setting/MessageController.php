@@ -406,10 +406,9 @@ class MessageController extends Controller
 
         $header_bot_heads = ['STT', 'Page', ['label' => 'Nội dung', 'class' => 'center'], ['label' => 'Thể loại', 'class' => 'center'], 'Ngày thêm', '###'];
         $header_text_messages = ['STT', 'ID Page', 'Nội dung nhận', 'Trả lời người dùng', 'Thể loại', 'Ngày thêm', '###'];
-        $header_assets_attachments = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
-        $header_message_templates = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+        $header_assets_attachments = ['STT', 'ID Page', 'Nội dung nhận', 'Attachment type', 'Attachment payload url', 'Thể loại', 'Ngày thêm', '###'];
+        $header_message_templates = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], ['label' => 'Số lượng element', 'class' => 'center'], 'Ngày thêm', '###'];
         $header_quick_replies = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
-
         return view('pages.setting.message.index', compact('bot_message_heads', 'text_messages',
             'assets_attachments', 'message_templates', 'quick_replies', 'header_bot_heads', 'header_text_messages',
             'header_assets_attachments', 'header_message_templates', 'header_quick_replies'));
@@ -462,7 +461,15 @@ class MessageController extends Controller
                 $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->paginate(10);
                 return view('pages.setting.message.show.call-bot-message', compact('bot_message_heads', 'headers'));
                 break;
+            case 'assets-attachments':
+                $headers = ['STT', 'ID Page', 'Tên page', ['label' => 'Nội dung người dùng', 'class' => 'center'], 'Ngày cập nhật', 'Ngày thêm', '###'];
+                $bot_message_heads = BotMessageHead::wherefb_page_id(Auth::user()->page_selected)->orderby('created_at', 'DESC')->paginate(10);
+                return view('pages.setting.message.show.call-bot-message', compact('bot_message_heads', 'headers'));
+                break;
         }
+
+        $bot_message_reply = BotMessageReply::findorfail($id);
+        return view('pages.setting.message.show.index', compact('bot_message_reply'));
     }
 
     public function edit($id)
@@ -470,13 +477,19 @@ class MessageController extends Controller
         $bot_message_reply = BotMessageReply::where_id($id)->firstorfail();
         switch ($bot_message_reply->type_message) {
             case 'text_messages':
-                return view('pages.setting.message.text-message.edit', compact('bot_message_reply'));
+                return view('pages.setting.message.edit.text-message', compact('bot_message_reply'));
+            case 'assets_attachments':
+                return view('pages.setting.message.edit.asset-attachment', compact('bot_message_reply'));
+            case 'message_templates':
+                return view('pages.setting.message.edit.message-template', compact('bot_message_reply'));
         }
         return $bot_message_reply;
     }
 
-    public function destroy($id) {
-        dd(1);
+    public function destroy($id)
+    {
+        BotMessageReply::findorfail($id)->delete();
+        return redirect()->back()->with('success', 'Đã xóa thành công.');
     }
 
     public function messageHead(Request $request)
