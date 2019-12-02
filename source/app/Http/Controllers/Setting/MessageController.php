@@ -481,7 +481,8 @@ class MessageController extends Controller
             case 'assets_attachments':
                 return view('pages.setting.message.edit.asset-attachment', compact('bot_message_reply'));
             case 'message_templates':
-                return view('pages.setting.message.edit.message-template', compact('bot_message_reply'));
+                $header_message_templates = ['STT', 'Title', 'Subtitle', ['label' => 'Số lượng button', 'class' => 'center'], ['label' => 'Group', 'class' => 'center'], 'Default action', 'Ngày thêm', '###'];
+                return view('pages.setting.message.edit.message-template', compact('bot_message_reply', 'header_message_templates'));
         }
         return $bot_message_reply;
     }
