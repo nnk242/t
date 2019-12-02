@@ -25,6 +25,11 @@ class EventController extends Controller
 
     public function index()
     {
+        dd(FbMessage::where(function ($q) {
+            $q->wherenotnull('text')->orWhereNotNull('attachments');
+        })->where(function ($q) {
+            $q->wheresender_id('1086408651532297')->orwhere('recipient_id', '1086408651532297');
+        })->get());
         dd(BotMessageReply::where('text', 'LIKE', "%h%")->limit(10)->get());
         dd('error');
         $data = ["messages" => [

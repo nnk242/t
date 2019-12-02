@@ -45,7 +45,7 @@ class DataMessaging
             'recipient_id' => $recipient_id,
             'sender_id' => $sender_id,
             'text' => $text,
-            'attachments' => json_encode($attachments),
+            'attachments' => $attachments ? json_encode($attachments) : null,
             'reply_to_mid' => $reply_to_mid,
             'sticker_id' => $sticker_id,
             'timestamp' => $timestamp,
