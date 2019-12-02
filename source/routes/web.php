@@ -58,7 +58,8 @@ Route::resource('event', 'Event\EventController');
 Route::resource('gift', 'Gift\GiftController');
 
 Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.'], function () {
-    Route::get('index', 'SettingController@index')->name('index');
+    Route::get('index', 'SettingController@index');
+    Route::get('/', 'SettingController@index')->name('index');
     Route::resource('message', 'MessageController');
     ##message-head
     Route::get('message-head', 'MessageController@messageHead')->name('message-head');
@@ -68,7 +69,7 @@ Route::group(['namespace' => 'Setting', 'prefix' => 'setting', 'as' => 'setting.
     Route::delete('message-head/{id}', 'MessageController@destroyMessageHead')->name('destroy-message-head');
 
     Route::get('message-reply', 'MessageController@messageReply')->name('message-reply');
-    Route::resource('persistent-menu', 'PersistentMenuController')->only('index', 'store');
+    Route::resource('persistent-menu', 'PersistentMenuController')->except('edit');
 //    Route::resource('message', 'MessageController')->only('index', 'store');
 });
 
