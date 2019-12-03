@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use App\User;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class UserRolePage extends Model

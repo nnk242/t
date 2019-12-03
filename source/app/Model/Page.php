@@ -24,4 +24,9 @@ class Page extends Model
     protected $hidden = [
         'access_token'
     ];
+
+    public function listFbPageId()
+    {
+        return Page::pluck('fb_page_id')->toArray();
+    }
 }

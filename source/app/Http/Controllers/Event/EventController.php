@@ -13,6 +13,7 @@ use App\Model\BotQuickReply;
 use App\Model\FbMessage;
 use App\Model\FbProcess;
 use App\Model\Page;
+use App\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,8 +24,10 @@ class EventController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(Page $page)
     {
+
+        dd(Auth::user()->getPageSelected());
         $data = ['date' => array()];
         $microtime = strtotime(date('Y-m-d')) * 1000 + (3600 * 24 * 1000);
 //        dd(FbMessage::where(function ($q) {

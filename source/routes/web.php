@@ -30,12 +30,12 @@ Route::group(['namespace' => 'Facebook', 'prefix' => 'facebook'], function () {
 });
 
 Route::group(['namespace' => 'Process', 'prefix' => 'process'], function () {
-    Route::get('/{id}', 'ProcessController@index');
+    Route::get('/{id}', 'ProcessController@index')->middleware('role.page');
 });
 
 Route::resource('page', 'PageController')->except('create', 'edit', 'update');
 
-Route::resource('role', 'RoleController')->only('index', 'store');
+Route::resource('role', 'RoleController')->only('index', 'store', 'destroy')->middleware('role.user');
 Route::resource('message', 'MessageController')->except('update', 'show');
 Route::get('message/search/data', 'MessageController@searchData')->name('search-data');
 Route::get('message/search/data/head-event', 'MessageController@searchDataHeadEvent')->name('search-data-head-event');

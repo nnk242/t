@@ -21,28 +21,42 @@ class MeController extends Controller
 
     public function index(Request $request)
     {
-//        $log = new Logger(date('Y-m-d H:i:s ') . 'log');
-//        $log->pushHandler(new StreamHandler(storage_path('fb/' . date('Y-m-d') . '-fb.log')), Logger::INFO);
-//        $log->info('OrderLog', ['$arr_log']);
-
         $user_and_page = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(0)->get();
         return view('pages.me.index', compact('pages', 'user_and_page'));
     }
 
     public function store(Request $request)
     {
-        $user_and_page = UserRolePage::wherestatus(1)->findorfail($request->id);
-        if ($user_and_page->user_child === Auth::id()) {
-            $user_and_page->update(
-                [
-                    'type' => (int)$request->type === 1 ? 1 : 2
-                ]
-            );
+        $type = $request->type;
+        if ($type === 'accept-all' || $type === 'deny-all') {
+            $user_and_page = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(0)->get();
+
+            foreach ($user_and_page as $value) {
+                $role_page = UserRolePage::wherestatus(1)->find($value->_id);
+                if (isset($role_page)) {
+                    $role_page->update(
+                        [
+                            'type' => $type === 'accept-all' ? 1 : 2
+                        ]
+                    );
+                }
+            }
+            return redirect()->back()->with('success', 'Thực thi thành công');
+        } else {
+            $user_and_page = UserRolePage::wherestatus(1)->findorfail($request->_id);
+            if ($user_and_page->user_child === Auth::id()) {
+                $user_and_page->update(
+                    [
+                        'type' => (int)$type === 1 ? 1 : 2
+                    ]
+                );
+            }
+            return redirect()->back()->with('success', 'Đã set thành công');
         }
-        return redirect()->back()->with('success', 'Đã set thành công');
     }
 
-    public function getAccessToken()
+    public
+    function getAccessToken()
     {
         $facebookScope = [
             'email',
@@ -65,7 +79,8 @@ class MeController extends Controller
         }
     }
 
-    public function setAccessToken()
+    public
+    function setAccessToken()
     {
         try {
             $data = Socialite::driver('facebook')->user();
@@ -81,7 +96,8 @@ class MeController extends Controller
         }
     }
 
-    public function pageSelected(Request $request)
+    public
+    function pageSelected(Request $request)
     {
         try {
             $arr_user_role_page = UserRolePage::whereuser_child(Auth::id())->wherestatus(1)->wheretype(1)->pluck('fb_page_id')->toArray();

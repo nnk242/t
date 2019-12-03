@@ -36,4 +36,30 @@ class User extends Authenticatable
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function getPageUse()
+    {
+        if ($this->getAttribute('page_use')) {
+            return json_decode($this->getAttribute('page_use'));
+        }
+        return [];
+    }
+
+    public function getPageSelected()
+    {
+        $page = new Page();
+        $arr_page_use = $this->getPageUse();
+        $page_selected = $this->getAttribute('page_selected');
+        if ($page_selected) {
+            if (in_array($page_selected, $arr_page_use) && in_array($page_selected, $page->listFbPageId())) {
+                return $page_selected;
+            }
+        }
+        return '';
+    }
+
+    public function getRole()
+    {
+        return $this->getAttribute('role');
+    }
 }

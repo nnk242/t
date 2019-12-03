@@ -1,27 +1,9 @@
-<div class="row mb-5">
-    <div class="col-xl-3 text-center mb-2">
-        <a href="{{route('me.index')}}">
-            <button class="btn {{ \App\Components\ActiveComponent::isActiveSide(['/me', '/me/index'])? 'btn-outline-primary' : 'btn-primary' }}">{{__('Tổng quan')}}</button>
-        </a>
-    </div>
-    <div class="col-xl-3 text-center mb-2">
-        <a href="{{route('me.share.index')}}">
-            <button class="btn {{ \App\Components\ActiveComponent::isActiveSide(['/me/share', '/me/share/index'])? 'btn-outline-primary' : 'btn-primary' }}">{{__('Chia sẻ page')}}</button>
-        </a>
-    </div>
-    <div class="col-xl-3 text-center mb-2">
-        <a href="{{route('me.manager-share.index')}}">
-            <button class="btn {{ \App\Components\ActiveComponent::isActiveSide(['/me/manager-share', '/me/manager-share/index'])? 'btn-outline-primary' : 'btn-primary' }}">{{__('Quản lý chia sẻ')}}</button>
-        </a>
-    </div>
-    <div class="col-xl-3 text-center mb-2">
-        <a href="{{route('me.page-use.index')}}">
-            <button class="btn {{ \App\Components\ActiveComponent::isActiveSide(['/me/page-use', '/me/page-share/index'])? 'btn-outline-primary' : 'btn-primary' }}">{{__('Page sử dụng')}}</button>
-        </a>
-    </div>
-    <div class="col-xl-3 text-center mb-2">
-        <a href="{{route('me.access-token')}}">
-            <button class="btn btn-primary">{{__('Cập nhật access token cá nhân')}}</button>
-        </a>
-    </div>
+<div class="col s12">
+    <ul class="tabs z-depth-1">
+        <li class="tab col"><a href="{{route('me.index')}}" >{{__('Tổng quan')}}</a></li>
+        <li class="tab col"><a href="{{route('me.share.index')}}">{{__('Chia sẻ page')}}</a></li>
+        <li class="tab col"><a href="{{route('me.manager-share.index')}}">{{__('Quản lý chia sẻ')}}</a></li>
+        <li class="tab col"><a href="{{route('me.page-use.index')}}" data-toggle="tab">{{__('Page sử dụng')}}</a></li>
+        <li class="tab col"><a href="{{route('me.access-token')}}" data-toggle="tab">{{__('Cập nhật access token cá nhân')}}</a></li>
+    </ul>
 </div>

@@ -3,10 +3,10 @@
 
 @endsection
 @section('content')
-    <div class="no-pad-top">
+    @include('pages.me.header.index')
+    <div class="container">
         <div class="row">
             <div class="col s12">
-                @include('pages.me.header.index')
                 @if($data->count())
                     @component('components.table.index', ['headers' => $headers])
                         @slot('body')
