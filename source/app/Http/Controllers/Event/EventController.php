@@ -25,11 +25,24 @@ class EventController extends Controller
 
     public function index()
     {
-        dd(FbMessage::where(function ($q) {
-            $q->wherenotnull('text')->orWhereNotNull('attachments');
-        })->where(function ($q) {
-            $q->wheresender_id('1086408651532297')->orwhere('recipient_id', '1086408651532297');
-        })->get());
+        $data = ['date' => array()];
+        $microtime = strtotime(date('Y-m-d')) * 1000 + (3600 * 24 * 1000);
+//        dd(FbMessage::where(function ($q) {
+//            $q->wherenotnull('text')->orWhereNotNull('attachments');
+//        })->where(function ($q) {
+//            $q->wheresender_id('1086408651532297')->orwhere('recipient_id', '1086408651532297');
+//        })->where('timestamp', '<', $microtime)->where('timestamp', '>=', ($microtime - (3600 * 24 * 1000)))->get());
+        for ($i = 0; $i < 7; $i++) {
+            $data[date('Y-m-d', (($microtime - (3600 * 24 * 1000)) / 1000) - ($i * 24 * 60 * 60))] = FbMessage::where(function ($q) {
+                $q->wherenotnull('text')->orWhereNotNull('attachments');
+            })->where(function ($q) {
+                $q->wheresender_id('1086408651532297')->orwhere('recipient_id', '1086408651532297');
+            })->where('timestamp', '<', $microtime - ($i * 3600 * 24 * 1000))->where('timestamp', '>=', ($microtime - (($i + 1) * 3600 * 24 * 1000)))->count();
+            $data['date'][$i] = date('Y-m-d', (($microtime - (3600 * 24 * 1000)) / 1000) - ($i * 24 * 60 * 60));
+        }
+//        dd($data);
+        return view('pages.event.index', compact('data'));
+
         dd(BotMessageReply::where('text', 'LIKE', "%h%")->limit(10)->get());
         dd('error');
         $data = ["messages" => [

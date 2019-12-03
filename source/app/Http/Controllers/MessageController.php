@@ -13,6 +13,7 @@ use App\Model\BotPayloadElement;
 use App\Model\BotQuickReply;
 use App\Model\BroadcastMessenger;
 use App\Model\BroadcastPage;
+use App\Model\FbMessage;
 use App\Model\FbProcess;
 use App\Model\Page;
 use App\Model\User;
@@ -250,5 +251,19 @@ class MessageController extends Controller
     {
         BroadcastMessenger::where_id($id)->firstorfail()->update(['status' => (int)$request->is_checked ? 1 : 0]);
         return (int)$request->is_checked ? 0 : 1;
+    }
+
+    public function countMessage()
+    {
+        $microtime = strtotime(date('Y-m-d')) * 1000 + (3600 * 24 * 1000);
+
+        return [
+            'date' => date('Y-m-d'),
+            'count' => FbMessage::where(function ($q) {
+                $q->wherenotnull('text')->orWhereNotNull('attachments');
+            })->where(function ($q) {
+                $q->wheresender_id('1086408651532297')->orwhere('recipient_id', '1086408651532297');
+            })->where('timestamp', '<', $microtime)->where('timestamp', '>=', ($microtime - (3600 * 24 * 1000)))->count()
+        ];
     }
 }

@@ -93,7 +93,7 @@ class MeController extends Controller
                 return redirect()->back()->with('success', 'Chọn thành công!');
             }
         } catch (\Exception $exception) {
-            return redirect()->back()->with('error', 'Chọn không thành công!');
         }
+        return redirect()->back()->with('error', 'Chọn không thành công!');
     }
 }

@@ -40,6 +40,7 @@ Route::resource('message', 'MessageController')->except('update', 'show');
 Route::get('message/search/data', 'MessageController@searchData')->name('search-data');
 Route::get('message/search/data/head-event', 'MessageController@searchDataHeadEvent')->name('search-data-head-event');
 Route::put('message/update/status/{id}', 'MessageController@updateStatus')->name('update-status');
+Route::get('message/count/message', 'MessageController@countMessage')->name('count-message');
 
 Route::group(['namespace' => 'Me', 'prefix' => 'me', 'as' => 'me.'], function () {
     Route::resource('/', 'MeController')->only('index', 'store');
